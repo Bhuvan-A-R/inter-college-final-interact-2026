@@ -8,7 +8,6 @@ import {
   Phone,
   AlertCircle,
   ShoppingCart,
-  LogIn,
   CheckCircle,
 } from "lucide-react";
 import { EventCategory } from "@/data/eventCategories";
@@ -446,7 +445,7 @@ export default function EventDetailClient({ category, details }: Props) {
                 </div>
 
                 {/* ── Cart CTA ── */}
-                <div className="pt-2">
+                <div className="pt-2 rounded-2xl border border-gat-blue/10 p-4">
                   {isLoggedIn ? (
                     inCart ? (
                       <div className="flex flex-col gap-2">
@@ -533,14 +532,7 @@ export default function EventDetailClient({ category, details }: Props) {
                         </button>
                       </div>
                     )
-                  ) : (
-                    <Link
-                      href="/auth/signin"
-                      className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gat-blue text-white font-bold text-sm hover:bg-gat-midnight transition-colors"
-                    >
-                      <LogIn className="w-4 h-4" /> Sign In to Register
-                    </Link>
-                  )}
+                  ) : null}
                   {category.amount && (
                     <p className="text-xs text-gat-steel text-center mt-2">
                       Registration fee:{" "}
