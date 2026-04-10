@@ -11,7 +11,6 @@ const Footer = () => {
     <footer className="bg-gat-midnight text-white pt-16 pb-24 md:pb-8 border-t border-gat-cobalt/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          
           {/* Column 1: Brand & About */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
@@ -20,16 +19,26 @@ const Footer = () => {
                 <span className="text-gat-gold">INTERACT</span>
               </span>
             </div>
-            
+
             <p className="text-sm text-gat-steel font-body leading-relaxed pr-4">
-              Join Global Academy of Technology for INTERACT 2026 – a celebration of innovation, creativity, and technology. Where Code Meets Culture.
+              Join Global Academy of Technology for INTERACT 2026 – a
+              celebration of innovation, creativity, and technology. Where Code
+              Meets Culture.
             </p>
-            
+
             {/* Social icons */}
             <div className="flex items-center gap-4">
               {[
-                { href: "https://www.linkedin.com", img: linkedin, alt: "LinkedIn" },
-                { href: "https://www.instagram.com", img: insta, alt: "Instagram" },
+                {
+                  href: "https://www.linkedin.com",
+                  img: linkedin,
+                  alt: "LinkedIn",
+                },
+                {
+                  href: "https://www.instagram.com",
+                  img: insta,
+                  alt: "Instagram",
+                },
                 { href: "https://www.youtube.com", img: yt, alt: "YouTube" },
               ].map(({ href, img, alt }) => (
                 <a
@@ -54,19 +63,60 @@ const Footer = () => {
 
           {/* Column 2: Quick Links */}
           <div>
-            <h3 className="font-heading font-bold text-lg text-white mb-6 tracking-wide">Quick Links</h3>
+            <h3 className="font-heading font-bold text-lg text-white mb-6 tracking-wide">
+              Quick Links
+            </h3>
             <ul className="space-y-3 font-body text-sm">
               <li>
-                <Link href="/" className="text-gat-steel hover:text-gat-gold transition-colors">Home</Link>
+                <Link
+                  href="/"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  Home
+                </Link>
               </li>
               <li>
-                <Link href="/about" className="text-gat-steel hover:text-gat-gold transition-colors">About GAT</Link>
+                <Link
+                  href="/about"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  About GAT
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/about-fest"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  About FEST
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/about/management"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  Management Team
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/about/interact-team"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  Interact Team
+                </Link>
               </li>
               {/* <li>
                 <Link href="/sponsors" className="text-gat-steel hover:text-gat-gold transition-colors">Sponsors</Link>
               </li> */}
               <li>
-                <Link href="/gallery" className="text-gat-steel hover:text-gat-gold transition-colors">Gallery</Link>
+                <Link
+                  href="/gallery"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  Gallery
+                </Link>
               </li>
             </ul>
           </div>
@@ -93,18 +143,65 @@ const Footer = () => {
             </ul>
           </div> */}
 
-          {/* Column 4: Legal & Contact */}
+          {/* Column 3: Contact - Website Issues */}
           <div>
-            <h3 className="font-heading font-bold text-lg text-white mb-6 tracking-wide">Legal</h3>
-            <ul className="space-y-3 font-body text-sm mb-8">
+            <h3 className="font-heading font-bold text-lg text-white mb-6 tracking-wide">
+              Website Issues
+            </h3>
+            <ul className="space-y-3 font-body text-sm text-gat-steel">
               <li>
-                <Link href="/privacy-policy" className="text-gat-steel hover:text-gat-gold transition-colors">Privacy Policy</Link>
-              </li>
-              <li>
-                <Link href="/terms-of-services" className="text-gat-steel hover:text-gat-gold transition-colors">Terms of Service</Link>
+                <a
+                  href="callto:+91 83174 62097"
+                  className="hover:text-gat-gold transition-colors"
+                >
+                  Bhuvan A R : +91 83174 62097
+                </a>
               </li>
             </ul>
-            
+
+            <h3 className="font-heading font-bold text-lg text-white mt-6 mb-6 tracking-wide">
+              Event Issues
+            </h3>
+            <ul className="space-y-3 font-body text-sm text-gat-steel">
+              <li>Coordinator 1: +91 00000 00000</li>
+              <li>Coordinator 2: +91 00000 00000</li>
+            </ul>
+
+            <h3 className="font-heading font-bold text-lg text-white mt-6 mb-4 tracking-wide">
+              Email Us:{" "}
+              <a
+                href="mailto:interact@gat.ac.in"
+                className="space-y-2 font-body text-sm text-gat-steel hover:text-gat-gold transition-colors"
+              >
+                interact@gat.ac.in
+              </a>
+            </h3>
+          </div>
+
+          {/* Column 5: Legal & Contact */}
+          <div>
+            <h3 className="font-heading font-bold text-lg text-white mb-6 tracking-wide">
+              Legal
+            </h3>
+            <ul className="space-y-3 font-body text-sm mb-8">
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms-of-services"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  Terms of Service
+                </Link>
+              </li>
+            </ul>
+
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-widest border border-gat-steel/20 bg-white/5 text-gat-steel hover:text-white hover:border-gat-gold hover:bg-gat-gold/10 rounded-lg transition-all duration-200"
@@ -112,7 +209,6 @@ const Footer = () => {
               ↑ Back to Top
             </button>
           </div>
-
         </div>
 
         {/* Bottom Bar */}

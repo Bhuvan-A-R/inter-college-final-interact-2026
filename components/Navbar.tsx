@@ -12,6 +12,15 @@ import LoginLogoutButton from "./LoginLogoutButton";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  {
+    label: "About",
+    children: [
+      { href: "/about", label: "About GAT" },
+      { href: "/about-fest", label: "About Fest" },
+      { href: "/about/management", label: "Management Team" },
+      { href: "/about/interact-team", label: "Interact Team" },
+    ],
+  },
   { href: "/events", label: "Events" },
   // { href: "/spoc-details", label: "SPOC's Details" },
   // { href: "/schedule", label: "Schedule" },
@@ -82,17 +91,47 @@ const Navbar = () => {
             {/* Desktop Nav */}
             {!logoOnly && (
               <nav className="hidden md:flex items-center gap-8">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`font-body font-semibold transition-colors hover:text-gat-blue ${
-                      scrolled ? "text-white/80" : "text-gat-charcoal"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {navLinks.map((link) => {
+                  if (link.children) {
+                    return (
+                      <div key={link.label} className="relative group">
+                        <button
+                          type="button"
+                          className={`font-body font-semibold transition-colors hover:text-gat-blue ${
+                            scrolled ? "text-white/80" : "text-gat-charcoal"
+                          }`}
+                        >
+                          {link.label}
+                        </button>
+                        <div className="absolute left-0 top-full pt-3 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
+                          <div className="min-w-[220px] rounded-xl border border-gat-blue/10 bg-white shadow-navy p-2">
+                            {link.children.map((child) => (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                className="block px-3 py-2 rounded-lg text-sm font-semibold text-gat-charcoal hover:bg-gat-blue/10 hover:text-gat-blue"
+                              >
+                                {child.label}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`font-body font-semibold transition-colors hover:text-gat-blue ${
+                        scrolled ? "text-white/80" : "text-gat-charcoal"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
               </nav>
             )}
 
@@ -136,16 +175,38 @@ const Navbar = () => {
               className="md:hidden overflow-hidden bg-gat-midnight text-white border-t border-gat-cobalt/30"
             >
               <div className="px-4 pt-2 pb-6 space-y-4 shadow-xl flex flex-col">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block px-3 py-3 rounded-md text-base font-heading font-bold text-white hover:bg-gat-cobalt/30 uppercase tracking-wider"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {navLinks.map((link) => {
+                  if (link.children) {
+                    return (
+                      <div key={link.label} className="space-y-2">
+                        <div className="px-3 text-xs font-bold uppercase tracking-wider text-white/60">
+                          {link.label}
+                        </div>
+                        {link.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="block px-3 py-3 rounded-md text-base font-heading font-bold text-white hover:bg-gat-cobalt/30 uppercase tracking-wider"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-3 py-3 rounded-md text-base font-heading font-bold text-white hover:bg-gat-cobalt/30 uppercase tracking-wider"
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
 
                 <div className="pt-4 border-t border-gat-cobalt/30 flex flex-col gap-4">
                   <LoginLogoutButton variant="stacked" />
