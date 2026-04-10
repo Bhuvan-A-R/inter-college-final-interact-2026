@@ -52,8 +52,13 @@ export async function GET(req: NextRequest) {
       prisma.order.count({ where: { status } }),
     ]);
 
+    const responseOrders = orders.map((order) => ({
+      ...order,
+      REJECTED_REASON: order.rejectionReason ?? null,
+    }));
+
     return successResponse({
-      orders,
+      orders: responseOrders,
       total,
       page,
       totalPages: Math.ceil(total / limit),

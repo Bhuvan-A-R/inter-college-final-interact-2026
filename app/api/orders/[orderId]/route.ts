@@ -47,7 +47,12 @@ export async function GET(req: NextRequest, context: RouteContext) {
       return errorResponse("Forbidden.", 403);
     }
 
-    return successResponse({ order });
+    return successResponse({
+      order: {
+        ...order,
+        REJECTED_REASON: order.rejectionReason ?? null,
+      },
+    });
   } catch (error) {
     console.error("[GET /api/orders/:orderId]", error);
     return errorResponse("Internal server error.", 500);

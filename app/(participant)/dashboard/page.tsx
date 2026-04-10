@@ -3,7 +3,16 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/lib/authCookie";
 import { verifySession } from "@/lib/session";
-import { ShoppingCart, ClipboardList, CheckCircle, Mail, CalendarDays, Users } from "lucide-react";
+import {
+  ShoppingCart,
+  ClipboardList,
+  CheckCircle,
+  Mail,
+  CalendarDays,
+  Users,
+} from "lucide-react";
+import EventCard from "@/components/EventCard";
+import { eventCategories } from "@/data/eventCategories";
 
 export default async function DashboardPage({
   searchParams,
@@ -29,31 +38,94 @@ export default async function DashboardPage({
 
   if (!user) redirect("/auth/signin");
 
-  const [cartCount, activeOrderCount, registrationCount, pendingInviteCount] =
-    await Promise.all([
-      prisma.cartItem.count({ where: { userId } }),
-      prisma.order.count({
-        where: {
-          userId,
-          status: { in: ["PENDING_PAYMENT", "PAYMENT_SUBMITTED"] },
+  const [
+    cartCount,
+    activeOrderCount,
+    registrationCount,
+    pendingInviteCount,
+    verifiedOrders,
+  ] = await Promise.all([
+    prisma.cartItem.count({ where: { userId } }),
+    prisma.order.count({
+      where: {
+        userId,
+        status: { in: ["PENDING_PAYMENT", "PAYMENT_SUBMITTED"] },
+      },
+    }),
+    prisma.registration.count({ where: { userId } }),
+    prisma.teamInvite.count({
+      where: { invitedUserId: userId, status: "PENDING" },
+    }),
+    prisma.order.findMany({
+      where: { userId, status: "VERIFIED" },
+      include: {
+        orderItems: {
+          include: {
+            event: {
+              select: {
+                id: true,
+                name: true,
+                category: true,
+                type: true,
+              },
+            },
+          },
         },
-      }),
-      prisma.registration.count({ where: { userId } }),
-      prisma.teamInvite.count({
-        where: { invitedUserId: userId, status: "PENDING" },
-      }),
-    ]);
+      },
+      orderBy: { verifiedAt: "desc" },
+    }),
+  ]);
+
+  const eventNoByName = new Map(
+    eventCategories.map((event) => [event.eventName, event.eventNo]),
+  );
+
+  const registeredEvents = [] as Array<{
+    eventId: string;
+    eventName: string;
+    eventNo: number | null;
+    category: string | null;
+    type: string | null;
+    status: "VERIFIED";
+    transactionId: string | null;
+    registrationDate: string | null;
+  }>;
+
+  const seen = new Set<string>();
+  for (const order of verifiedOrders) {
+    for (const item of order.orderItems) {
+      if (seen.has(item.event.id)) continue;
+      seen.add(item.event.id);
+
+      registeredEvents.push({
+        eventId: item.event.id,
+        eventName: item.event.name,
+        eventNo: eventNoByName.get(item.event.name) ?? null,
+        category: item.event.category ?? null,
+        type: item.event.type ?? null,
+        status: "VERIFIED",
+        transactionId: order.upiTransactionId ?? null,
+        registrationDate: order.verifiedAt
+          ? new Date(order.verifiedAt).toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })
+          : null,
+      });
+    }
+  }
 
   const cards = [
-    {
-      label: "Events Registered",
-      count: registrationCount,
-      href: null,
-      icon: CheckCircle,
-      color: "text-green-600",
-      bg: "bg-green-50",
-      border: "border-green-200",
-    },
+    // {
+    //   label: "Events Registered",
+    //   count: registrationCount,
+    //   href: null,
+    //   icon: CheckCircle,
+    //   color: "text-green-600",
+    //   bg: "bg-green-50",
+    //   border: "border-green-200",
+    // },
     {
       label: "Cart Items",
       count: cartCount,
@@ -86,13 +158,14 @@ export default async function DashboardPage({
   return (
     <div className="min-h-screen bg-gat-off-white pt-24 pb-20">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* Unauthorized access banner */}
         {showUnauthorized && (
           <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4">
             <span className="text-red-500 text-lg leading-none mt-0.5">⛔</span>
             <div>
-              <p className="font-semibold text-red-700 text-sm">Access Denied</p>
+              <p className="font-semibold text-red-700 text-sm">
+                Access Denied
+              </p>
               <p className="text-xs text-red-600 mt-0.5">
                 You do not have permission to access that page.
               </p>
@@ -113,38 +186,43 @@ export default async function DashboardPage({
 
         {/* Summary cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          {cards.map(({ label, count, href, icon: Icon, color, bg, border }) => {
-            const inner = (
-              <div
-                className={`rounded-xl border ${border} ${bg} p-5 flex flex-col gap-3 h-full transition-all hover:shadow-md`}
-              >
-                <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center border ${border}`}>
-                  <Icon className={`h-5 w-5 ${color}`} />
+          {cards.map(
+            ({ label, count, href, icon: Icon, color, bg, border }) => {
+              const inner = (
+                <div
+                  className={`rounded-xl border ${border} ${bg} p-5 flex flex-col gap-3 h-full transition-all hover:shadow-md`}
+                >
+                  <div
+                    className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center border ${border}`}
+                  >
+                    <Icon className={`h-5 w-5 ${color}`} />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-heading font-black text-gat-midnight">
+                      {count}
+                    </p>
+                    <p className="text-xs font-semibold text-gat-steel mt-0.5 uppercase tracking-widest">
+                      {label}
+                    </p>
+                  </div>
+                  {href && (
+                    <p className={`text-xs font-bold ${color} mt-auto`}>
+                      View →
+                    </p>
+                  )}
                 </div>
-                <div>
-                  <p className="text-3xl font-heading font-black text-gat-midnight">
-                    {count}
-                  </p>
-                  <p className="text-xs font-semibold text-gat-steel mt-0.5 uppercase tracking-widest">
-                    {label}
-                  </p>
-                </div>
-                {href && (
-                  <p className={`text-xs font-bold ${color} mt-auto`}>
-                    View →
-                  </p>
-                )}
-              </div>
-            );
-            return href ? (
-              <Link key={label} href={href} className="block">
-                {inner}
-              </Link>
-            ) : (
-              <div key={label}>{inner}</div>
-            );
-          })}
+              );
+              return href ? (
+                <Link key={label} href={href} className="block">
+                  {inner}
+                </Link>
+              ) : (
+                <div key={label}>{inner}</div>
+              );
+            },
+          )}
         </div>
+
 
         {/* Quick Links */}
         <div className="bg-white rounded-xl border border-gat-blue/10 shadow-sm p-6">
@@ -188,9 +266,55 @@ export default async function DashboardPage({
           </div>
         </div>
 
+         {/* Events Registered */}
+        <div className="bg-white rounded-xl border border-gat-blue/10 shadow-sm mt-10 p-6 mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-bold tracking-[0.2em] uppercase text-gat-steel">
+              Events Registered
+            </h2>
+            <Link
+              href="/events"
+              className="text-xs font-bold text-gat-blue hover:text-gat-midnight"
+            >
+              Browse Events →
+            </Link>
+          </div>
+
+          {registeredEvents.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-gat-blue/20 bg-gat-off-white p-8 text-center">
+              <p className="text-sm font-semibold text-gat-midnight">
+                No Registered Events Yet
+              </p>
+              <p className="text-xs text-gat-steel mt-1">
+                Once your payment is verified, your registered events will
+                appear here.
+              </p>
+              <Link
+                href="/events"
+                className="inline-flex mt-4 text-xs font-bold text-gat-blue hover:text-gat-midnight"
+              >
+                Browse Events →
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {registeredEvents.map((event) => (
+                <EventCard
+                  key={event.eventId}
+                  eventNo={event.eventNo}
+                  eventName={event.eventName}
+                  category={event.category}
+                  type={event.type}
+                  registrationStatus={event.status}
+                  transactionId={event.transactionId}
+                  registrationDate={event.registrationDate}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
 }
-
-

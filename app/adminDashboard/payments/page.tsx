@@ -66,7 +66,7 @@ export default function AdminPaymentsPage() {
 
   useEffect(() => {
     loadOrders();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleApprove = async (orderId: string) => {
@@ -93,9 +93,7 @@ export default function AdminPaymentsPage() {
   };
 
   const handleReject = async (orderId: string) => {
-    const reason = window.prompt(
-      "Enter rejection reason (required):"
-    );
+    const reason = window.prompt("Enter rejection reason (required):");
 
     if (reason === null) return; // user cancelled
     if (!reason.trim()) {
@@ -108,7 +106,7 @@ export default function AdminPaymentsPage() {
       const res = await fetch(`/api/admin/payments/${orderId}/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rejectionReason: reason.trim() }),
+        body: JSON.stringify({ REJECTED_REASON: reason.trim() }),
       });
       const data = await res.json();
 
@@ -160,9 +158,7 @@ export default function AdminPaymentsPage() {
               <table className="w-full text-sm">
                 <thead className="bg-gat-midnight text-white">
                   <tr>
-                    <th className="text-left px-4 py-3 font-semibold">
-                      User
-                    </th>
+                    <th className="text-left px-4 py-3 font-semibold">User</th>
                     <th className="text-left px-4 py-3 font-semibold">
                       College
                     </th>
@@ -192,7 +188,7 @@ export default function AdminPaymentsPage() {
                     const eventNames = order.orderItems
                       .map(
                         (item) =>
-                          `${item.event.name}${item.Team ? ` (${item.Team.name})` : ""}`
+                          `${item.event.name}${item.Team ? ` (${item.Team.name})` : ""}`,
                       )
                       .join(", ");
 
@@ -221,7 +217,9 @@ export default function AdminPaymentsPage() {
 
                         {/* Events */}
                         <td className="px-4 py-3 text-gat-midnight max-w-[220px]">
-                          <p className="text-xs leading-relaxed">{eventNames}</p>
+                          <p className="text-xs leading-relaxed">
+                            {eventNames}
+                          </p>
                         </td>
 
                         {/* Amount */}
@@ -257,15 +255,16 @@ export default function AdminPaymentsPage() {
                         {/* Submitted At */}
                         <td className="px-4 py-3 text-xs text-gat-steel whitespace-nowrap">
                           {order.paymentSubmittedAt
-                            ? new Date(
-                                order.paymentSubmittedAt
-                              ).toLocaleString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
+                            ? new Date(order.paymentSubmittedAt).toLocaleString(
+                                "en-IN",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
                             : "—"}
                         </td>
 

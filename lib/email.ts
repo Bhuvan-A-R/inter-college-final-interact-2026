@@ -55,3 +55,64 @@ export async function sendPasswordResetEmail(
     `,
   });
 }
+
+export async function sendPaymentUploadReceivedEmail(
+  email: string
+): Promise<void> {
+  const transporter = createTransporter();
+  await transporter.sendMail({
+    from: `"INTERACT 2K26" <${process.env.SMTP_EMAIL}>`,
+    to: email,
+    subject: "Payment proof received",
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
+        <h2 style="color:#111827;margin-bottom:8px;">INTERACT 2K26</h2>
+        <p style="color:#6b7280;margin-bottom:18px;">
+          Your upload has reached the admin board. Please wait 24 hours for verification of your payment and registration status.
+        </p>
+        <p style="color:#9ca3af;font-size:12px;margin-top:16px;">Global Academy of Technology · INTERACT 2K26</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendPaymentVerifiedEmail(
+  email: string
+): Promise<void> {
+  const transporter = createTransporter();
+  await transporter.sendMail({
+    from: `"INTERACT 2K26" <${process.env.SMTP_EMAIL}>`,
+    to: email,
+    subject: "Payment verified",
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
+        <h2 style="color:#111827;margin-bottom:8px;">INTERACT 2K26</h2>
+        <p style="color:#6b7280;margin-bottom:18px;">
+          Payment verified! You are successfully registered for the event.
+        </p>
+        <p style="color:#9ca3af;font-size:12px;margin-top:16px;">Global Academy of Technology · INTERACT 2K26</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendPaymentRejectedEmail(
+  email: string,
+  REJECTED_REASON: string
+): Promise<void> {
+  const transporter = createTransporter();
+  await transporter.sendMail({
+    from: `"INTERACT 2K26" <${process.env.SMTP_EMAIL}>`,
+    to: email,
+    subject: "Payment rejected",
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
+        <h2 style="color:#111827;margin-bottom:8px;">INTERACT 2K26</h2>
+        <p style="color:#6b7280;margin-bottom:18px;">
+          Your registration was rejected for the following reason: ${REJECTED_REASON}. Please re-verify your details and upload again.
+        </p>
+        <p style="color:#9ca3af;font-size:12px;margin-top:16px;">Global Academy of Technology · INTERACT 2K26</p>
+      </div>
+    `,
+  });
+}

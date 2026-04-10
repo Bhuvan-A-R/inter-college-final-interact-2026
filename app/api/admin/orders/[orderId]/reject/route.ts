@@ -7,6 +7,7 @@ import {
   errorResponse,
 } from "@/lib/apiHelpers";
 import { rejectPaymentSchema } from "@/lib/schemas/orders";
+import { sendPaymentRejectedEmail } from "@/lib/email";
 
 type RouteContext = { params: Promise<{ orderId: string }> };
 
@@ -21,11 +22,11 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const parsed = await parseBody(req, rejectPaymentSchema);
     if (parsed.error) return parsed.error;
 
-    const { rejectionReason } = parsed.data;
+    const { REJECTED_REASON } = parsed.data;
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      select: { id: true, status: true, userId: true, totalAmount: true },
+      select: { id: true, status: true, userId: true, totalAmount: true, user: { select: { email: true } } },
     });
 
     if (!order) {
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
         where: { id: orderId },
         data: {
           status: "REJECTED",
-          rejectionReason,
+          rejectionReason: REJECTED_REASON,
           verifiedBy: auth.session.id,
           verifiedAt: new Date(),
         },
@@ -58,11 +59,19 @@ export async function POST(req: NextRequest, context: RouteContext) {
           details: {
             orderUserId: order.userId,
             totalAmount: order.totalAmount.toString(),
-            reason: rejectionReason,
+            reason: REJECTED_REASON,
           },
         },
       }),
     ]);
+
+    if (order.user?.email) {
+      try {
+        await sendPaymentRejectedEmail(order.user.email, REJECTED_REASON);
+      } catch (emailError) {
+        console.error("[order rejected email]", emailError);
+      }
+    }
 
     return successResponse({
       message: "Payment rejected.",

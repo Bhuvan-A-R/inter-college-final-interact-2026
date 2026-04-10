@@ -13,6 +13,12 @@ export async function GET() {
             { status: 401 }
         );
     }
+    if (session.role === "PARTICIPANT") {
+        return NextResponse.json(
+            { success: false, message: "forbidden" },
+            { status: 403 }
+        );
+    }
     const userId: string = session.id as string;
     // get all the registerants with the userId of the signup
 

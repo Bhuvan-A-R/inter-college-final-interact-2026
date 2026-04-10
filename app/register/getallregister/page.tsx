@@ -32,6 +32,9 @@ export default async function Page() {
   if (!session) {
     redirect("/auth/signin");
   }
+  if (session.role === "PARTICIPANT") {
+    redirect("/dashboard?error=unauthorized");
+  }
   const userIdFromSession = session.id as string;
 
   const user = await prisma.user.findUnique({
@@ -51,8 +54,8 @@ export default async function Page() {
   const results: Data[] = [];
 
   const participantEvents = registrations
-    .filter((r: typeof registrations[0]) => r.event?.name)
-    .map((r: typeof registrations[0]) => ({
+    .filter((r: (typeof registrations)[0]) => r.event?.name)
+    .map((r: (typeof registrations)[0]) => ({
       eventName: r.event?.name ?? "",
       role: "Participant" as const,
     }));

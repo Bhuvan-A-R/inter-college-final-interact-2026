@@ -36,15 +36,15 @@ const Navbar = () => {
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
-            <Link href="/" className="flex-shrink-0 group flex items-center">
+            <Link href="/" className="flex-shrink-0 group flex items-center gap-2 sm:gap-3">
               <Image
                 src={gatLogo}
                 alt="GAT Logo"
                 width={160}
                 height={90}
-                className={`object-contain h-10 md:h-12 w-auto transition-all duration-300 ${scrolled ? 'opacity-90' : 'opacity-100'}`}
+                className={`object-contain h-9 sm:h-10 md:h-12 w-auto transition-all duration-300 ${scrolled ? "opacity-90" : "opacity-100"}`}
                 priority
               />
               <Image
@@ -52,7 +52,7 @@ const Navbar = () => {
                 alt="Interact Logo"
                 width={160}
                 height={90}
-                className={`object-contain h-10 md:h-12 w-auto transition-all duration-300 ${scrolled ? 'opacity-90' : 'opacity-100'}`}
+                className={`object-contain h-9 sm:h-10 md:h-12 w-auto transition-all duration-300 ${scrolled ? "opacity-90" : "opacity-100"}`}
                 priority
               />
             </Link>
@@ -115,7 +115,7 @@ const Navbar = () => {
                 ))}
 
                 <div className="pt-4 border-t border-gat-cobalt/30 flex flex-col gap-4">
-                  <LoginLogoutButton />
+                  <LoginLogoutButton variant="stacked" />
                 </div>
               </div>
             </motion.div>

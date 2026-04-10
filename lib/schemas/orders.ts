@@ -10,5 +10,11 @@ export const verifyPaymentSchema = z.object({
 });
 
 export const rejectPaymentSchema = z.object({
-  rejectionReason: z.string().min(1, "Rejection reason is required"),
+  REJECTED_REASON: z.string().min(1, "Rejection reason is required"),
+});
+
+export const adminVerifySchema = z.object({
+  orderId: z.string().min(1, "Order ID is required"),
+  action: z.enum(["APPROVED", "REJECTED"]),
+  REJECTED_REASON: z.string().optional(),
 });
