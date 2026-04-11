@@ -77,7 +77,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/about"
+                  href="/about/gat"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
                   About GAT
@@ -85,7 +85,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/about-fest"
+                  href="/about/fest"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
                   About FEST
@@ -179,7 +179,7 @@ const Footer = () => {
           </div>
 
           {/* Column 5: Legal & Contact */}
-          <div>
+          {/* <div>
             <h3 className="font-heading font-bold text-lg text-white mb-6 tracking-wide">
               Legal
             </h3>
@@ -208,7 +208,7 @@ const Footer = () => {
             >
               ↑ Back to Top
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Bottom Bar */}

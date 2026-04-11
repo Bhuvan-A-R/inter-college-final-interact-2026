@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
                 headers: [
                     {
                         key: "Content-Security-Policy",
-                        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self' https:; frame-ancestors 'none';",
+                        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com; script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; media-src 'self' https://5r9tznfycn.ufs.sh; connect-src 'self' https:; frame-ancestors 'none';",
                     },
                     {
                         key: "X-Frame-Options",

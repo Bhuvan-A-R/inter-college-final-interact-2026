@@ -73,13 +73,16 @@ const About = () => {
                 Inspiring Futures Since 2001
               </h2>
               <p className="text-lg leading-relaxed text-[hsl(var(--muted-foreground))]">
-                Global Academy of Technology (GAT), <strong className="text-[hsl(var(--foreground))]">established in 2001</strong>, is one of the most sought-after engineering and management colleges in Bengaluru, Karnataka. Nestled within a sprawling 10-acre campus, GAT provides an ideal environment for students to excel academically amidst an atmosphere of innovation and optimism.
+                Global Academy of Technology (GAT), established in 2001 in Bengaluru, is an autonomous institution affiliated with VTU and approved by AICTE, with NAAC ‘A’ grade accreditation. Positioned in India’s leading technology hub, the institution has evolved into a reputed centre for engineering, management, and research education.
               </p>
               <p className="text-lg leading-relaxed text-[hsl(var(--muted-foreground))]">
-                This year <strong className="text-[hsl(var(--secondary))]">2026</strong> marks a momentous milestone as the institution celebrates its <strong className="text-[hsl(var(--primary))]">Silver Jubilee – 25 years</strong> of academic excellence, innovation, and transformative education. With a legacy of shaping future leaders and achievers, GAT continues to set benchmarks in higher education, solidifying its position as a premier destination for aspiring engineers and managers.
+                Spread across a well-developed campus in Rajarajeshwari Nagar, GAT supports a vibrant academic ecosystem with over 3,000 students and a strong faculty base. The institution offers a wide spectrum of undergraduate, postgraduate, and doctoral programs across core and emerging disciplines, including Computer Science, Artificial Intelligence, Electronics, Mechanical, and Management studies.
               </p>
               <p className="text-lg leading-relaxed text-[hsl(var(--muted-foreground))]">
-                GAT offers ample opportunities for various co-curricular and extracurricular activities, ensuring a well-rounded student experience. The campus is home to over <strong className="text-[hsl(var(--foreground))]">3,500 students</strong> and <strong className="text-[hsl(var(--foreground))]">300 experienced staff members</strong> dedicated to an effective teaching and learning process.
+                GAT is recognised for its strong academic framework combined with industry-oriented learning. The curriculum is designed in alignment with evolving industry needs, supported by modern laboratories, digital learning systems, and research-driven initiatives. Students are actively engaged in technical events, innovation platforms, and interdisciplinary projects, creating a culture that extends beyond conventional classroom education.
+              </p>
+              <p className="text-lg leading-relaxed text-[hsl(var(--muted-foreground))]">
+                Ranked among notable engineering colleges in Bengaluru, GAT emphasises holistic development through academics, extracurricular activities, and large-scale student-driven initiatives. Its ecosystem encourages leadership, creativity, and competitive excellence, making it not just an academic institution but a dynamic hub for talent development.
               </p>
             </motion.div>
           </div>

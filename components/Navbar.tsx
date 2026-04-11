@@ -7,6 +7,7 @@ import { Menu, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import gatLogo from "@/public/gat-logos/GAT_Linear Logo.png";
+// import gat25Logo from "@/public/gat-logos/GAT_Campaign Unit.png";
 import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
 import LoginLogoutButton from "./LoginLogoutButton";
 
@@ -15,8 +16,8 @@ const navLinks = [
   {
     label: "About",
     children: [
-      { href: "/about", label: "About GAT" },
-      { href: "/about-fest", label: "About Fest" },
+      { href: "/about/gat", label: "About GAT" },
+      { href: "/about/fest", label: "About Fest" },
       { href: "/about/management", label: "Management Team" },
       { href: "/about/interact-team", label: "Interact Team" },
     ],
@@ -78,6 +79,14 @@ const Navbar = () => {
                 className={`object-contain h-9 sm:h-10 md:h-12 w-auto transition-all duration-300 ${scrolled ? "opacity-90" : "opacity-100"}`}
                 priority
               />
+              {/* <Image
+                src={gat25Logo}
+                alt="GAT 25 Logo"
+                width={160}
+                height={90}
+                className={`object-contain h-9 sm:h-10 md:h-12 w-auto transition-all duration-300 ${scrolled ? "opacity-90" : "opacity-100"}`}
+                priority
+              /> */}
               <Image
                 src={interactLogo}
                 alt="Interact Logo"

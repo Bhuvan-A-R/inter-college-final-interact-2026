@@ -113,6 +113,7 @@ function InteractLogoLaunchVideo() {
   const inView = useInView(sectionRef, { amount: 0.6 });
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
+  const [videoFailed, setVideoFailed] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -137,15 +138,34 @@ function InteractLogoLaunchVideo() {
     >
       <div className="w-full bg-black">
         <div className="w-full aspect-video relative">
-          <video
-            ref={videoRef}
-            className="w-full h-full object-contain"
-            src="/video/new interact logo launch.mp4"
-            autoPlay
-            muted={muted}
-            loop
-            playsInline
-          />
+          {!videoFailed ? (
+            <video
+              ref={videoRef}
+              className="w-full h-full object-contain"
+              src="https://5r9tznfycn.ufs.sh/f/CYCsZkxUjlfJPF0jK9SjXtaQnHPD02o3LlpKUuOhmBS4GfwN"
+              autoPlay
+              muted={muted}
+              loop
+              playsInline
+              poster="/gat-logos/INTERACT2K26.png"
+              onError={() => setVideoFailed(true)}
+            />
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center"
+              style={{
+                background:
+                  "radial-gradient(ellipse 60% 60% at 50% 40%, hsl(var(--primary) / 0.18) 0%, transparent 60%), linear-gradient(120deg, #0b0b0d 0%, #15151c 100%)",
+              }}
+            >
+              <Image
+                src={interactLogo}
+                alt="Interact 2K26"
+                className="w-[60%] max-w-[520px] h-auto object-contain"
+                priority
+              />
+            </div>
+          )}
           <button
             type="button"
             onClick={() => {
@@ -170,20 +190,117 @@ function InteractLogoLaunchVideo() {
   );
 }
 
+function IntroSplash({ onDone }: { onDone: () => void }) {
+  useEffect(() => {
+    const timer = window.setTimeout(onDone, 1800);
+    return () => window.clearTimeout(timer);
+  }, [onDone]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      style={{ fontFamily: "'Outfit', sans-serif" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 70% at 50% 30%, hsl(var(--primary) / 0.25) 0%, transparent 60%), radial-gradient(ellipse 55% 55% at 15% 85%, hsl(var(--secondary) / 0.18) 0%, transparent 60%), linear-gradient(120deg, #0b0b0d 0%, #14131a 55%, #0b0b0d 100%)",
+        }}
+      />
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute -top-24 -left-16 h-72 w-72 rounded-full bg-[hsl(var(--secondary))] blur-[120px]" />
+        <div className="absolute bottom-[-120px] right-[-40px] h-96 w-96 rounded-full bg-[hsl(var(--primary))] blur-[140px]" />
+      </div>
+
+      <div className="relative z-10 text-center px-6">
+        <motion.div
+          initial={{ scale: 0.92, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="mx-auto w-[160px] md:w-[200px]"
+        >
+          <Image
+            src={interactLogo}
+            alt="Interact 2K26"
+            className="w-full h-auto object-contain"
+            priority
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="mt-6"
+        >
+          <p
+            className="text-xs uppercase tracking-[0.4em]"
+            style={{ color: "hsl(var(--muted))" }}
+          >
+            Techno-Cultural Fest
+          </p>
+          <h1
+            className="font-display text-3xl md:text-4xl font-black tracking-tight"
+            style={{ color: "hsl(var(--foreground))" }}
+          >
+            INTERACT 2K26
+          </h1>
+          <p
+            className="mt-2 text-sm"
+            style={{ color: "hsl(var(--foreground) / 0.7)" }}
+          >
+            Where innovation meets rhythm.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.35 }}
+          className="mt-8"
+        >
+          <div className="mx-auto h-1.5 w-40 overflow-hidden rounded-full bg-white/10">
+            <motion.div
+              className="h-full w-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, hsl(var(--secondary)) 0%, hsl(var(--primary)) 100%)",
+              }}
+              initial={{ x: "-100%" }}
+              animate={{ x: "0%" }}
+              transition={{ duration: 1.6, ease: "easeInOut" }}
+            />
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─────────────────────────────────────────────
     PAGE
 ───────────────────────────────────────────── */
 export default function Home() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <>
-      <InteractLogoLaunchVideo />
-      <div
-        className="min-h-screen"
-        style={{
-          background: "hsl(var(--background))",
-          color: "hsl(var(--foreground))",
-        }}
-      >
+      {showSplash ? (
+        <IntroSplash onDone={() => setShowSplash(false)} />
+      ) : (
+        <>
+          <InteractLogoLaunchVideo />
+          <div
+            className="min-h-screen"
+            style={{
+              background: "hsl(var(--background))",
+              color: "hsl(var(--foreground))",
+            }}
+          >
         {/* ══ HERO ══════════════════════════════════════════════════════════ */}
         <section
           className="relative overflow-hidden min-h-screen flex flex-col justify-center pt-24 pb-32"
@@ -521,16 +638,16 @@ export default function Home() {
         </section>
 
         {/* ══ BOTTOM CTA ═══════════════════════════════════════════════════ */}
-        <section
-          className="py-20 relative overflow-hidden"
-          style={{
-            background: `
+          <section
+            className="py-20 relative overflow-hidden"
+            style={{
+              background: `
             radial-gradient(ellipse 80% 80% at 50% 50%, hsl(var(--primary) / 0.12) 0%, transparent 70%),
             hsl(var(--accent))
           `,
-            fontFamily: "'Outfit', sans-serif",
-          }}
-        >
+              fontFamily: "'Outfit', sans-serif",
+            }}
+          >
           <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
             <span
               className="font-mono-jb text-xs uppercase tracking-[0.22em] mb-4 block"
@@ -590,8 +707,10 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </section>
-      </div>
+          </section>
+        </div>
+        </>
+      )}
     </>
   );
 }

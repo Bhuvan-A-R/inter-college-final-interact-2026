@@ -35,38 +35,43 @@ const AboutFestPage = () => {
           <div className="flex flex-col-reverse lg:flex-row items-center gap-12">
             <div className="w-full lg:w-2/3 space-y-6 text-lg leading-relaxed text-[hsl(var(--muted-foreground))] text-justify">
               <p>
-                Global Academy of Technology (GAT), established in 2001 in
-                Bengaluru, is an autonomous institution affiliated with VTU and
-                approved by AICTE, with NAAC ‘A’ grade accreditation. Positioned
-                in India’s leading technology hub, the institution has evolved
-                into a reputed centre for engineering, management, and research
-                education. 
+                INTERACT is not just a college fest — it is part of the larger
+                legacy of the GAT, one of the most significant inter-collegiate
+                platforms in Karnataka. Over the years, it has evolved into a
+                large-scale celebration of talent, creativity, and competitive
+                excellence, bringing together students from diverse disciplines
+                onto a single stage.
               </p>
               <p>
-                Spread across a well-developed campus in
-                Rajarajeshwari Nagar, GAT supports a vibrant academic ecosystem
-                with over 3,000 students and a strong faculty base. The
-                institution offers a wide spectrum of undergraduate,
-                postgraduate, and doctoral programs across core and emerging
-                disciplines, including Computer Science, Artificial
-                Intelligence, Electronics, Mechanical, and Management studies.
+                With participation from 200+ colleges, over 4,000 students, and
+                a footfall exceeding 20,000, INTERACT operates at a scale that
+                places it among the most impactful student-driven festivals in
+                the region. The fest spans multiple domains, including cultural,
+                technical, literary, and sports, creating a multidimensional
+                platform where students don’t just compete — they collaborate,
+                perform, and innovate.
               </p>
               <p>
-                 GAT is recognised for its strong academic framework combined
-                with industry-oriented learning. The curriculum is designed in
-                alignment with evolving industry needs, supported by modern
-                laboratories, digital learning systems, and research-driven
-                initiatives. Students are actively engaged in technical events,
-                innovation platforms, and interdisciplinary projects, creating a
-                culture that extends beyond conventional classroom education.
+                Each edition of INTERACT is designed as an immersive, multi-day
+                experience featuring 25+ competitions, live performances,
+                workshops, and large-format showcases, continuously setting new
+                benchmarks for collegiate events. From music, dance, and theatre
+                to innovation-driven challenges and interactive sessions, the
+                fest captures the full spectrum of student expression.
               </p>
               <p>
-                Ranked among notable engineering colleges in Bengaluru, GAT
-                emphasises holistic development through academics,
-                extracurricular activities, and large-scale student-driven
-                initiatives. Its ecosystem encourages leadership, creativity,
-                and competitive excellence, making it not just an academic
-                institution but a dynamic hub for talent development.
+                Beyond competitions, INTERACT functions as a high-impact
+                engagement platform. It attracts brands, artists, and
+                collaborators, offering direct access to a young, dynamic
+                audience. For participants, it is a space to gain recognition
+                and build networks; for partners, it is a strategic opportunity
+                for visibility, activation, and meaningful connection with the
+                student community.
+              </p>
+              <p>
+                With every edition, INTERACT continues to expand in scale,
+                reach, and influence — positioning itself not just as an event,
+                but as a defining experience in the collegiate ecosystem.
               </p>
             </div>
             <div className="w-full lg:w-1/3 flex justify-center lg:justify-end">
