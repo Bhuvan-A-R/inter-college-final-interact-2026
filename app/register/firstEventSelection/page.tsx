@@ -25,6 +25,10 @@ export default async function Page() {
     redirect("/registrationTeamDashboard/registrationdetails");
   }
 
+  if (session && session.role === "PARTICIPANT") {
+    redirect("/dashboard");
+  }
+
   const registeredCount = await prisma.registration.count({
     where: { userId: session.id as string },
   });

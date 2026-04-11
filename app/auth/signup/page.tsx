@@ -41,24 +41,18 @@ const emailSchema = z.object({
 });
 
 const otpSchema = z.object({
-  otp: z
-    .string()
-    .regex(/^\d{6}$/, "OTP must be exactly 6 digits"),
+  otp: z.string().regex(/^\d{6}$/, "OTP must be exactly 6 digits"),
 });
 
 const registrationSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  phone: z
-    .string()
-    .regex(/^\d{10}$/, "Phone must be exactly 10 digits"),
+  phone: z.string().regex(/^\d{10}$/, "Phone must be exactly 10 digits"),
   collegeName: z.string().min(2, "College name is required"),
   collegeIdNumber: z.string().min(1, "College ID number is required"),
   aadhaarNumber: z
     .string()
     .regex(/^\d{12}$/, "Aadhaar must be exactly 12 digits"),
-  password: z
-    .string()
-    .min(6, "Password must be at least 6 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type Step = "email" | "otp" | "form";
@@ -190,9 +184,7 @@ export default function SignUp() {
   };
 
   // ── Step 3: Submit Registration ────────────────────────────────────────────
-  const handleRegister = async (
-    values: z.infer<typeof registrationSchema>
-  ) => {
+  const handleRegister = async (values: z.infer<typeof registrationSchema>) => {
     if (!photoUrl) {
       toast.error("Please upload your profile photo before submitting.");
       return;
@@ -209,7 +201,7 @@ export default function SignUp() {
         toast.success("Registration complete!", {
           description: "Welcome to INTERACT 2K26!",
         });
-        router.push("/register/firstEventSelection");
+        router.push("/dashboard");
       } else {
         toast.error(data.error?.message ?? "Registration failed.");
       }
@@ -256,14 +248,22 @@ export default function SignUp() {
       {/* Ghost watermarks */}
       <div
         className="font-display absolute left-[-2%] bottom-[4%] font-black leading-none select-none pointer-events-none"
-        style={{ fontSize: "clamp(90px,14vw,170px)", color: "hsl(var(--primary) / 0.1)", letterSpacing: "-0.02em" }}
+        style={{
+          fontSize: "clamp(90px,14vw,170px)",
+          color: "hsl(var(--primary) / 0.1)",
+          letterSpacing: "-0.02em",
+        }}
         aria-hidden
       >
         INTERACT
       </div>
       <div
         className="font-display absolute right-[-2%] top-[4%] font-black leading-none select-none pointer-events-none"
-        style={{ fontSize: "clamp(90px,14vw,170px)", color: "hsl(var(--primary) / 0.1)", letterSpacing: "-0.02em" }}
+        style={{
+          fontSize: "clamp(90px,14vw,170px)",
+          color: "hsl(var(--primary) / 0.1)",
+          letterSpacing: "-0.02em",
+        }}
         aria-hidden
       >
         2K26
@@ -276,23 +276,50 @@ export default function SignUp() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 w-full max-w-md"
       >
-        <div className="rounded-[var(--radius)] overflow-hidden" style={cardStyle}>
+        <div
+          className="rounded-[var(--radius)] overflow-hidden"
+          style={cardStyle}
+        >
           {/* Header */}
-          <div className="px-8 pt-8 pb-6 border-b" style={{ borderColor: "hsl(var(--border))" }}>
+          <div
+            className="px-8 pt-8 pb-6 border-b"
+            style={{ borderColor: "hsl(var(--border))" }}
+          >
             <div className="flex flex-col items-center text-center gap-3">
               <div className="mb-2 flex items-center justify-center gap-4">
-                <Image src={gatLogo} alt="GAT Logo" width={52} height={52} className="object-contain" />
-                <Image src={interactLogo} alt="INTERACT Logo" width={52} height={52} className="object-contain" />
+                <Image
+                  src={gatLogo}
+                  alt="GAT Logo"
+                  width={52}
+                  height={52}
+                  className="object-contain"
+                />
+                <Image
+                  src={interactLogo}
+                  alt="INTERACT Logo"
+                  width={52}
+                  height={52}
+                  className="object-contain"
+                />
               </div>
               <div className="flex items-center gap-2">
-                <h1 className="font-display text-4xl font-black tracking-tighter" style={{ color: "hsl(var(--foreground))" }}>
+                <h1
+                  className="font-display text-4xl font-black tracking-tighter"
+                  style={{ color: "hsl(var(--foreground))" }}
+                >
                   INTERACT
                 </h1>
-                <span className="font-display text-2xl font-black tracking-tight" style={{ color: "hsl(var(--primary))" }}>
+                <span
+                  className="font-display text-2xl font-black tracking-tight"
+                  style={{ color: "hsl(var(--primary))" }}
+                >
                   2K26
                 </span>
               </div>
-              <p className="font-mono-jb text-xs font-semibold tracking-[0.2em] uppercase" style={{ color: "hsl(var(--muted))" }}>
+              <p
+                className="font-mono-jb text-xs font-semibold tracking-[0.2em] uppercase"
+                style={{ color: "hsl(var(--muted))" }}
+              >
                 {step === "email" && "Create Participant Account"}
                 {step === "otp" && "Verify Your Email"}
                 {step === "form" && "Complete Registration"}
@@ -308,16 +335,18 @@ export default function SignUp() {
                         background:
                           step === s
                             ? "hsl(var(--primary))"
-                            : (step === "otp" && s === "email") || step === "form"
-                            ? "hsl(var(--primary) / 0.3)"
-                            : "hsl(var(--muted) / 0.2)",
+                            : (step === "otp" && s === "email") ||
+                                step === "form"
+                              ? "hsl(var(--primary) / 0.3)"
+                              : "hsl(var(--muted) / 0.2)",
                         color:
                           step === s
                             ? "hsl(var(--primary-foreground))"
                             : "hsl(var(--muted-foreground))",
                       }}
                     >
-                      {((step === "otp" && s === "email") || step === "form") && s !== step ? (
+                      {((step === "otp" && s === "email") || step === "form") &&
+                      s !== step ? (
                         <CheckCircle2 className="w-4 h-4" />
                       ) : (
                         idx + 1
@@ -353,13 +382,19 @@ export default function SignUp() {
                 className="px-8 py-7"
               >
                 <Form {...emailForm}>
-                  <form onSubmit={emailForm.handleSubmit(handleSendOtp)} className="space-y-5">
+                  <form
+                    onSubmit={emailForm.handleSubmit(handleSendOtp)}
+                    className="space-y-5"
+                  >
                     <FormField
                       control={emailForm.control}
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-mono-jb text-xs font-semibold tracking-widest uppercase" style={labelStyle}>
+                          <FormLabel
+                            className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                            style={labelStyle}
+                          >
                             Email Address
                           </FormLabel>
                           <FormControl>
@@ -402,20 +437,32 @@ export default function SignUp() {
                 transition={{ duration: 0.25 }}
                 className="px-8 py-7"
               >
-                <p className="text-sm text-center mb-5" style={{ color: "hsl(var(--muted-foreground))" }}>
+                <p
+                  className="text-sm text-center mb-5"
+                  style={{ color: "hsl(var(--muted-foreground))" }}
+                >
                   We sent a 6-digit code to{" "}
-                  <span className="font-semibold" style={{ color: "hsl(var(--foreground))" }}>
+                  <span
+                    className="font-semibold"
+                    style={{ color: "hsl(var(--foreground))" }}
+                  >
                     {verifiedEmail}
                   </span>
                 </p>
                 <Form {...otpForm}>
-                  <form onSubmit={otpForm.handleSubmit(handleVerifyOtp)} className="space-y-5">
+                  <form
+                    onSubmit={otpForm.handleSubmit(handleVerifyOtp)}
+                    className="space-y-5"
+                  >
                     <FormField
                       control={otpForm.control}
                       name="otp"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-mono-jb text-xs font-semibold tracking-widest uppercase" style={labelStyle}>
+                          <FormLabel
+                            className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                            style={labelStyle}
+                          >
                             One-Time Password
                           </FormLabel>
                           <FormControl>
@@ -460,11 +507,16 @@ export default function SignUp() {
                     disabled={resendTimer > 0 || isSending}
                     className="text-xs transition-colors"
                     style={{
-                      color: resendTimer > 0 ? "hsl(var(--muted-foreground))" : "hsl(var(--primary))",
+                      color:
+                        resendTimer > 0
+                          ? "hsl(var(--muted-foreground))"
+                          : "hsl(var(--primary))",
                       cursor: resendTimer > 0 ? "not-allowed" : "pointer",
                     }}
                   >
-                    {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : "Resend OTP"}
+                    {resendTimer > 0
+                      ? `Resend OTP in ${resendTimer}s`
+                      : "Resend OTP"}
                   </button>
                 </div>
               </motion.div>
@@ -491,11 +543,19 @@ export default function SignUp() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-mono-jb text-xs font-semibold tracking-widest uppercase" style={labelStyle}>
+                          <FormLabel
+                            className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                            style={labelStyle}
+                          >
                             Full Name
                           </FormLabel>
                           <FormControl>
-                            <Input className="h-11" style={inputStyle} placeholder="Your full name" {...field} />
+                            <Input
+                              className="h-11"
+                              style={inputStyle}
+                              placeholder="Your full name"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage className="text-red-400 text-xs" />
                         </FormItem>
@@ -504,7 +564,10 @@ export default function SignUp() {
 
                     {/* Email (readonly) */}
                     <FormItem>
-                      <FormLabel className="font-mono-jb text-xs font-semibold tracking-widest uppercase" style={labelStyle}>
+                      <FormLabel
+                        className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                        style={labelStyle}
+                      >
                         Email Address
                       </FormLabel>
                       <Input
@@ -522,11 +585,20 @@ export default function SignUp() {
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-mono-jb text-xs font-semibold tracking-widest uppercase" style={labelStyle}>
+                          <FormLabel
+                            className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                            style={labelStyle}
+                          >
                             Phone Number
                           </FormLabel>
                           <FormControl>
-                            <Input className="h-11" style={inputStyle} placeholder="10-digit mobile number" maxLength={10} {...field} />
+                            <Input
+                              className="h-11"
+                              style={inputStyle}
+                              placeholder="10-digit mobile number"
+                              maxLength={10}
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage className="text-red-400 text-xs" />
                         </FormItem>
@@ -539,11 +611,19 @@ export default function SignUp() {
                       name="collegeName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-mono-jb text-xs font-semibold tracking-widest uppercase" style={labelStyle}>
+                          <FormLabel
+                            className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                            style={labelStyle}
+                          >
                             College Name
                           </FormLabel>
                           <FormControl>
-                            <Input className="h-11" style={inputStyle} placeholder="Full college name" {...field} />
+                            <Input
+                              className="h-11"
+                              style={inputStyle}
+                              placeholder="Full college name"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage className="text-red-400 text-xs" />
                         </FormItem>
@@ -556,11 +636,19 @@ export default function SignUp() {
                       name="collegeIdNumber"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-mono-jb text-xs font-semibold tracking-widest uppercase" style={labelStyle}>
+                          <FormLabel
+                            className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                            style={labelStyle}
+                          >
                             College ID Number
                           </FormLabel>
                           <FormControl>
-                            <Input className="h-11" style={inputStyle} placeholder="e.g. 1BG21CS001" {...field} />
+                            <Input
+                              className="h-11"
+                              style={inputStyle}
+                              placeholder="e.g. 1BG21CS001"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage className="text-red-400 text-xs" />
                         </FormItem>
@@ -573,7 +661,10 @@ export default function SignUp() {
                       name="aadhaarNumber"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-mono-jb text-xs font-semibold tracking-widest uppercase" style={labelStyle}>
+                          <FormLabel
+                            className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                            style={labelStyle}
+                          >
                             Aadhaar Number
                           </FormLabel>
                           <FormControl>
@@ -596,7 +687,10 @@ export default function SignUp() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-mono-jb text-xs font-semibold tracking-widest uppercase" style={labelStyle}>
+                          <FormLabel
+                            className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                            style={labelStyle}
+                          >
                             Password
                           </FormLabel>
                           <FormControl>
@@ -629,7 +723,10 @@ export default function SignUp() {
 
                     {/* Photo Upload */}
                     <div className="space-y-2">
-                      <p className="font-mono-jb text-xs font-semibold tracking-widest uppercase" style={labelStyle}>
+                      <p
+                        className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                        style={labelStyle}
+                      >
                         Profile Photo
                       </p>
                       <div
@@ -646,7 +743,10 @@ export default function SignUp() {
                         clearly visible and matches your identity documents.
                       </div>
                       {photoUrl ? (
-                        <div className="flex items-center gap-2 text-xs" style={{ color: "hsl(var(--primary))" }}>
+                        <div
+                          className="flex items-center gap-2 text-xs"
+                          style={{ color: "hsl(var(--primary))" }}
+                        >
                           <CheckCircle2 className="w-4 h-4" />
                           Photo uploaded successfully.{" "}
                           <button
@@ -707,7 +807,10 @@ export default function SignUp() {
             className="px-8 pb-7 border-t pt-5"
             style={{ borderColor: "hsl(var(--border))" }}
           >
-            <p className="text-xs text-center" style={{ color: "hsl(var(--muted-foreground))" }}>
+            <p
+              className="text-xs text-center"
+              style={{ color: "hsl(var(--muted-foreground))" }}
+            >
               Already have an account?{" "}
               <Link
                 href="/auth/signin"

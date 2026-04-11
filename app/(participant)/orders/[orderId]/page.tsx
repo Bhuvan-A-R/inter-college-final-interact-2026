@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ type Order = {
   createdAt: string;
   upiTransactionId?: string | null;
   paymentSubmittedAt?: string | null;
+  REJECTED_REASON?: string | null;
   orderItems: OrderItem[];
 };
 
@@ -57,6 +58,8 @@ export default function OrderPaymentPage() {
   const [submitting, setSubmitting] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [allowResubmit, setAllowResubmit] = useState(false);
+  const paymentFormRef = useRef<HTMLDivElement | null>(null);
 
   const loadOrder = async () => {
     setLoading(true);
@@ -92,7 +95,7 @@ export default function OrderPaymentPage() {
 
   useEffect(() => {
     loadOrder();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderId]);
 
   // Build UPI deeplink whenever order amount is known
@@ -113,9 +116,15 @@ export default function OrderPaymentPage() {
     if (!upiLink) return;
     let active = true;
     QRCode.toDataURL(upiLink, { width: 260, margin: 1 })
-      .then((url: string) => { if (active) setQrDataUrl(url); })
-      .catch(() => { if (active) setQrDataUrl(""); });
-    return () => { active = false; };
+      .then((url: string) => {
+        if (active) setQrDataUrl(url);
+      })
+      .catch(() => {
+        if (active) setQrDataUrl("");
+      });
+    return () => {
+      active = false;
+    };
   }, [upiLink]);
 
   const handleSubmitPayment = async () => {
@@ -145,7 +154,9 @@ export default function OrderPaymentPage() {
         return;
       }
 
-      toast.success("Payment submitted successfully. Await admin verification.");
+      toast.success(
+        "Payment submitted successfully. Await admin verification.",
+      );
       loadOrder();
     } catch (error) {
       console.error(error);
@@ -284,7 +295,8 @@ export default function OrderPaymentPage() {
               Payment Under Review
             </p>
             <p className="text-blue-600 text-sm mt-1">
-              Your payment has been submitted and is awaiting admin verification.
+              Your payment has been submitted and is awaiting admin
+              verification.
             </p>
             {order.upiTransactionId && (
               <p className="text-blue-500 text-xs mt-2">
@@ -296,18 +308,37 @@ export default function OrderPaymentPage() {
 
         {order.status === "REJECTED" && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-5 text-center">
-            <p className="text-red-600 font-bold text-lg">
-              Payment Rejected
-            </p>
+            <p className="text-red-600 font-bold text-lg">Payment Rejected</p>
             <p className="text-red-500 text-sm mt-1">
-              This order has been rejected. Please contact the organizers.
+              Your registration was rejected for the following reason:
             </p>
+            <p className="text-red-700 text-sm mt-2 font-semibold">
+              {order.REJECTED_REASON ?? "No reason provided."}
+            </p>
+            <div className="mt-4 flex justify-center">
+              <Button
+                type="button"
+                onClick={() => {
+                  setAllowResubmit(true);
+                  requestAnimationFrame(() => {
+                    paymentFormRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  });
+                }}
+                className="bg-gat-blue text-white hover:bg-gat-midnight"
+              >
+                Re-upload
+              </Button>
+            </div>
           </div>
         )}
 
         {/* Payment form — only for PENDING_PAYMENT */}
-        {order.status === "PENDING_PAYMENT" && (
-          <div className="space-y-6">
+        {(order.status === "PENDING_PAYMENT" ||
+          (order.status === "REJECTED" && allowResubmit)) && (
+          <div className="space-y-6" ref={paymentFormRef}>
             {/* UPI QR + Bank Details */}
             <div className="bg-white border border-gat-blue/10 rounded-xl p-5 shadow-sm">
               <h2 className="text-lg font-heading font-bold text-gat-midnight mb-4">
@@ -336,7 +367,9 @@ export default function OrderPaymentPage() {
                     </>
                   ) : (
                     <div className="w-[200px] h-[200px] rounded-xl border-2 border-dashed border-gat-blue/20 flex items-center justify-center bg-gat-off-white">
-                      <span className="text-gat-steel text-sm">Generating QR…</span>
+                      <span className="text-gat-steel text-sm">
+                        Generating QR…
+                      </span>
                     </div>
                   )}
                   <p className="text-xs text-gat-steel text-center">
@@ -349,7 +382,9 @@ export default function OrderPaymentPage() {
 
                 {/* Bank Details */}
                 <div className="space-y-2 text-sm">
-                  <h3 className="font-heading font-bold text-gat-midnight mb-3">Bank Details</h3>
+                  <h3 className="font-heading font-bold text-gat-midnight mb-3">
+                    Bank Details
+                  </h3>
                   {[
                     ["Bank Name", "Union Bank"],
                     ["Account Holder", "Global Academy Of Technology"],
@@ -358,8 +393,12 @@ export default function OrderPaymentPage() {
                     ["IFSC Code", "UBIN0814351"],
                   ].map(([label, value]) => (
                     <p key={label}>
-                      <span className="font-medium text-gat-charcoal">{label}: </span>
-                      <span className="text-gat-midnight font-mono">{value}</span>
+                      <span className="font-medium text-gat-charcoal">
+                        {label}:{" "}
+                      </span>
+                      <span className="text-gat-midnight font-mono">
+                        {value}
+                      </span>
                     </p>
                   ))}
                 </div>

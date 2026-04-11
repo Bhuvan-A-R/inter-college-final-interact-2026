@@ -7,6 +7,7 @@ import {
   errorResponse,
 } from "@/lib/apiHelpers";
 import { submitPaymentSchema } from "@/lib/schemas/orders";
+import { sendPaymentUploadReceivedEmail } from "@/lib/email";
 
 type RouteContext = { params: Promise<{ orderId: string }> };
 
@@ -26,6 +27,9 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
+        user: {
+          select: { email: true },
+        },
         orderItems: {
           include: {
             Team: { select: { id: true, leaderId: true } },
@@ -42,14 +46,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
       return errorResponse("Forbidden.", 403);
     }
 
-    if (order.status === "REJECTED") {
-      return errorResponse(
-        "This order has been rejected. Payment resubmission is not allowed.",
-        400
-      );
-    }
-
-    if (order.status !== "PENDING_PAYMENT") {
+    if (order.status !== "PENDING_PAYMENT" && order.status !== "REJECTED") {
       return errorResponse(
         `Payment cannot be submitted. Current status: ${order.status}.`,
         400
@@ -72,9 +69,18 @@ export async function POST(req: NextRequest, context: RouteContext) {
         upiTransactionId,
         paymentScreenshotUrl,
         paymentSubmittedAt: new Date(),
+        rejectionReason: null,
         status: "PAYMENT_SUBMITTED",
       },
     });
+
+    if (order.user?.email) {
+      try {
+        await sendPaymentUploadReceivedEmail(order.user.email);
+      } catch (emailError) {
+        console.error("[payment submission email]", emailError);
+      }
+    }
 
     return successResponse({
       order: {

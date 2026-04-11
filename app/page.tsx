@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
-import { ArrowRight, MapPin, Calendar } from "lucide-react";
+import { ArrowRight, MapPin, Calendar, Volume2, VolumeX } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { categories, marqueeItems } from "@/data/homeData";
 import ParticlesBackground from "@/components/ParticlesBackground";
@@ -98,7 +98,9 @@ function Marquee() {
             >
               {item}
             </span>
-            <span style={{ color: "hsl(var(--secondary))", fontSize: 9 }}>◆</span>
+            <span style={{ color: "hsl(var(--secondary))", fontSize: 9 }}>
+              ◆
+            </span>
           </span>
         ))}
       </div>
@@ -106,109 +108,302 @@ function Marquee() {
   );
 }
 
+function InteractLogoLaunchVideo() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef, { amount: 0.6 });
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [muted, setMuted] = useState(true);
+  const [videoFailed, setVideoFailed] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(
+      new CustomEvent("logo-only-navbar", { detail: inView }),
+    );
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent("logo-only-navbar", { detail: false }),
+      );
+    };
+  }, [inView]);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="w-full"
+      style={{
+        background: "hsl(var(--background))",
+        fontFamily: "'Outfit', sans-serif",
+      }}
+    >
+      <div className="w-full bg-black">
+        <div className="w-full aspect-video relative">
+          {!videoFailed ? (
+            <video
+              ref={videoRef}
+              className="w-full h-full object-contain"
+              src="https://5r9tznfycn.ufs.sh/f/CYCsZkxUjlfJPF0jK9SjXtaQnHPD02o3LlpKUuOhmBS4GfwN"
+              autoPlay
+              muted={muted}
+              loop
+              playsInline
+              poster="/gat-logos/INTERACT2K26.png"
+              onError={() => setVideoFailed(true)}
+            />
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center"
+              style={{
+                background:
+                  "radial-gradient(ellipse 60% 60% at 50% 40%, hsl(var(--primary) / 0.18) 0%, transparent 60%), linear-gradient(120deg, #0b0b0d 0%, #15151c 100%)",
+              }}
+            >
+              <Image
+                src={interactLogo}
+                alt="Interact 2K26"
+                className="w-[60%] max-w-[520px] h-auto object-contain"
+                priority
+              />
+            </div>
+          )}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0) 40%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.25) 82%, rgba(0,0,0,0.55) 100%)",
+            }}
+            aria-hidden
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const nextMuted = !muted;
+              setMuted(nextMuted);
+              if (videoRef.current) videoRef.current.muted = nextMuted;
+            }}
+            className="absolute bottom-3 right-3 flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold"
+            style={{
+              background: "rgba(0, 0, 0, 0.65)",
+              color: "#ffffff",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+            }}
+            aria-label={muted ? "Unmute video" : "Mute video"}
+          >
+            {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+            {muted ? "Unmute" : "Mute"}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function IntroSplash({ onDone }: { onDone: () => void }) {
+  useEffect(() => {
+    const timer = window.setTimeout(onDone, 1800);
+    return () => window.clearTimeout(timer);
+  }, [onDone]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      style={{ fontFamily: "'Outfit', sans-serif" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 70% at 50% 30%, hsl(var(--primary) / 0.25) 0%, transparent 60%), radial-gradient(ellipse 55% 55% at 15% 85%, hsl(var(--secondary) / 0.18) 0%, transparent 60%), linear-gradient(120deg, #0b0b0d 0%, #14131a 55%, #0b0b0d 100%)",
+        }}
+      />
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute -top-24 -left-16 h-72 w-72 rounded-full bg-[hsl(var(--secondary))] blur-[120px]" />
+        <div className="absolute bottom-[-120px] right-[-40px] h-96 w-96 rounded-full bg-[hsl(var(--primary))] blur-[140px]" />
+      </div>
+
+      <div className="relative z-10 text-center px-6">
+        <motion.div
+          initial={{ scale: 0.92, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="mx-auto w-[160px] md:w-[200px]"
+        >
+          <Image
+            src={interactLogo}
+            alt="Interact 2K26"
+            className="w-full h-auto object-contain"
+            priority
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="mt-6"
+        >
+          <p
+            className="text-xs uppercase tracking-[0.4em]"
+            style={{ color: "hsl(var(--muted))" }}
+          >
+            Techno-Cultural Fest
+          </p>
+          <h1
+            className="font-display text-3xl md:text-4xl font-black tracking-tight"
+            style={{ color: "hsl(var(--foreground))" }}
+          >
+            INTERACT 2K26
+          </h1>
+          <p
+            className="mt-2 text-sm"
+            style={{ color: "hsl(var(--foreground) / 0.7)" }}
+          >
+            Where innovation meets rhythm.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.35 }}
+          className="mt-8"
+        >
+          <div className="mx-auto h-1.5 w-40 overflow-hidden rounded-full bg-white/10">
+            <motion.div
+              className="h-full w-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, hsl(var(--secondary)) 0%, hsl(var(--primary)) 100%)",
+              }}
+              initial={{ x: "-100%" }}
+              animate={{ x: "0%" }}
+              transition={{ duration: 1.6, ease: "easeInOut" }}
+            />
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─────────────────────────────────────────────
     PAGE
 ───────────────────────────────────────────── */
 export default function Home() {
-  return (
-    <div
-      className="min-h-screen"
-      style={{
-        background: "hsl(var(--background))",
-        color: "hsl(var(--foreground))",
-      }}
-    >
+  const [showSplash, setShowSplash] = useState(true);
 
-      {/* ══ HERO ══════════════════════════════════════════════════════════ */}
-      <section
-        className="relative overflow-hidden min-h-screen flex flex-col justify-center pt-24 pb-32"
-        style={{
-          background: `
+  return (
+    <>
+      {showSplash ? (
+        <IntroSplash onDone={() => setShowSplash(false)} />
+      ) : (
+        <>
+          <InteractLogoLaunchVideo />
+          <div
+            className="min-h-screen"
+            style={{
+              background: "hsl(var(--background))",
+              color: "hsl(var(--foreground))",
+            }}
+          >
+            {/* ══ HERO ══════════════════════════════════════════════════════════ */}
+            <section
+              className="relative overflow-hidden min-h-screen flex flex-col justify-center pt-24 pb-32"
+              style={{
+                background: `
             radial-gradient(ellipse 65% 55% at 60% 35%, hsl(var(--primary) / 0.09) 0%, transparent 65%),
             radial-gradient(ellipse 45% 45% at 5% 85%,  hsl(var(--secondary) / 0.07) 0%, transparent 55%),
             hsl(var(--background))
           `,
-          fontFamily: "'Outfit', sans-serif",
-        }}
-      >
-        {/* dot grid */}
-        <div className="dot-grid absolute inset-0 pointer-events-none opacity-100" />
-
-        {/* ghost year watermark */}
-        <div
-          className="absolute top-[12%] select-none pointer-events-none transition-all duration-500 max-[550px]:left-1/2 max-[550px]:-translate-x-1/2 max-[550px]:opacity-[0.05] min-[551px]:right-[-2%] min-[551px]:opacity-[0.9]"
-          style={{ width: "clamp(280px, 40vw, 700px)" }}
-          aria-hidden
-        >
-          <Image
-            src={interactLogo}
-            alt="Interact Logo Watermark"
-            className="w-full h-auto object-contain"
-            priority
-          />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-14 w-full">
-          {/* badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-          >
-            <span className="pill-badge mb-8 inline-flex">
-              Global Academy of Technology Presents
-            </span>
-          </motion.div>
-
-          {/* headline */}
-          <motion.h1
-            className="font-display leading-[0.92] mb-5"
-            style={{
-              // Reduced from clamp(2.5rem, 8vw, 6.5rem)
-              fontSize: "clamp(2rem, 6vw, 5rem)",
-              letterSpacing: "-0.02em",
-              color: "hsl(var(--foreground))",
-            }}
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            NATIONAL LEVEL
-            <br />
-            <span style={{ color: "hsl(var(--primary))" }}>INTER-COLLEGIATE</span>
-            <br />
-            <span
-              style={{
-                WebkitTextStroke: "1.5px hsl(var(--secondary))", // Slightly thinner stroke for smaller text
-                color: "transparent",
+                fontFamily: "'Outfit', sans-serif",
               }}
             >
-              EVENTS 2026
-            </span>
-          </motion.h1>
+              {/* dot grid */}
+              <div className="dot-grid absolute inset-0 pointer-events-none opacity-100" />
 
-          {/* tagline */}
-          <motion.p
-            className="font-mono-jb text-sm uppercase tracking-[0.28em] mb-12"
-            style={{ color: "hsl(var(--muted))" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.45, delay: 0.3 }}
-          >
-            Inter-collegiate Event <br /> Registration Portal
-          </motion.p>
+              {/* ghost year watermark */}
+              <div
+                className="absolute top-[12%] select-none pointer-events-none transition-all duration-500 max-[550px]:left-1/2 max-[550px]:-translate-x-1/2 max-[550px]:opacity-[0.05] min-[551px]:right-[-2%] min-[551px]:opacity-[0.9]"
+                style={{ width: "clamp(280px, 40vw, 700px)" }}
+                aria-hidden
+              >
+                <Image
+                  src={interactLogo}
+                  alt="Interact Logo Watermark"
+                  className="w-full h-auto object-contain"
+                  priority
+                />
+              </div>
 
-          {/* stats */}
-          <motion.div
-            className="stats-row flex flex-wrap gap-y-8 mb-12"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <StatItem to={categories.reduce((acc, c) => acc + c.count, 0)} label="Events" />
-            <StatItem to={3} label="Days" />
-            <StatItem to={1000} label="Participants" />
-            {/* <div className="flex flex-col gap-1">
+              <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-14 w-full">
+                {/* badge */}
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45 }}
+                >
+                  <span className="pill-badge mb-8 inline-flex">
+                    Global Academy of Technology Presents
+                  </span>
+                </motion.div>
+
+                {/* headline */}
+                <motion.h1
+                  className="font-display leading-[0.92] mb-5"
+                  style={{
+                    // Reduced from clamp(2.5rem, 8vw, 6.5rem)
+                    fontSize: "clamp(2rem, 6vw, 5rem)",
+                    letterSpacing: "-0.02em",
+                    color: "hsl(var(--foreground))",
+                  }}
+                  initial={{ opacity: 0, y: 32 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                >
+                  NATIONAL LEVEL
+                  <br />
+                  <span style={{ color: "hsl(var(--primary))" }}>
+                    INTER-COLLEGIATE
+                  </span>
+                  <br />
+                  <span
+                    style={{
+                      WebkitTextStroke: "1.5px hsl(var(--secondary))", // Slightly thinner stroke for smaller text
+                      color: "transparent",
+                    }}
+                  >
+                    EVENTS 2026
+                  </span>
+                </motion.h1>
+
+                {/* tagline */}
+                <motion.p
+                  className="font-mono-jb text-sm uppercase tracking-[0.28em] mb-12"
+                  style={{ color: "hsl(var(--muted))" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.45, delay: 0.3 }}
+                >
+                  Inter-collegiate Event <br /> Registration Portal
+                </motion.p>
+
+                {/* stats */}
+                <motion.div
+                  className="stats-row flex flex-wrap gap-y-8 mb-12"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                  <StatItem
+                    to={categories.reduce((acc, c) => acc + c.count, 0)}
+                    label="Events"
+                  />
+                  <StatItem to={3} label="Days" />
+                  <StatItem to={1000} label="Participants" />
+                  {/* <div className="flex flex-col gap-1">
               <span
                 className="font-display text-5xl md:text-4xl font-extrabold leading-none"
                 style={{ color: "hsl(var(--secondary))" }}
@@ -222,282 +417,312 @@ export default function Home() {
                 Prize Pool
               </span>
             </div> */}
-          </motion.div>
+                </motion.div>
 
-          {/* CTAs */}
-          <motion.div
-            className="flex flex-wrap gap-3 mb-10"
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.52 }}
-          >
-            <Link href="/events" className="btn-primary">
-              Explore Events <ArrowRight size={16} />
-            </Link>
-          </motion.div>
-
-          {/* meta */}
-          <motion.div
-            className="flex flex-wrap items-center gap-5"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.68 }}
-          >
-            <span
-              className="font-mono-jb text-xs flex items-center gap-2"
-              style={{ color: "hsl(var(--muted))" }}
-            >
-              <Calendar size={12} />
-              May 13–15, 2026
-            </span>
-            <span
-              className="w-px h-3"
-              style={{ background: "hsl(var(--border))" }}
-            />
-            <span
-              className="font-mono-jb text-xs flex items-center gap-2"
-              style={{ color: "hsl(var(--muted))" }}
-            >
-              <MapPin size={12} />
-              GAT Campus, Bengaluru
-            </span>
-          </motion.div>
-        </div>
-
-        {/* diagonal cut to next section */}
-        <div className="hero-cut" />
-      </section>
-
-      {/* ══ MARQUEE ══════════════════════════════════════════════════════ */}
-      <Marquee />
-
-      {/* ══ CATEGORIES ═══════════════════════════════════════════════════ */}
-      <section
-        className="py-28"
-        style={{ background: "hsl(var(--card))", fontFamily: "'Outfit', sans-serif" }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* section header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-14">
-            <div>
-              <span className="eyebrow">{categories.reduce((acc, c) => acc + c.count, 0)} events across {categories.length} domains</span>
-              <h2
-                className="font-display text-5xl md:text-6xl font-black leading-[0.95]"
-                style={{ color: "hsl(var(--foreground))" }}
-              >
-                CHOOSE YOUR
-                <br />
-                <span style={{ color: "hsl(var(--primary))" }}>DOMAIN</span>
-              </h2>
-            </div>
-            <p
-              className="text-base leading-relaxed md:max-w-xs"
-              style={{ color: "hsl(var(--muted-foreground))" }}
-            >
-              From high-stakes hackathons to mesmerizing musical performances — find your stage.
-            </p>
-          </div>
-
-          {/* cards grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories.map((cat, i) => {
-              const Icon = cat.icon;
-              return (
+                {/* CTAs */}
                 <motion.div
-                  key={cat.name}
-                  initial={{ opacity: 0, y: 22 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ delay: i * 0.08, duration: 0.42 }}
+                  className="flex flex-wrap gap-3 mb-10"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: 0.52 }}
                 >
-                  <Link
-                    href={`/events?category=${cat.name.toLowerCase()}`}
-                    className="cat-card group block rounded-[var(--radius)] p-6"
-                    style={{
-                      background: "hsl(var(--background))",
-                      border: `1px solid ${cat.accentBorder}`,
-                      textDecoration: "none",
-                    }}
-                  >
-                    {/* icon box */}
-                    <div
-                      className="w-12 h-12 rounded-lg flex items-center justify-center mb-5"
-                      style={{ background: cat.accentLight, color: cat.accent }}
-                    >
-                      <Icon size={22} />
-                    </div>
-
-                    {/* name */}
-                    <h3
-                      className="font-display text-2xl font-bold mb-1 tracking-tight"
-                      style={{ color: "hsl(var(--foreground))" }}
-                    >
-                      {cat.name}
-                    </h3>
-
-                    {/* count */}
-                    <p
-                      className="font-mono-jb text-xs mb-4"
-                      style={{ color: cat.accent, fontWeight: 500 }}
-                    >
-                      {cat.count} events
-                    </p>
-
-                    {/* tags */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {cat.tags.map((t) => (
-                        <span key={t} className="tag-chip">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* arrow reveal */}
-                    <div
-                      className="flex items-center gap-1 mt-5 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                      style={{ color: cat.accent }}
-                    >
-                      Browse events <ArrowRight size={12} />
-                    </div>
+                  <Link href="/events" className="btn-primary">
+                    Explore Events <ArrowRight size={16} />
                   </Link>
                 </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
-      {/* ══ SCHEDULE ═════════════════════════════════════════════════════ */}
-      <section
-        className="py-28 relative overflow-hidden"
-        style={{ background: "hsl(var(--background))", fontFamily: "'Outfit', sans-serif" }}
-      >
-        {/* ghost watermark */}
-        <div
-          className="font-display absolute left-[-2%] bottom-[4%] font-black leading-none select-none pointer-events-none"
-          style={{
-            fontSize: "clamp(90px,14vw,170px)",
-            color: "hsl(var(--primary) / 0.1)",
-            letterSpacing: "-0.02em",
-          }}
-          aria-hidden
-        >
-          INTERACT
-        </div>
-        {/* ghost watermark */}
-        <div
-          className="font-display absolute right-[-2%] top-[4%] font-black leading-none select-none pointer-events-none"
-          style={{
-            fontSize: "clamp(90px,14vw,170px)",
-            color: "hsl(var(--primary) / 0.1)",
-            letterSpacing: "-0.02em",
-          }}
-          aria-hidden
-        >
-          2K26
-        </div>
+                {/* meta */}
+                <motion.div
+                  className="flex flex-wrap items-center gap-5"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.68 }}
+                >
+                  <span
+                    className="font-mono-jb text-xs flex items-center gap-2"
+                    style={{ color: "hsl(var(--muted))" }}
+                  >
+                    <Calendar size={12} />
+                    May 13–15, 2026
+                  </span>
+                  <span
+                    className="w-px h-3"
+                    style={{ background: "hsl(var(--border))" }}
+                  />
+                  <span
+                    className="font-mono-jb text-xs flex items-center gap-2"
+                    style={{ color: "hsl(var(--muted))" }}
+                  >
+                    <MapPin size={12} />
+                    GAT Campus, Bengaluru
+                  </span>
+                </motion.div>
+              </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-16 items-start">
+              {/* diagonal cut to next section */}
+              <div className="hero-cut" />
+            </section>
 
-            {/* left col — sticky */}
-            <div className="lg:sticky lg:top-28">
-              <span className="eyebrow">The Itinerary</span>
-              <h2
-                className="font-display text-5xl md:text-6xl font-black leading-[0.93] mb-6"
-                style={{ color: "hsl(var(--foreground))" }}
+            {/* ══ MARQUEE ══════════════════════════════════════════════════════ */}
+            <Marquee />
+
+            {/* ══ CATEGORIES ═══════════════════════════════════════════════════ */}
+            <section
+              className="py-28"
+              style={{
+                background: "hsl(var(--card))",
+                fontFamily: "'Outfit', sans-serif",
+              }}
+            >
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* section header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-14">
+                  <div>
+                    <span className="eyebrow">
+                      {categories.reduce((acc, c) => acc + c.count, 0)} events
+                      across {categories.length} domains
+                    </span>
+                    <h2
+                      className="font-display text-5xl md:text-6xl font-black leading-[0.95]"
+                      style={{ color: "hsl(var(--foreground))" }}
+                    >
+                      CHOOSE YOUR
+                      <br />
+                      <span style={{ color: "hsl(var(--primary))" }}>
+                        DOMAIN
+                      </span>
+                    </h2>
+                  </div>
+                  <p
+                    className="text-base leading-relaxed md:max-w-xs"
+                    style={{ color: "hsl(var(--muted-foreground))" }}
+                  >
+                    From high-stakes hackathons to mesmerizing musical
+                    performances — find your stage.
+                  </p>
+                </div>
+
+                {/* cards grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {categories.map((cat, i) => {
+                    const Icon = cat.icon;
+                    return (
+                      <motion.div
+                        key={cat.name}
+                        initial={{ opacity: 0, y: 22 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ delay: i * 0.08, duration: 0.42 }}
+                      >
+                        <Link
+                          href={`/events?category=${cat.name.toLowerCase()}`}
+                          className="cat-card group block rounded-[var(--radius)] p-6"
+                          style={{
+                            background: "hsl(var(--background))",
+                            border: `1px solid ${cat.accentBorder}`,
+                            textDecoration: "none",
+                          }}
+                        >
+                          {/* icon box */}
+                          <div
+                            className="w-12 h-12 rounded-lg flex items-center justify-center mb-5"
+                            style={{
+                              background: cat.accentLight,
+                              color: cat.accent,
+                            }}
+                          >
+                            <Icon size={22} />
+                          </div>
+
+                          {/* name */}
+                          <h3
+                            className="font-display text-2xl font-bold mb-1 tracking-tight"
+                            style={{ color: "hsl(var(--foreground))" }}
+                          >
+                            {cat.name}
+                          </h3>
+
+                          {/* count */}
+                          <p
+                            className="font-mono-jb text-xs mb-4"
+                            style={{ color: cat.accent, fontWeight: 500 }}
+                          >
+                            {cat.count} events
+                          </p>
+
+                          {/* tags */}
+                          <div className="flex flex-wrap gap-1.5">
+                            {cat.tags.map((t) => (
+                              <span key={t} className="tag-chip">
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+
+                          {/* arrow reveal */}
+                          <div
+                            className="flex items-center gap-1 mt-5 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                            style={{ color: cat.accent }}
+                          >
+                            Browse events <ArrowRight size={12} />
+                          </div>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+
+            {/* ══ SCHEDULE ═════════════════════════════════════════════════════ */}
+            <section
+              className="py-28 relative overflow-hidden"
+              style={{
+                background: "hsl(var(--background))",
+                fontFamily: "'Outfit', sans-serif",
+              }}
+            >
+              {/* ghost watermark */}
+              <div
+                className="font-display absolute left-[-2%] bottom-[4%] font-black leading-none select-none pointer-events-none"
+                style={{
+                  fontSize: "clamp(90px,14vw,170px)",
+                  color: "hsl(var(--primary) / 0.1)",
+                  letterSpacing: "-0.02em",
+                }}
+                aria-hidden
               >
-                3 DAYS.
-                <br />
-                {categories.reduce((acc, c) => acc + c.count, 0)}+ EVENTS.
-                <br />
-                <span style={{ color: "hsl(var(--primary))" }}>YOUR CALL.</span>
-              </h2>
-              <p
-                className="text-base leading-relaxed mb-8 max-w-sm"
-                style={{ color: "hsl(var(--muted-foreground))" }}
+                INTERACT
+              </div>
+              {/* ghost watermark */}
+              <div
+                className="font-display absolute right-[-2%] top-[4%] font-black leading-none select-none pointer-events-none"
+                style={{
+                  fontSize: "clamp(90px,14vw,170px)",
+                  color: "hsl(var(--primary) / 0.1)",
+                  letterSpacing: "-0.02em",
+                }}
+                aria-hidden
               >
-                Plan your days ahead to make the most of INTERACT 2026. Every slot is a story — pick yours.
-              </p>
-              <button
-                disabled
-                className="btn-primary"
-                style={{ opacity: 1, cursor: "not-allowed", pointerEvents: "none" }}
-              >
-                Full Schedule  ( Coming Soon... )
-              </button>
+                2K26
+              </div>
 
-            </div>
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-16 items-start">
+                  {/* left col — sticky */}
+                  <div className="lg:sticky lg:top-28">
+                    <span className="eyebrow">The Itinerary</span>
+                    <h2
+                      className="font-display text-5xl md:text-6xl font-black leading-[0.93] mb-6"
+                      style={{ color: "hsl(var(--foreground))" }}
+                    >
+                      3 DAYS.
+                      <br />
+                      {categories.reduce((acc, c) => acc + c.count, 0)}+ EVENTS.
+                      <br />
+                      <span style={{ color: "hsl(var(--primary))" }}>
+                        YOUR CALL.
+                      </span>
+                    </h2>
+                    <p
+                      className="text-base leading-relaxed mb-8 max-w-sm"
+                      style={{ color: "hsl(var(--muted-foreground))" }}
+                    >
+                      Plan your days ahead to make the most of INTERACT 2026.
+                      Every slot is a story — pick yours.
+                    </p>
+                    <button
+                      disabled
+                      className="btn-primary"
+                      style={{
+                        opacity: 1,
+                        cursor: "not-allowed",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      Full Schedule ( Coming Soon... )
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
 
-          </div>
-        </div>
-      </section>
-
-      {/* ══ BOTTOM CTA ═══════════════════════════════════════════════════ */}
-      <section
-        className="py-20 relative overflow-hidden"
-        style={{
-          background: `
+            {/* ══ BOTTOM CTA ═══════════════════════════════════════════════════ */}
+            <section
+              className="py-20 relative overflow-hidden"
+              style={{
+                background: `
             radial-gradient(ellipse 80% 80% at 50% 50%, hsl(var(--primary) / 0.12) 0%, transparent 70%),
             hsl(var(--accent))
           `,
-          fontFamily: "'Outfit', sans-serif",
-        }}
-      >
-        <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
-          <span
-            className="font-mono-jb text-xs uppercase tracking-[0.22em] mb-4 block"
-            style={{ color: "hsl(var(--secondary))" }}
-          >
-            Registration are Live Now.
-          </span>
-          <h2
-            className="font-display text-4xl md:text-6xl font-black leading-[0.93] mb-6"
-            style={{ color: "hsl(var(--accent-foreground))" }}
-          >
-            READY TO
-            <br />
-            <span style={{ color: "hsl(var(--secondary))" }}>INTERACT?</span>
-          </h2>
-          <p
-            className="text-base leading-relaxed mb-8"
-            style={{ color: "hsl(var(--accent-foreground) / 0.6)" }}
-          >
-            Join 1000+ students across {categories.reduce((acc, c) => acc + c.count, 0)}+ events. Just bring your best game.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <button
-              disabled
-              className="btn-gold"
-              style={{ opacity: 1, cursor: "not-allowed", pointerEvents: "none" }}
-            >
-              Register Now ( Coming Soon... )
-            </button>
-            <Link
-              href="/events"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "13px 28px",
-                fontSize: 14,
-                fontWeight: 600,
-                letterSpacing: "0.04em",
-                borderRadius: "var(--radius)",
-                background: "transparent",
-                color: "hsl(var(--accent-foreground) / 0.8)",
-                border: "1.5px solid hsl(var(--accent-foreground) / 0.2)",
-                cursor: "pointer",
-                textDecoration: "none",
                 fontFamily: "'Outfit', sans-serif",
-                transition: "border-color 0.2s, background 0.2s",
               }}
             >
-              Browse All Events
-            </Link>
+              <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
+                <span
+                  className="font-mono-jb text-xs uppercase tracking-[0.22em] mb-4 block"
+                  style={{ color: "hsl(var(--secondary))" }}
+                >
+                  Registration are Live Now.
+                </span>
+                <h2
+                  className="font-display text-4xl md:text-6xl font-black leading-[0.93] mb-6"
+                  style={{ color: "hsl(var(--accent-foreground))" }}
+                >
+                  READY TO
+                  <br />
+                  <span style={{ color: "hsl(var(--secondary))" }}>
+                    INTERACT?
+                  </span>
+                </h2>
+                <p
+                  className="text-base leading-relaxed mb-8"
+                  style={{ color: "hsl(var(--accent-foreground) / 0.6)" }}
+                >
+                  Join 1000+ students across{" "}
+                  {categories.reduce((acc, c) => acc + c.count, 0)}+ events.
+                  Just bring your best game.
+                </p>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <button
+                    disabled
+                    className="btn-gold"
+                    style={{
+                      opacity: 1,
+                      cursor: "not-allowed",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    Register Now ( Coming Soon... )
+                  </button>
+                  <Link
+                    href="/events"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "13px 28px",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      letterSpacing: "0.04em",
+                      borderRadius: "var(--radius)",
+                      background: "transparent",
+                      color: "hsl(var(--accent-foreground) / 0.8)",
+                      border: "1.5px solid hsl(var(--accent-foreground) / 0.2)",
+                      cursor: "pointer",
+                      textDecoration: "none",
+                      fontFamily: "'Outfit', sans-serif",
+                      transition: "border-color 0.2s, background 0.2s",
+                    }}
+                  >
+                    Browse All Events
+                  </Link>
+                </div>
+              </div>
+            </section>
           </div>
-        </div>
-      </section>
-    </div>
+        </>
+      )}
+    </>
   );
 }

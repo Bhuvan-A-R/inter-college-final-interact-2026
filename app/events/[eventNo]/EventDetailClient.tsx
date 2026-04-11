@@ -2,7 +2,14 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { ArrowLeft, Users, Phone, AlertCircle, ShoppingCart, LogIn, CheckCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Users,
+  Phone,
+  AlertCircle,
+  ShoppingCart,
+  CheckCircle,
+} from "lucide-react";
 import { EventCategory } from "@/data/eventCategories";
 import { EventList } from "@/data/eventList";
 import { motion } from "framer-motion";
@@ -14,17 +21,44 @@ interface Props {
   details: EventList[];
 }
 
+type RegisteredEvent = {
+  eventId: string;
+  eventName: string;
+  eventNo: number | null;
+  status: "VERIFIED";
+  transactionId: string | null;
+  registrationDate: string | null;
+};
+
 const getColorForCategory = (category: string) => {
-  const map: Record<string, { bg: string, text: string, split: string }> = {
+  const map: Record<string, { bg: string; text: string; split: string }> = {
     THEATRE: { bg: "bg-gat-blue", text: "text-gat-blue", split: "gat-blue" },
     DANCE: { bg: "bg-gat-gold", text: "text-gat-gold", split: "gat-gold" },
     MUSIC: { bg: "bg-gat-navy", text: "text-gat-navy", split: "gat-navy" },
-    FASHION: { bg: "bg-gat-cobalt", text: "text-gat-cobalt", split: "gat-cobalt" },
-    LITERARY: { bg: "bg-gat-dark-gold", text: "text-gat-dark-gold", split: "gat-dark-gold" },
+    FASHION: {
+      bg: "bg-gat-cobalt",
+      text: "text-gat-cobalt",
+      split: "gat-cobalt",
+    },
+    LITERARY: {
+      bg: "bg-gat-dark-gold",
+      text: "text-gat-dark-gold",
+      split: "gat-dark-gold",
+    },
     FINE_ARTS: { bg: "bg-gat-blue", text: "text-gat-blue", split: "gat-blue" },
-    GENERAL_EVENTS: { bg: "bg-gat-gold", text: "text-gat-gold", split: "gat-gold" },
+    GENERAL_EVENTS: {
+      bg: "bg-gat-gold",
+      text: "text-gat-gold",
+      split: "gat-gold",
+    },
   };
-  return map[category] || { bg: "bg-gat-charcoal", text: "text-gat-charcoal", split: "gat-charcoal" };
+  return (
+    map[category] || {
+      bg: "bg-gat-charcoal",
+      text: "text-gat-charcoal",
+      split: "gat-charcoal",
+    }
+  );
 };
 
 export default function EventDetailClient({ category, details }: Props) {
@@ -32,13 +66,19 @@ export default function EventDetailClient({ category, details }: Props) {
   const hasDetails = details.length > 0;
   const mainDetail = hasDetails ? details[0] : null;
 
-  const [activeAccordion, setActiveAccordion] = useState<string | null>("description");
+  const [activeAccordion, setActiveAccordion] = useState<string | null>(
+    "description",
+  );
   const { isLoggedIn } = useAuthContext();
   const [dbEventId, setDbEventId] = useState<string | null>(null);
   const [inCart, setInCart] = useState(false);
   const [adding, setAdding] = useState(false);
-  const [userTeams, setUserTeams] = useState<Array<{ id: string; name: string; eventId: string; myRole: string }>>([]);
+  const [userTeams, setUserTeams] = useState<
+    Array<{ id: string; name: string; eventId: string; myRole: string }>
+  >([]);
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
+  const [registrationInfo, setRegistrationInfo] =
+    useState<RegisteredEvent | null>(null);
   const isTeamEvent = category.maxParticipant > 1;
 
   const toggleAccordion = (id: string) => {
@@ -52,7 +92,7 @@ export default function EventDetailClient({ category, details }: Props) {
       .then((data) => {
         if (data.success) {
           const match = data.data.items.find(
-            (e: { id: string; name: string }) => e.name === category.eventName
+            (e: { id: string; name: string }) => e.name === category.eventName,
           );
           if (match) setDbEventId(match.id);
         }
@@ -62,13 +102,16 @@ export default function EventDetailClient({ category, details }: Props) {
 
   // Check if already in cart when logged in
   useEffect(() => {
-    if (!isLoggedIn || !dbEventId) { setInCart(false); return; }
+    if (!isLoggedIn || !dbEventId) {
+      setInCart(false);
+      return;
+    }
     fetch("/api/cart")
       .then((r) => r.json())
       .then((data) => {
         if (data.success) {
           const found = data.data.items.some(
-            (item: { eventId: string }) => item.eventId === dbEventId
+            (item: { eventId: string }) => item.eventId === dbEventId,
           );
           setInCart(found);
         }
@@ -78,7 +121,10 @@ export default function EventDetailClient({ category, details }: Props) {
 
   // Fetch user's teams when logged in
   useEffect(() => {
-    if (!isLoggedIn) { setUserTeams([]); return; }
+    if (!isLoggedIn) {
+      setUserTeams([]);
+      return;
+    }
     fetch("/api/teams")
       .then((r) => r.json())
       .then((data) => {
@@ -86,6 +132,23 @@ export default function EventDetailClient({ category, details }: Props) {
       })
       .catch(() => {});
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setRegistrationInfo(null);
+      return;
+    }
+    fetch("/api/registered-events")
+      .then((r) => r.json())
+      .then((data) => {
+        if (!data?.success) return;
+        const match = (data.data?.items ?? []).find(
+          (item: RegisteredEvent) => item.eventNo === category.eventNo,
+        );
+        setRegistrationInfo(match ?? null);
+      })
+      .catch(() => {});
+  }, [isLoggedIn, category.eventNo]);
 
   const handleAddToCart = useCallback(async () => {
     if (!dbEventId) {
@@ -109,7 +172,9 @@ export default function EventDetailClient({ category, details }: Props) {
       const data = await res.json();
       if (res.ok || res.status === 409) {
         setInCart(true);
-        toast.success(res.status === 409 ? "Already in cart!" : "Added to cart!");
+        toast.success(
+          res.status === 409 ? "Already in cart!" : "Added to cart!",
+        );
       } else {
         toast.error(data.error?.message ?? "Failed to add to cart.");
       }
@@ -123,7 +188,6 @@ export default function EventDetailClient({ category, details }: Props) {
   return (
     <div className="min-h-screen bg-gat-off-white font-body pt-24 pb-20">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* ── Top Nav row ──────────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between mb-8">
           <Link
@@ -152,7 +216,6 @@ export default function EventDetailClient({ category, details }: Props) {
   Login / Register
   <ArrowRight size={16} />
 </button> */}
-
           </div>
         </div>
 
@@ -162,11 +225,15 @@ export default function EventDetailClient({ category, details }: Props) {
           <div className={`absolute top-0 inset-x-0 h-1.5 ${colors.bg}`} />
 
           <div className="flex flex-wrap gap-2 mb-4">
-            <span className={`px-2.5 py-1 rounded-md text-xs font-heading font-bold tracking-widest uppercase bg-opacity-10 border border-opacity-20 ${colors.text} ${colors.bg.replace('bg-', 'bg-')}/10 border-${colors.split}/20`}>
+            <span
+              className={`px-2.5 py-1 rounded-md text-xs font-heading font-bold tracking-widest uppercase bg-opacity-10 border border-opacity-20 ${colors.text} ${colors.bg.replace("bg-", "bg-")}/10 border-${colors.split}/20`}
+            >
               {category.category.replace(/_/g, " ")}
             </span>
             <span className="px-2.5 py-1 rounded-md text-xs font-heading font-bold tracking-widest uppercase bg-gat-off-white border border-gat-steel/20 text-gat-steel">
-              {category.maxParticipant > 1 ? `TEAM (${category.maxParticipant})` : "SOLO"}
+              {category.maxParticipant > 1
+                ? `TEAM (${category.maxParticipant})`
+                : "SOLO"}
             </span>
             <span className="px-2.5 py-1 rounded-md text-xs font-heading font-bold tracking-widest uppercase bg-gat-off-white border border-gat-steel/20 text-gat-steel">
               Event #{String(category.eventNo).padStart(2, "0")}
@@ -179,11 +246,34 @@ export default function EventDetailClient({ category, details }: Props) {
           <p className="text-gat-steel text-sm md:text-base font-medium">
             Part of the {category.category.replace(/_/g, " ")} lineup
           </p>
+
+          {registrationInfo && (
+            <div className="mt-4 inline-flex flex-col gap-1 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-xs text-green-700">
+              <span className="inline-flex items-center gap-2 font-bold uppercase tracking-widest">
+                <CheckCircle className="h-4 w-4" /> Registration Confirmed
+              </span>
+              {registrationInfo.transactionId && (
+                <span>
+                  Transaction ID:{" "}
+                  <span className="font-semibold">
+                    {registrationInfo.transactionId}
+                  </span>
+                </span>
+              )}
+              {registrationInfo.registrationDate && (
+                <span>
+                  Registration Date:{" "}
+                  <span className="font-semibold">
+                    {registrationInfo.registrationDate}
+                  </span>
+                </span>
+              )}
+            </div>
+          )}
         </header>
 
         {/* ── Grid Layout ────────────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
           {/* LEFT COLUMN: Meta & Actions */}
           {/* <div className="lg:col-span-1 space-y-6">
             
@@ -234,7 +324,6 @@ export default function EventDetailClient({ category, details }: Props) {
 
           {/* RIGHT COLUMN: Details & Accordions */}
           <div className="lg:col-span-2 space-y-6">
-
             <div className="bg-white p-6 md:p-8 rounded-2xl border border-gat-blue/10 shadow-sm">
               <h2 className="text-2xl font-bold font-heading text-gat-midnight mb-6 border-b border-gat-blue/5 pb-4">
                 About This Event
@@ -242,7 +331,6 @@ export default function EventDetailClient({ category, details }: Props) {
 
               {/* Accordion Group */}
               <div className="space-y-4">
-
                 {/* Description */}
                 <div className="border border-gat-steel/20 rounded-xl overflow-hidden">
                   <button
@@ -250,7 +338,9 @@ export default function EventDetailClient({ category, details }: Props) {
                     className="w-full flex items-center justify-between p-4 bg-gat-off-white hover:bg-gat-blue/5 transition-colors font-bold text-gat-midnight"
                   >
                     Description & Guidelines
-                    <span className="text-gat-steel">{activeAccordion === "description" ? "−" : "+"}</span>
+                    <span className="text-gat-steel">
+                      {activeAccordion === "description" ? "−" : "+"}
+                    </span>
                   </button>
                   {activeAccordion === "description" && (
                     <div className="p-5 bg-white text-gat-charcoal text-sm leading-relaxed border-t border-gat-steel/10">
@@ -258,9 +348,15 @@ export default function EventDetailClient({ category, details }: Props) {
                         <div className="space-y-4">
                           {details.map((detail, idx) => (
                             <div key={idx} className="space-y-3">
-                              {details.length > 1 && <h4 className="font-bold text-gat-midnight">{detail.name}</h4>}
+                              {details.length > 1 && (
+                                <h4 className="font-bold text-gat-midnight">
+                                  {detail.name}
+                                </h4>
+                              )}
                               <ol className="list-decimal pl-5 space-y-2">
-                                {detail.rules.map((rule, ridx) => <li key={ridx}>{rule}</li>)}
+                                {detail.rules.map((rule, ridx) => (
+                                  <li key={ridx}>{rule}</li>
+                                ))}
                               </ol>
                             </div>
                           ))}
@@ -282,49 +378,74 @@ export default function EventDetailClient({ category, details }: Props) {
                     className="w-full flex items-center justify-between p-4 bg-gat-off-white hover:bg-gat-blue/5 transition-colors font-bold text-gat-midnight"
                   >
                     Contact Coordinators
-                    <span className="text-gat-steel">{activeAccordion === "coordinators" ? "−" : "+"}</span>
+                    <span className="text-gat-steel">
+                      {activeAccordion === "coordinators" ? "−" : "+"}
+                    </span>
                   </button>
                   {activeAccordion === "coordinators" && (
                     <div className="p-5 bg-white text-gat-charcoal text-sm leading-relaxed border-t border-gat-steel/10">
-                      {mainDetail && (mainDetail.coordinator || (mainDetail.coordinators && mainDetail.coordinators.length > 0)) ? (
+                      {mainDetail &&
+                      (mainDetail.coordinator ||
+                        (mainDetail.coordinators &&
+                          mainDetail.coordinators.length > 0)) ? (
                         <div className="grid sm:grid-cols-2 gap-4">
                           {mainDetail.coordinator && (
                             <div className="flex items-start gap-4 p-4 border border-gat-blue/10 rounded-lg hover:border-gat-blue/30 transition-colors bg-gat-off-white">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${colors.bg}`}>
+                              <div
+                                className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${colors.bg}`}
+                              >
                                 <Users className="w-5 h-5" />
                               </div>
                               <div>
-                                <p className="font-bold text-gat-midnight">{mainDetail.coordinator.name}</p>
-                                <a href={`tel:${mainDetail.coordinator.mobile.replace(/\s/g, "")}`} className="flex items-center gap-1.5 text-xs text-gat-blue hover:underline mt-1">
-                                  <Phone className="w-3 h-3" /> {mainDetail.coordinator.mobile}
+                                <p className="font-bold text-gat-midnight">
+                                  {mainDetail.coordinator.name}
+                                </p>
+                                <a
+                                  href={`tel:${mainDetail.coordinator.mobile.replace(/\s/g, "")}`}
+                                  className="flex items-center gap-1.5 text-xs text-gat-blue hover:underline mt-1"
+                                >
+                                  <Phone className="w-3 h-3" />{" "}
+                                  {mainDetail.coordinator.mobile}
                                 </a>
                               </div>
                             </div>
                           )}
-                          {mainDetail.coordinators && mainDetail.coordinators.map((coord, idx) => (
-                            <div key={idx} className="flex items-start gap-4 p-4 border border-gat-blue/10 rounded-lg hover:border-gat-blue/30 transition-colors bg-gat-off-white">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${colors.bg}`}>
-                                <Users className="w-5 h-5" />
+                          {mainDetail.coordinators &&
+                            mainDetail.coordinators.map((coord, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-start gap-4 p-4 border border-gat-blue/10 rounded-lg hover:border-gat-blue/30 transition-colors bg-gat-off-white"
+                              >
+                                <div
+                                  className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${colors.bg}`}
+                                >
+                                  <Users className="w-5 h-5" />
+                                </div>
+                                <div>
+                                  <p className="font-bold text-gat-midnight">
+                                    {coord.name}
+                                  </p>
+                                  <a
+                                    href={`tel:${coord.mobile.replace(/\s/g, "")}`}
+                                    className="flex items-center gap-1.5 text-xs text-gat-blue hover:underline mt-1"
+                                  >
+                                    <Phone className="w-3 h-3" /> {coord.mobile}
+                                  </a>
+                                </div>
                               </div>
-                              <div>
-                                <p className="font-bold text-gat-midnight">{coord.name}</p>
-                                <a href={`tel:${coord.mobile.replace(/\s/g, "")}`} className="flex items-center gap-1.5 text-xs text-gat-blue hover:underline mt-1">
-                                  <Phone className="w-3 h-3" /> {coord.mobile}
-                                </a>
-                              </div>
-                            </div>
-                          ))}
+                            ))}
                         </div>
                       ) : (
-                        <p className="text-gat-steel italic">Coordinator info pending.</p>
+                        <p className="text-gat-steel italic">
+                          Coordinator info pending.
+                        </p>
                       )}
                     </div>
                   )}
-
                 </div>
 
                 {/* ── Cart CTA ── */}
-                <div className="pt-2">
+                <div className="pt-2 rounded-2xl border border-gat-blue/10 p-4">
                   {isLoggedIn ? (
                     inCart ? (
                       <div className="flex flex-col gap-2">
@@ -340,70 +461,89 @@ export default function EventDetailClient({ category, details }: Props) {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        {isTeamEvent && (() => {
-                          const teamsForEvent = userTeams.filter(
-                            (t) => t.eventId === dbEventId && t.myRole === "LEADER"
-                          );
-                          return teamsForEvent.length === 0 ? (
-                            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-800">
-                              <p className="font-bold mb-1">Team event</p>
-                              <p className="text-xs">You need to create a team for this event before registering.</p>
-                              <Link href="/teams" className="inline-flex items-center gap-1 mt-2 text-xs font-bold text-gat-blue hover:underline">
-                                Create a Team &rarr;
-                              </Link>
-                            </div>
-                          ) : (
-                            <div>
-                              <label className="block text-xs font-bold text-gat-steel mb-1.5 uppercase tracking-widest">
-                                Select Your Team
-                              </label>
-                              <select
-                                value={selectedTeamId}
-                                onChange={(e) => setSelectedTeamId(e.target.value)}
-                                className="w-full border border-gat-steel/30 rounded-lg px-3 py-2.5 text-sm text-gat-midnight focus:outline-none focus:ring-2 focus:ring-gat-blue/30"
-                              >
-                                <option value="">-- Choose a team --</option>
-                                {teamsForEvent.map((t) => (
-                                  <option key={t.id} value={t.id}>{t.name}</option>
-                                ))}
-                              </select>
-                            </div>
-                          );
-                        })()}
+                        {isTeamEvent &&
+                          (() => {
+                            const teamsForEvent = userTeams.filter(
+                              (t) =>
+                                t.eventId === dbEventId &&
+                                t.myRole === "LEADER",
+                            );
+                            return teamsForEvent.length === 0 ? (
+                              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-800">
+                                <p className="font-bold mb-1">Team event</p>
+                                <p className="text-xs">
+                                  You need to create a team for this event
+                                  before registering.
+                                </p>
+                                <Link
+                                  href="/teams"
+                                  className="inline-flex items-center gap-1 mt-2 text-xs font-bold text-gat-blue hover:underline"
+                                >
+                                  Create a Team &rarr;
+                                </Link>
+                              </div>
+                            ) : (
+                              <div>
+                                <label className="block text-xs font-bold text-gat-steel mb-1.5 uppercase tracking-widest">
+                                  Select Your Team
+                                </label>
+                                <select
+                                  value={selectedTeamId}
+                                  onChange={(e) =>
+                                    setSelectedTeamId(e.target.value)
+                                  }
+                                  className="w-full border border-gat-steel/30 rounded-lg px-3 py-2.5 text-sm text-gat-midnight focus:outline-none focus:ring-2 focus:ring-gat-blue/30"
+                                >
+                                  <option value="">-- Choose a team --</option>
+                                  {teamsForEvent.map((t) => (
+                                    <option key={t.id} value={t.id}>
+                                      {t.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            );
+                          })()}
                         <button
                           onClick={handleAddToCart}
-                          disabled={adding || !dbEventId || (isTeamEvent && !selectedTeamId)}
+                          disabled={
+                            adding ||
+                            !dbEventId ||
+                            (isTeamEvent && !selectedTeamId)
+                          }
                           className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
-                            adding || !dbEventId || (isTeamEvent && !selectedTeamId)
+                            adding ||
+                            !dbEventId ||
+                            (isTeamEvent && !selectedTeamId)
                               ? "bg-gat-off-white text-gat-steel/40 cursor-not-allowed border border-gat-steel/20"
                               : "bg-gat-blue text-white hover:bg-gat-midnight"
                           }`}
                         >
                           {adding ? (
-                            <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" /> Adding…</>
+                            <>
+                              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" />{" "}
+                              Adding…
+                            </>
                           ) : (
-                            <><ShoppingCart className="w-4 h-4" /> Add to Cart</>
+                            <>
+                              <ShoppingCart className="w-4 h-4" /> Add to Cart
+                            </>
                           )}
                         </button>
                       </div>
                     )
-                  ) : (
-                    <Link
-                      href="/auth/signin"
-                      className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gat-blue text-white font-bold text-sm hover:bg-gat-midnight transition-colors"
-                    >
-                      <LogIn className="w-4 h-4" /> Sign In to Register
-                    </Link>
-                  )}
+                  ) : null}
                   {category.amount && (
                     <p className="text-xs text-gat-steel text-center mt-2">
-                      Registration fee: <span className="font-bold text-gat-midnight">₹{category.amount}</span>
+                      Registration fee:{" "}
+                      <span className="font-bold text-gat-midnight">
+                        ₹{category.amount}
+                      </span>
                     </p>
                   )}
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>

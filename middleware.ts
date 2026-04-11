@@ -79,6 +79,10 @@ const adminRoutes: string[] = [
     "/api/admin",
 ];
 
+const registrationTeamRoutes: string[] = [
+    "/register",
+];
+
 
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
@@ -151,6 +155,15 @@ export async function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL("/auth/signin", request.nextUrl));
         }
         if (session.role !== "ADMIN" && session.role !== "SUPER_ADMIN") {
+            return NextResponse.redirect(new URL("/dashboard?error=unauthorized", request.nextUrl));
+        }
+    }
+
+    if (registrationTeamRoutes.some(route => path === route || path.startsWith(route + "/"))) {
+        if (!session?.id) {
+            return NextResponse.redirect(new URL("/auth/signin", request.nextUrl));
+        }
+        if (session.role === "PARTICIPANT") {
             return NextResponse.redirect(new URL("/dashboard?error=unauthorized", request.nextUrl));
         }
     }

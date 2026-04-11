@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/db";
 import { requireAdmin, successResponse, errorResponse } from "@/lib/apiHelpers";
+import { sendPaymentVerifiedEmail } from "@/lib/email";
 
 type RouteContext = { params: Promise<{ orderId: string }> };
 
@@ -15,6 +16,9 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
+        user: {
+          select: { email: true },
+        },
         orderItems: {
           include: {
             Team: {
@@ -100,6 +104,14 @@ export async function POST(req: NextRequest, context: RouteContext) {
         },
       });
     });
+
+    if (order.user?.email) {
+      try {
+        await sendPaymentVerifiedEmail(order.user.email);
+      } catch (emailError) {
+        console.error("[payment verified email]", emailError);
+      }
+    }
 
     return successResponse({ message: "Payment verified and registrations created." });
   } catch (error) {

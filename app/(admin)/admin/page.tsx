@@ -19,7 +19,7 @@ type Order = {
   paymentScreenshotUrl: string | null;
   paymentSubmittedAt: string | null;
   verifiedAt: string | null;
-  rejectionReason: string | null;
+  REJECTED_REASON: string | null;
   user: {
     id: string;
     name: string;
@@ -84,7 +84,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     loadTab(activeTab);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handleRefresh = () => loadTab(activeTab);
@@ -105,10 +105,16 @@ export default function AdminDashboardPage() {
       toast.success("Payment approved and registrations created.");
       setOrdersByTab((prev) => ({
         ...prev,
-        PAYMENT_SUBMITTED: prev.PAYMENT_SUBMITTED.filter((o) => o.id !== orderId),
+        PAYMENT_SUBMITTED: prev.PAYMENT_SUBMITTED.filter(
+          (o) => o.id !== orderId,
+        ),
       }));
       // Invalidate approved tab so it reloads fresh next time
-      setLoadedTabs((prev) => { const s = new Set(prev); s.delete("VERIFIED"); return s; });
+      setLoadedTabs((prev) => {
+        const s = new Set(prev);
+        s.delete("VERIFIED");
+        return s;
+      });
     } catch (error) {
       console.error(error);
       toast.error("Unable to approve payment.");
@@ -130,7 +136,7 @@ export default function AdminDashboardPage() {
       const res = await fetch(`/api/admin/payments/${orderId}/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rejectionReason: reason.trim() }),
+        body: JSON.stringify({ REJECTED_REASON: reason.trim() }),
       });
       const data = await res.json();
 
@@ -142,10 +148,16 @@ export default function AdminDashboardPage() {
       toast.success("Payment rejected.");
       setOrdersByTab((prev) => ({
         ...prev,
-        PAYMENT_SUBMITTED: prev.PAYMENT_SUBMITTED.filter((o) => o.id !== orderId),
+        PAYMENT_SUBMITTED: prev.PAYMENT_SUBMITTED.filter(
+          (o) => o.id !== orderId,
+        ),
       }));
       // Invalidate rejected tab so it reloads fresh next time
-      setLoadedTabs((prev) => { const s = new Set(prev); s.delete("REJECTED"); return s; });
+      setLoadedTabs((prev) => {
+        const s = new Set(prev);
+        s.delete("REJECTED");
+        return s;
+      });
     } catch (error) {
       console.error(error);
       toast.error("Unable to reject payment.");
@@ -157,7 +169,12 @@ export default function AdminDashboardPage() {
   const orders = ordersByTab[activeTab];
 
   const formatDate = (iso: string | null) =>
-    iso ? new Date(iso).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "—";
+    iso
+      ? new Date(iso).toLocaleString("en-IN", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
+      : "—";
 
   return (
     <div className="min-h-screen bg-gat-off-white pt-24 pb-16">
@@ -196,8 +213,8 @@ export default function AdminDashboardPage() {
                   ? tab === "PAYMENT_SUBMITTED"
                     ? "bg-amber-500 text-white shadow"
                     : tab === "VERIFIED"
-                    ? "bg-green-600 text-white shadow"
-                    : "bg-red-600 text-white shadow"
+                      ? "bg-green-600 text-white shadow"
+                      : "bg-red-600 text-white shadow"
                   : "text-gat-steel hover:text-gat-midnight"
               }`}
             >
@@ -219,14 +236,18 @@ export default function AdminDashboardPage() {
         ) : orders.length === 0 ? (
           <div className="rounded-xl bg-white p-12 border border-gat-blue/10 shadow-sm text-center">
             <p className="text-2xl mb-2">
-              {activeTab === "PAYMENT_SUBMITTED" ? "✅" : activeTab === "VERIFIED" ? "📋" : "📋"}
+              {activeTab === "PAYMENT_SUBMITTED"
+                ? "✅"
+                : activeTab === "VERIFIED"
+                  ? "📋"
+                  : "📋"}
             </p>
             <p className="font-heading font-bold text-gat-midnight">
               {activeTab === "PAYMENT_SUBMITTED"
                 ? "All caught up!"
                 : activeTab === "VERIFIED"
-                ? "No approved payments yet."
-                : "No rejected payments."}
+                  ? "No approved payments yet."
+                  : "No rejected payments."}
             </p>
             <p className="text-sm text-gat-steel mt-1">
               {activeTab === "PAYMENT_SUBMITTED"
@@ -240,21 +261,39 @@ export default function AdminDashboardPage() {
               <table className="w-full text-sm">
                 <thead className="bg-gat-midnight text-white">
                   <tr>
-                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Participant</th>
-                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Event(s)</th>
-                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Amount</th>
-                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">UPI Transaction ID</th>
-                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Screenshot</th>
+                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+                      Participant
+                    </th>
+                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+                      Event(s)
+                    </th>
+                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+                      Amount
+                    </th>
+                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+                      UPI Transaction ID
+                    </th>
+                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+                      Screenshot
+                    </th>
                     {activeTab === "PAYMENT_SUBMITTED" && (
-                      <th className="text-center px-4 py-3 font-semibold whitespace-nowrap">Actions</th>
+                      <th className="text-center px-4 py-3 font-semibold whitespace-nowrap">
+                        Actions
+                      </th>
                     )}
                     {activeTab === "VERIFIED" && (
-                      <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Approved At</th>
+                      <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+                        Approved At
+                      </th>
                     )}
                     {activeTab === "REJECTED" && (
                       <>
-                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Rejected At</th>
-                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Reason</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+                          Rejected At
+                        </th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+                          Reason
+                        </th>
                       </>
                     )}
                   </tr>
@@ -265,7 +304,7 @@ export default function AdminDashboardPage() {
                     const eventNames = order.orderItems
                       .map(
                         (item) =>
-                          `${item.event.name}${item.Team ? ` (Team: ${item.Team.name})` : ""}`
+                          `${item.event.name}${item.Team ? ` (Team: ${item.Team.name})` : ""}`,
                       )
                       .join(", ");
 
@@ -273,20 +312,31 @@ export default function AdminDashboardPage() {
                       <tr
                         key={order.id}
                         className={`bg-white hover:bg-gat-blue/5 transition-colors align-top ${
-                          activeTab === "VERIFIED" ? "border-l-4 border-green-500" :
-                          activeTab === "REJECTED" ? "border-l-4 border-red-400" : ""
+                          activeTab === "VERIFIED"
+                            ? "border-l-4 border-green-500"
+                            : activeTab === "REJECTED"
+                              ? "border-l-4 border-red-400"
+                              : ""
                         }`}
                       >
                         {/* Participant */}
                         <td className="px-4 py-3">
-                          <p className="font-medium text-gat-midnight">{order.user.name}</p>
-                          <p className="text-xs text-gat-steel">{order.user.email}</p>
-                          <p className="text-xs text-gat-steel">{order.user.collegeName}</p>
+                          <p className="font-medium text-gat-midnight">
+                            {order.user.name}
+                          </p>
+                          <p className="text-xs text-gat-steel">
+                            {order.user.email}
+                          </p>
+                          <p className="text-xs text-gat-steel">
+                            {order.user.collegeName}
+                          </p>
                         </td>
 
                         {/* Events */}
                         <td className="px-4 py-3 max-w-[200px]">
-                          <p className="text-xs text-gat-midnight leading-relaxed">{eventNames}</p>
+                          <p className="text-xs text-gat-midnight leading-relaxed">
+                            {eventNames}
+                          </p>
                         </td>
 
                         {/* Amount */}
@@ -296,7 +346,9 @@ export default function AdminDashboardPage() {
 
                         {/* UPI Txn ID */}
                         <td className="px-4 py-3 font-mono text-xs text-gat-midnight">
-                          {order.upiTransactionId ?? <span className="text-gat-steel italic">—</span>}
+                          {order.upiTransactionId ?? (
+                            <span className="text-gat-steel italic">—</span>
+                          )}
                         </td>
 
                         {/* Screenshot */}
@@ -311,7 +363,9 @@ export default function AdminDashboardPage() {
                               View Photo ↗
                             </a>
                           ) : (
-                            <span className="text-gat-steel italic text-xs">Not uploaded</span>
+                            <span className="text-gat-steel italic text-xs">
+                              Not uploaded
+                            </span>
                           )}
                         </td>
 
@@ -354,7 +408,9 @@ export default function AdminDashboardPage() {
                               {formatDate(order.verifiedAt)}
                             </td>
                             <td className="px-4 py-3 text-xs text-gat-midnight max-w-[180px]">
-                              {order.rejectionReason ?? <span className="text-gat-steel italic">—</span>}
+                              {order.REJECTED_REASON ?? (
+                                <span className="text-gat-steel italic">—</span>
+                              )}
                             </td>
                           </>
                         )}
@@ -365,7 +421,8 @@ export default function AdminDashboardPage() {
               </table>
             </div>
             <div className="bg-white border-t border-gat-blue/10 px-4 py-3 text-xs text-gat-steel">
-              {orders.length} {TAB_LABELS[activeTab].toLowerCase()} payment{orders.length !== 1 ? "s" : ""}
+              {orders.length} {TAB_LABELS[activeTab].toLowerCase()} payment
+              {orders.length !== 1 ? "s" : ""}
             </div>
           </div>
         )}
@@ -373,4 +430,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-
