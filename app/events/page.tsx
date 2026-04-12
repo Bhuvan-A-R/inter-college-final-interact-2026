@@ -1,8 +1,14 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { Search, ChevronRight, ShoppingCart, LogIn, CheckCircle } from "lucide-react";
+import React, { useState, useMemo, useEffect, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Search,
+  ChevronRight,
+  ShoppingCart,
+  LogIn,
+  CheckCircle,
+} from "lucide-react";
 import { eventCategories } from "@/data/eventCategories";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,31 +17,73 @@ import { toast } from "sonner";
 
 // Helper to assign brand colors to categories
 const getColorForCategory = (category: string) => {
-  const map: Record<string, { bg: string, text: string, border: string }> = {
-    THEATRE: { bg: "bg-gat-blue", text: "text-gat-blue", border: "border-gat-blue" },
-    DANCE: { bg: "bg-gat-gold", text: "text-gat-gold", border: "border-gat-gold" },
-    MUSIC: { bg: "bg-gat-navy", text: "text-gat-navy", border: "border-gat-navy" },
-    FASHION: { bg: "bg-gat-cobalt", text: "text-gat-cobalt", border: "border-gat-cobalt" },
-    LITERARY: { bg: "bg-gat-dark-gold", text: "text-gat-dark-gold", border: "border-gat-dark-gold" },
-    FINE_ARTS: { bg: "bg-gat-blue", text: "text-gat-blue", border: "border-gat-blue" },
-    GENERAL_EVENTS: { bg: "bg-gat-gold", text: "text-gat-gold", border: "border-gat-gold" },
+  const map: Record<string, { bg: string; text: string; border: string }> = {
+    THEATRE: {
+      bg: "bg-gat-blue",
+      text: "text-gat-blue",
+      border: "border-gat-blue",
+    },
+    DANCE: {
+      bg: "bg-gat-gold",
+      text: "text-gat-gold",
+      border: "border-gat-gold",
+    },
+    MUSIC: {
+      bg: "bg-gat-navy",
+      text: "text-gat-navy",
+      border: "border-gat-navy",
+    },
+    FASHION: {
+      bg: "bg-gat-cobalt",
+      text: "text-gat-cobalt",
+      border: "border-gat-cobalt",
+    },
+    LITERARY: {
+      bg: "bg-gat-dark-gold",
+      text: "text-gat-dark-gold",
+      border: "border-gat-dark-gold",
+    },
+    FINE_ARTS: {
+      bg: "bg-gat-blue",
+      text: "text-gat-blue",
+      border: "border-gat-blue",
+    },
+    GENERAL_EVENTS: {
+      bg: "bg-gat-gold",
+      text: "text-gat-gold",
+      border: "border-gat-gold",
+    },
   };
-  return map[category] || { bg: "bg-gat-charcoal", text: "text-gat-charcoal", border: "border-gat-charcoal" };
+  return (
+    map[category] || {
+      bg: "bg-gat-charcoal",
+      text: "text-gat-charcoal",
+      border: "border-gat-charcoal",
+    }
+  );
 };
 
-const EventPage = () => {
+const EventPageInner = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
   const { isLoggedIn } = useAuthContext();
   const [dbEventMap, setDbEventMap] = useState<Map<string, string>>(new Map());
-  const [dbEventTypeMap, setDbEventTypeMap] = useState<Map<string, string>>(new Map());
+  const [dbEventTypeMap, setDbEventTypeMap] = useState<Map<string, string>>(
+    new Map(),
+  );
   const [cartedIds, setCartedIds] = useState<Set<string>>(new Set());
   const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
   const [addingId, setAddingId] = useState<string | null>(null);
-  const [userTeams, setUserTeams] = useState<Array<{ id: string; name: string; eventId: string; myRole: string }>>([]);
-  const [teamModal, setTeamModal] = useState<{ dbId: string; name: string } | null>(null);
+  const [userTeams, setUserTeams] = useState<
+    Array<{ id: string; name: string; eventId: string; myRole: string }>
+  >([]);
+  const [teamModal, setTeamModal] = useState<{
+    dbId: string;
+    name: string;
+  } | null>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Fetch DB events for name→UUID lookup (public endpoint)
   useEffect(() => {
@@ -68,7 +116,7 @@ const EventPage = () => {
       .then((data) => {
         if (data.success) {
           const ids = new Set<string>(
-            data.data.items.map((item: { eventId: string }) => item.eventId)
+            data.data.items.map((item: { eventId: string }) => item.eventId),
           );
           setCartedIds(ids);
         }
@@ -96,7 +144,10 @@ const EventPage = () => {
 
   // Fetch user's teams when logged in
   useEffect(() => {
-    if (!isLoggedIn) { setUserTeams([]); return; }
+    if (!isLoggedIn) {
+      setUserTeams([]);
+      return;
+    }
     fetch("/api/teams")
       .then((r) => r.json())
       .then((data) => {
@@ -105,35 +156,32 @@ const EventPage = () => {
       .catch(() => {});
   }, [isLoggedIn]);
 
-  const doAddToCart = useCallback(
-    async (dbId: string, teamId?: string) => {
-      setAddingId(dbId);
-      try {
-        const body: Record<string, string> = { eventId: dbId };
-        if (teamId) body.teamId = teamId;
-        const res = await fetch("/api/cart/items", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setCartedIds((prev) => new Set([...prev, dbId]));
-          toast.success("Added to cart!");
-          router.push("/cart");
-        } else if (res.status === 409) {
-          setCartedIds((prev) => new Set([...prev, dbId]));
-        } else {
-          toast.error(data.error?.message ?? "Failed to add to cart.");
-        }
-      } catch {
-        toast.error("Something went wrong. Please try again.");
-      } finally {
-        setAddingId(null);
+  const doAddToCart = useCallback(async (dbId: string, teamId?: string) => {
+    setAddingId(dbId);
+    try {
+      const body: Record<string, string> = { eventId: dbId };
+      if (teamId) body.teamId = teamId;
+      const res = await fetch("/api/cart/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCartedIds((prev) => new Set([...prev, dbId]));
+        toast.success("Added to cart!");
+        router.push("/cart");
+      } else if (res.status === 409) {
+        setCartedIds((prev) => new Set([...prev, dbId]));
+      } else {
+        toast.error(data.error?.message ?? "Failed to add to cart.");
       }
-    },
-    []
-  );
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setAddingId(null);
+    }
+  }, []);
 
   const handleAddToCart = useCallback(
     async (eventName: string) => {
@@ -155,7 +203,7 @@ const EventPage = () => {
       }
       await doAddToCart(dbId);
     },
-    [dbEventMap, dbEventTypeMap, cartedIds, registeredIds, doAddToCart]
+    [dbEventMap, dbEventTypeMap, cartedIds, registeredIds, doAddToCart],
   );
 
   // Derive unique categories
@@ -164,11 +212,24 @@ const EventPage = () => {
     return ["ALL", ...cats];
   }, []);
 
+  // Sync category from query param
+  useEffect(() => {
+    const param = searchParams.get("category");
+    if (!param) {
+      setActiveCategory("ALL");
+      return;
+    }
+    setActiveCategory(categories.includes(param) ? param : "ALL");
+  }, [searchParams, categories]);
+
   // Filter events
   const filteredEvents = useMemo(() => {
     return eventCategories.filter((e) => {
-      const matchesSearch = e.eventName.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = activeCategory === "ALL" || e.category === activeCategory;
+      const matchesSearch = e.eventName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        activeCategory === "ALL" || e.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
   }, [searchQuery, activeCategory]);
@@ -179,7 +240,9 @@ const EventPage = () => {
       <header className="bg-white border-b border-gat-blue/10 pt-16 pb-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-gat-steel mb-2 flex items-center gap-2">
-            <Link href="/" className="hover:text-gat-blue transition-colors">Home</Link>
+            <Link href="/" className="hover:text-gat-blue transition-colors">
+              Home
+            </Link>
             <span>/</span>
             <span className="text-gat-blue">Events</span>
           </p>
@@ -205,13 +268,15 @@ const EventPage = () => {
 
       {/* ── Tabs & Grid ─────────────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
         {/* Category Tabs */}
         <div className="flex overflow-x-auto scrollbar-none gap-2 pb-6 mb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
           {categories.map((cat) => {
             const isActive = activeCategory === cat;
-            const count = cat === "ALL" ? eventCategories.length : eventCategories.filter(e => e.category === cat).length;
-            
+            const count =
+              cat === "ALL"
+                ? eventCategories.length
+                : eventCategories.filter((e) => e.category === cat).length;
+
             return (
               <button
                 key={cat}
@@ -223,7 +288,9 @@ const EventPage = () => {
                 }`}
               >
                 {cat.replace(/_/g, " ")}
-                <span className={`px-2 py-0.5 rounded-md text-xs ${isActive ? "bg-white/20 text-white" : "bg-gat-off-white text-gat-steel"}`}>
+                <span
+                  className={`px-2 py-0.5 rounded-md text-xs ${isActive ? "bg-white/20 text-white" : "bg-gat-off-white text-gat-steel"}`}
+                >
                   {count}
                 </span>
               </button>
@@ -233,7 +300,7 @@ const EventPage = () => {
 
         {/* Event Grid */}
         {filteredEvents.length > 0 ? (
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -242,7 +309,7 @@ const EventPage = () => {
             <AnimatePresence mode="popLayout">
               {filteredEvents.map((event) => {
                 const colors = getColorForCategory(event.category);
-                
+
                 return (
                   <motion.div
                     layout
@@ -254,20 +321,26 @@ const EventPage = () => {
                     className="flex flex-col"
                   >
                     {/* Card body — navigates to event detail */}
-                    <Link href={`/events/${event.eventNo}`} className="block flex-1">
+                    <Link
+                      href={`/events/${event.eventNo}`}
+                      className="block flex-1"
+                    >
                       <div className="group relative bg-white border border-gat-blue/10 rounded-t-xl overflow-hidden shadow-[0_2px_12px_rgba(27,58,139,0.04)] hover:shadow-[0_8px_32px_rgba(35,98,236,0.15)] transition-all duration-300 flex flex-col">
-                        
                         {/* Top Color Bar */}
                         <div className={`h-[4px] w-full ${colors.bg}`} />
 
                         <div className="p-5 flex flex-col flex-grow">
                           {/* Badges */}
                           <div className="flex gap-2 mb-4">
-                            <span className={`inline-flex px-2 py-1 rounded-md text-[10px] font-heading font-bold uppercase tracking-widest bg-opacity-10 border border-opacity-20 ${colors.text} ${colors.bg.replace('bg-', 'bg-')}/10 ${colors.border.replace('border-', 'border-')}/20`}>
+                            <span
+                              className={`inline-flex px-2 py-1 rounded-md text-[10px] font-heading font-bold uppercase tracking-widest bg-opacity-10 border border-opacity-20 ${colors.text} ${colors.bg.replace("bg-", "bg-")}/10 ${colors.border.replace("border-", "border-")}/20`}
+                            >
                               {event.category.replace(/_/g, " ")}
                             </span>
                             <span className="inline-flex px-2 py-1 rounded-md text-[10px] font-heading font-bold uppercase tracking-widest bg-gat-off-white border border-gat-steel/20 text-gat-steel group-hover:border-gat-blue/30 transition-colors">
-                              {event.maxParticipant > 1 ? `TEAM (${event.maxParticipant})` : "SOLO"}
+                              {event.maxParticipant > 1
+                                ? `TEAM (${event.maxParticipant})`
+                                : "SOLO"}
                             </span>
                           </div>
 
@@ -300,42 +373,58 @@ const EventPage = () => {
                     </Link>
 
                     {/* Cart CTA — outside Link to avoid nested anchors */}
-                    {isLoggedIn && (() => {
-                      const dbId = dbEventMap.get(event.eventName);
-                      const isRegistered = !!dbId && registeredIds.has(dbId);
-                      const inCart = !!dbId && cartedIds.has(dbId);
-                      const isAdding = !!dbId && dbId === addingId;
-                      const notAvailable = !dbId;
-                      return (
-                        <button
-                          onClick={() => handleAddToCart(event.eventName)}
-                          disabled={isRegistered || inCart || isAdding || notAvailable}
-                          className={`w-full py-2.5 text-sm font-bold rounded-b-xl flex items-center justify-center gap-2 border border-t-0 border-gat-blue/10 transition-all ${
-                            isRegistered
-                              ? "bg-gat-off-white text-gat-steel/60 cursor-not-allowed"
-                              : inCart
-                              ? "bg-green-50 text-green-700 cursor-default"
-                              : isAdding
-                              ? "bg-gat-off-white text-gat-steel cursor-wait"
-                              : notAvailable
-                              ? "bg-gat-off-white text-gat-steel/40 cursor-not-allowed"
-                              : "bg-white text-gat-blue hover:bg-gat-blue hover:text-white hover:border-gat-blue"
-                          }`}
-                        >
-                          {isRegistered ? (
-                            <><CheckCircle className="w-4 h-4" /> Already Registered</>
-                          ) : inCart ? (
-                            <><CheckCircle className="w-4 h-4" /> In Cart</>
-                          ) : isAdding ? (
-                            <><span className="w-4 h-4 border-2 border-gat-steel/30 border-t-gat-blue rounded-full animate-spin inline-block" /> Adding...</>
-                          ) : notAvailable ? (
-                            <><ShoppingCart className="w-4 h-4" /> Not Available</>
-                          ) : (
-                            <><ShoppingCart className="w-4 h-4" /> Add to Cart</>
-                          )}
-                        </button>
-                      );
-                    })()}
+                    {isLoggedIn &&
+                      (() => {
+                        const dbId = dbEventMap.get(event.eventName);
+                        const isRegistered = !!dbId && registeredIds.has(dbId);
+                        const inCart = !!dbId && cartedIds.has(dbId);
+                        const isAdding = !!dbId && dbId === addingId;
+                        const notAvailable = !dbId;
+                        return (
+                          <button
+                            onClick={() => handleAddToCart(event.eventName)}
+                            disabled={
+                              isRegistered || inCart || isAdding || notAvailable
+                            }
+                            className={`w-full py-2.5 text-sm font-bold rounded-b-xl flex items-center justify-center gap-2 border border-t-0 border-gat-blue/10 transition-all ${
+                              isRegistered
+                                ? "bg-gat-off-white text-gat-steel/60 cursor-not-allowed"
+                                : inCart
+                                  ? "bg-green-50 text-green-700 cursor-default"
+                                  : isAdding
+                                    ? "bg-gat-off-white text-gat-steel cursor-wait"
+                                    : notAvailable
+                                      ? "bg-gat-off-white text-gat-steel/40 cursor-not-allowed"
+                                      : "bg-white text-gat-blue hover:bg-gat-blue hover:text-white hover:border-gat-blue"
+                            }`}
+                          >
+                            {isRegistered ? (
+                              <>
+                                <CheckCircle className="w-4 h-4" /> Already
+                                Registered
+                              </>
+                            ) : inCart ? (
+                              <>
+                                <CheckCircle className="w-4 h-4" /> In Cart
+                              </>
+                            ) : isAdding ? (
+                              <>
+                                <span className="w-4 h-4 border-2 border-gat-steel/30 border-t-gat-blue rounded-full animate-spin inline-block" />{" "}
+                                Adding...
+                              </>
+                            ) : notAvailable ? (
+                              <>
+                                <ShoppingCart className="w-4 h-4" /> Not
+                                Available
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingCart className="w-4 h-4" /> Add to Cart
+                              </>
+                            )}
+                          </button>
+                        );
+                      })()}
                   </motion.div>
                 );
               })}
@@ -346,10 +435,17 @@ const EventPage = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gat-steel/10 mb-4">
               <Search className="w-8 h-8 text-gat-steel" />
             </div>
-            <h3 className="font-heading text-2xl font-bold text-gat-midnight mb-2">No events found</h3>
-            <p className="text-gat-charcoal">Try adjusting your filters or search query.</p>
-            <button 
-              onClick={() => { setSearchQuery(""); setActiveCategory("ALL"); }}
+            <h3 className="font-heading text-2xl font-bold text-gat-midnight mb-2">
+              No events found
+            </h3>
+            <p className="text-gat-charcoal">
+              Try adjusting your filters or search query.
+            </p>
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setActiveCategory("ALL");
+              }}
               className="mt-6 px-6 py-2 bg-gat-blue text-white rounded-lg font-bold hover:bg-gat-midnight transition-colors"
             >
               Clear Filters
@@ -359,73 +455,87 @@ const EventPage = () => {
       </div>
 
       {/* ── Team Selection Modal ── */}
-      {teamModal && (() => {
-        const teamsForEvent = userTeams.filter(
-          (t) => t.eventId === teamModal.dbId && t.myRole === "LEADER"
-        );
-        return (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-            onClick={() => setTeamModal(null)}
-          >
+      {teamModal &&
+        (() => {
+          const teamsForEvent = userTeams.filter(
+            (t) => t.eventId === teamModal.dbId && t.myRole === "LEADER",
+          );
+          return (
             <div
-              className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full mx-4"
-              onClick={(e) => e.stopPropagation()}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+              onClick={() => setTeamModal(null)}
             >
-              <h3 className="font-heading text-xl font-bold text-gat-midnight mb-1">Select Your Team</h3>
-              <p className="text-sm text-gat-steel mb-4">{teamModal.name}</p>
-              {teamsForEvent.length === 0 ? (
-                <div className="text-center py-4">
-                  <p className="text-gat-steel text-sm mb-3">
-                    You don&apos;t have a team (as leader) for this event yet.
-                  </p>
-                  <Link
-                    href="/teams"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-gat-blue text-white rounded-lg text-sm font-bold hover:bg-gat-midnight transition-colors"
-                  >
-                    Create a Team &rarr;
-                  </Link>
-                </div>
-              ) : (
-                <>
-                  <select
-                    value={selectedTeamId}
-                    onChange={(e) => setSelectedTeamId(e.target.value)}
-                    className="w-full border border-gat-steel/30 rounded-lg px-3 py-2.5 text-sm text-gat-midnight focus:outline-none focus:ring-2 focus:ring-gat-blue/30 mb-4"
-                  >
-                    <option value="">-- Choose a team --</option>
-                    {teamsForEvent.map((t) => (
-                      <option key={t.id} value={t.id}>{t.name}</option>
-                    ))}
-                  </select>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => setTeamModal(null)}
-                      className="flex-1 py-2.5 text-sm font-bold border border-gat-steel/30 rounded-lg text-gat-steel hover:bg-gat-off-white transition-colors"
+              <div
+                className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full mx-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="font-heading text-xl font-bold text-gat-midnight mb-1">
+                  Select Your Team
+                </h3>
+                <p className="text-sm text-gat-steel mb-4">{teamModal.name}</p>
+                {teamsForEvent.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p className="text-gat-steel text-sm mb-3">
+                      You don&apos;t have a team (as leader) for this event yet.
+                    </p>
+                    <Link
+                      href="/teams"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gat-blue text-white rounded-lg text-sm font-bold hover:bg-gat-midnight transition-colors"
                     >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={async () => {
-                        if (!selectedTeamId) { toast.error("Please select a team."); return; }
-                        const { dbId } = teamModal;
-                        setTeamModal(null);
-                        await doAddToCart(dbId, selectedTeamId);
-                      }}
-                      disabled={!selectedTeamId}
-                      className="flex-1 py-2.5 text-sm font-bold bg-gat-blue text-white rounded-lg hover:bg-gat-midnight transition-colors disabled:bg-gat-off-white disabled:text-gat-steel/40 disabled:cursor-not-allowed"
-                    >
-                      Add to Cart
-                    </button>
+                      Create a Team &rarr;
+                    </Link>
                   </div>
-                </>
-              )}
+                ) : (
+                  <>
+                    <select
+                      value={selectedTeamId}
+                      onChange={(e) => setSelectedTeamId(e.target.value)}
+                      className="w-full border border-gat-steel/30 rounded-lg px-3 py-2.5 text-sm text-gat-midnight focus:outline-none focus:ring-2 focus:ring-gat-blue/30 mb-4"
+                    >
+                      <option value="">-- Choose a team --</option>
+                      {teamsForEvent.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setTeamModal(null)}
+                        className="flex-1 py-2.5 text-sm font-bold border border-gat-steel/30 rounded-lg text-gat-steel hover:bg-gat-off-white transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!selectedTeamId) {
+                            toast.error("Please select a team.");
+                            return;
+                          }
+                          const { dbId } = teamModal;
+                          setTeamModal(null);
+                          await doAddToCart(dbId, selectedTeamId);
+                        }}
+                        disabled={!selectedTeamId}
+                        className="flex-1 py-2.5 text-sm font-bold bg-gat-blue text-white rounded-lg hover:bg-gat-midnight transition-colors disabled:bg-gat-off-white disabled:text-gat-steel/40 disabled:cursor-not-allowed"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
     </div>
   );
 };
 
-export default EventPage;
+export default function EventPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gat-off-white pt-24 pb-16 text-center font-heading font-bold text-gat-steel">Loading events...</div>}>
+      <EventPageInner />
+    </Suspense>
+  );
+}

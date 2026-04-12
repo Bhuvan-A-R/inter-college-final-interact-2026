@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Trash2, ShoppingBag, PlusCircle } from "lucide-react";
+import { Trash2, ShoppingBag, PlusCircle, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/auth-context";
 import { toast } from "sonner";
@@ -32,6 +33,54 @@ type CartResponse = {
   error?: {
     message?: string;
   };
+};
+
+const SlideToPayButton = ({ onComplete, isProcessing, text }: { onComplete: () => void, isProcessing: boolean, text: string }) => {
+  const [isSuccess, setIsSuccess] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isProcessing && isSuccess) {
+      setIsSuccess(false);
+    }
+  }, [isProcessing, isSuccess]);
+
+  return (
+    <div
+      ref={containerRef}
+      className={`relative w-full h-[60px] rounded-xl overflow-hidden mt-5 shadow-sm transition-colors ${isSuccess || isProcessing ? "bg-gat-off-white border border-gat-blue/10" : "bg-gat-blue hover:bg-gat-midnight"
+        }`}
+    >
+      <div className={`absolute inset-0 flex items-center justify-center font-bold text-base pointer-events-none ${isSuccess || isProcessing ? "text-gat-steel" : "text-white"}`}>
+        {isProcessing || isSuccess ? "Processing…" : text}
+      </div>
+
+      {!(isProcessing || isSuccess) && (
+        <motion.div
+          drag="x"
+          dragConstraints={containerRef}
+          dragElastic={0}
+          dragMomentum={false}
+          onDragEnd={(event, info) => {
+            const currentElement = containerRef.current;
+            if (!currentElement) return;
+            const containerWidth = currentElement.getBoundingClientRect().width;
+            const thumbWidth = 68;
+            const threshold = containerWidth - thumbWidth;
+            if (info.offset.x >= threshold * 0.9) {
+              setIsSuccess(true);
+              onComplete();
+            }
+          }}
+          whileDrag={{ scale: 1.05 }}
+          dragSnapToOrigin={true}
+          className="absolute left-[4px] top-[4px] bottom-[4px] w-[52px] bg-white rounded-lg cursor-grab active:cursor-grabbing flex items-center justify-center shadow-sm"
+        >
+          <ChevronRight className="w-6 h-6 text-gat-blue" />
+        </motion.div>
+      )}
+    </div>
+  );
 };
 
 export default function CartPage() {
@@ -91,6 +140,7 @@ export default function CartPage() {
       }
 
       toast.success("Item removed.");
+      window.dispatchEvent(new CustomEvent("update-user-stats"));
       loadCart();
     } catch (error) {
       console.error(error);
@@ -116,6 +166,7 @@ export default function CartPage() {
       }
 
       toast.success("Order created. Submit payment to continue.");
+      window.dispatchEvent(new CustomEvent("update-user-stats"));
       router.push(`/orders/${data.data!.orderId}`);
     } catch (error) {
       console.error(error);
@@ -275,15 +326,11 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <Button
-                onClick={handleCheckout}
-                disabled={checkingOut}
-                className="w-full mt-5 bg-gat-blue text-white hover:bg-gat-midnight text-base font-bold py-6"
-              >
-                {checkingOut
-                  ? "Processing…"
-                  : `Pay for All ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""} →`}
-              </Button>
+              <SlideToPayButton
+                onComplete={handleCheckout}
+                isProcessing={checkingOut}
+                text={`Charge ₹${subtotal.toFixed(2)} for ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""} →`}
+              />
 
               <p className="text-xs text-gat-steel text-center mt-3">
                 One UPI payment covers all events. Upload your screenshot after

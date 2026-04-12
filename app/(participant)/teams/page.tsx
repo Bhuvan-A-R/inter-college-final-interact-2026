@@ -56,10 +56,19 @@ export default function TeamsPage() {
   const [teamName, setTeamName] = useState<string>("");
   const [eventId, setEventId] = useState<string>("");
 
-  const teamEvents = useMemo(
-    () => events.filter((event) => event.type === "TEAM" && event.isActive),
-    [events],
-  );
+  const teamEvents = useMemo(() => {
+    const filteredEvents = events.filter((event) => event.type === "TEAM" && event.isActive);
+    const uniqueEventsMap = new Map();
+    
+    filteredEvents.forEach(event => {
+      const key = `${event.name}-${event.category}`;
+      if (!uniqueEventsMap.has(key)) {
+        uniqueEventsMap.set(key, event);
+      }
+    });
+    
+    return Array.from(uniqueEventsMap.values());
+  }, [events]);
 
   const loadData = async () => {
     setLoading(true);
