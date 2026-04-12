@@ -266,6 +266,7 @@ enum OtpPurpose {
 enum Role {
   PARTICIPANT
   SUPER_ADMIN
+  REG_ADMIN
 }
 
 enum TeamInviteStatus {

@@ -69,7 +69,7 @@ export default function SignIn() {
           description: "Welcome back!",
         });
         const role = response.data.data?.user?.role;
-        if (role === "SUPER_ADMIN" || role === "ADMIN") {
+        if (role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN") {
           router.push("/admin");
         } else {
           router.push("/dashboard");
