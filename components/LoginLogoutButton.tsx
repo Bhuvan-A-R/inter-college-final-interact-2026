@@ -14,7 +14,7 @@ type LoginLogoutButtonProps = {
 
 const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
   const { isLoggedIn, role, setIsLoggedIn } = useAuthContext();
-  const isAdmin = role === "SUPER_ADMIN" || role === "ADMIN";
+  const isAdmin = role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN";
   const isParticipant =
     role === "PARTICIPANT" || (isLoggedIn && role !== null && !isAdmin);
   const router = useRouter();
@@ -90,15 +90,17 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
         <>
           {
             isAdmin ? (
-              // SUPER_ADMIN / ADMIN: registered students list + payment dashboard
+              // SUPER_ADMIN / ADMIN / REG_ADMIN: payment dashboard
               <>
-                <Link
-                  id="dashboard-link"
-                  href="/adminDashboard"
-                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
-                >
-                  Registrations
-                </Link>
+                {role === "SUPER_ADMIN" && (
+                  <Link
+                    id="dashboard-link"
+                    href="/adminDashboard"
+                    className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
+                  >
+                    Registrations
+                  </Link>
+                )}
                 <Link
                   id="payments-link"
                   href="/admin"

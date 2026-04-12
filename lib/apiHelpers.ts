@@ -37,7 +37,7 @@ export async function requireAdmin(): Promise<
 > {
   const result = await requireAuth();
   if (result.error) return result;
-  if (result.session.role !== "SUPER_ADMIN") {
+  if (result.session.role !== "SUPER_ADMIN" && result.session.role !== "REG_ADMIN") {
     return { error: errorResponse("Forbidden.", 403) };
   }
   return { session: result.session };

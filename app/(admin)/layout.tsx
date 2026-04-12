@@ -31,7 +31,7 @@ export default async function AdminLayout({
     select: { role: true, emailVerified: true },
   });
 
-  const isAdmin = user?.role === "SUPER_ADMIN";
+  const isAdmin = user?.role === "SUPER_ADMIN" || user?.role === "REG_ADMIN";
 
   if (!user || !isAdmin || !user.emailVerified) {
     redirect("/dashboard?error=unauthorized");
