@@ -28,36 +28,44 @@ const Footer = () => {
 
             {/* Social icons */}
             <div className="flex items-center gap-4">
-              {[
-                {
-                  href: "https://www.linkedin.com",
-                  img: linkedin,
-                  alt: "LinkedIn",
-                },
-                {
-                  href: "https://www.instagram.com",
-                  img: insta,
-                  alt: "Instagram",
-                },
-                { href: "https://www.youtube.com", img: yt, alt: "YouTube" },
-              ].map(({ href, img, alt }) => (
-                <a
-                  key={alt}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={alt}
-                  className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-gat-gold hover:border-gat-gold transition-all duration-300 group"
-                >
-                  <Image
-                    src={img}
-                    alt={alt}
-                    width={18}
-                    height={18}
-                    className="brightness-0 invert opacity-70 group-hover:opacity-100 group-hover:invert-0 group-hover:brightness-100 transition-all"
-                  />
-                </a>
-              ))}
+              <a
+                href="https://www.instagram.com/interact2026/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Instagram"
+                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-gat-gold hover:border-gat-gold transition-all duration-300 group"
+              >
+                <Image
+                  src={insta}
+                  alt="Instagram"
+                  width={18}
+                  height={18}
+                  className="brightness-0 invert opacity-70 group-hover:opacity-100 group-hover:invert-0 group-hover:brightness-100 transition-all"
+                />
+                <span className="text-sm font-bold text-gat-steel group-hover:text-gat-midnight transition-colors">
+                  @interact2026
+                </span>
+              </a>
+              </div>
+              <div className="flex items-center gap-4">
+              <a
+                href="https://www.instagram.com/gatbengaluru/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Instagram"
+                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-gat-gold hover:border-gat-gold transition-all duration-300 group"
+              >
+                <Image
+                  src={insta}
+                  alt="Instagram"
+                  width={18}
+                  height={18}
+                  className="brightness-0 invert opacity-70 group-hover:opacity-100 group-hover:invert-0 group-hover:brightness-100 transition-all"
+                />
+                <span className="text-sm font-bold text-gat-steel group-hover:text-gat-midnight transition-colors">
+                  @gatbengaluru
+                </span>
+              </a>
             </div>
           </div>
 
@@ -145,46 +153,50 @@ const Footer = () => {
 
           {/* Column 3: Contact - Website Issues */}
           <div>
-            <h3 className="font-heading font-bold text-lg text-white mb-6 tracking-wide">
+            <h3 className="font-heading font-bold text-lg text-white mb-1 tracking-wide">
               Website Issues
             </h3>
             <ul className="space-y-3 font-body text-sm text-gat-steel">
-              <li>
+              <li className="text-gat-gold">
+                Bhuvan A R <br />
                 <a
                   href="callto:+91 83174 62097"
-                  className="hover:text-gat-gold transition-colors"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  Bhuvan A R : +91 83174 62097
+                  +91 83174 62097
                 </a>
               </li>
             </ul>
 
-            <h3 className="font-heading font-bold text-lg text-white mt-6 mb-6 tracking-wide">
+            <h3 className="font-heading font-bold text-lg text-white mt-3 mb-1 tracking-wide">
               Event Issues
             </h3>
-            <ul className="space-y-3 font-body text-sm text-gat-steel">
-              <li>
+            <ul className="space-y-2 font-body text-sm text-gat-steel">
+              <li className="text-gat-gold">
+                Cultural Coordinator <br />
                 <a
                   href="callto:+91 95380 06513"
-                  className="hover:text-gat-gold transition-colors"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  Cultural Coordinator - Sohan S K - +91 95380 06513
+                  Sohan S K - +91 95380 06513
                 </a>
               </li>
-              <li>
+              <li className="text-gat-gold">
+                Technical Coordinator <br />
                 <a
                   href="callto:+91 83174 62097"
-                  className="hover:text-gat-gold transition-colors"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  Technical Coordinator - Coming Soon ..
+                  Coming Soon ..
                 </a>
               </li>
-              <li>
+              <li className="text-gat-gold">
+                Sports Coordinator <br />
                 <a
                   href="callto:+91 97400 35208"
-                  className="hover:text-gat-gold transition-colors"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  Sports Coordinator - Sharath - +91 97400 35208
+                  Sharath - +91 97400 35208
                 </a>
               </li>
             </ul>
