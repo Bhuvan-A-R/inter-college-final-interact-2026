@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
@@ -63,7 +63,7 @@ const getColorForCategory = (category: string) => {
   );
 };
 
-const EventPage = () => {
+const EventPageInner = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
   const { isLoggedIn } = useAuthContext();
@@ -532,4 +532,10 @@ const EventPage = () => {
   );
 };
 
-export default EventPage;
+export default function EventPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gat-off-white pt-24 pb-16 text-center font-heading font-bold text-gat-steel">Loading events...</div>}>
+      <EventPageInner />
+    </Suspense>
+  );
+}

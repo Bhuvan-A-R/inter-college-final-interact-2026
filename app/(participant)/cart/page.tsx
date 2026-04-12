@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Trash2, ShoppingBag, PlusCircle, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
-import Image from "next/image";
-import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/auth-context";
 import { toast } from "sonner";
@@ -48,24 +46,15 @@ const SlideToPayButton = ({ onComplete, isProcessing, text }: { onComplete: () =
   }, [isProcessing, isSuccess]);
 
   return (
-    <div 
-      ref={containerRef} 
-      className={`relative w-full h-[64px] rounded-[1.25rem] overflow-hidden mt-6 shadow-sm border transition-all duration-300 ${
-        isSuccess || isProcessing ? "bg-gat-off-white border-gat-blue/10" : "bg-gradient-to-r from-gat-blue to-gat-midnight border-gat-midnight hover:shadow-navy focus-within:ring-2 focus-within:ring-gat-blue/30"
-      }`}
+    <div
+      ref={containerRef}
+      className={`relative w-full h-[60px] rounded-xl overflow-hidden mt-5 shadow-sm transition-colors ${isSuccess || isProcessing ? "bg-gat-off-white border border-gat-blue/10" : "bg-gat-blue hover:bg-gat-midnight"
+        }`}
     >
-      {!(isSuccess || isProcessing) && (
-        <div className="absolute inset-y-0 right-4 w-32 opacity-20 pointer-events-none flex items-center justify-end z-0">
-          <Image src={interactLogo} alt="Interact Logo" width={100} height={40} className="object-contain" priority />
-        </div>
-      )}
-
-      <div className={`absolute inset-0 flex items-center justify-center font-heading font-black tracking-widest uppercase text-sm z-10 pointer-events-none ${
-        isSuccess || isProcessing ? "text-gat-steel" : "text-white"
-      }`}>
+      <div className={`absolute inset-0 flex items-center justify-center font-bold text-base pointer-events-none ${isSuccess || isProcessing ? "text-gat-steel" : "text-white"}`}>
         {isProcessing || isSuccess ? "Processing…" : text}
       </div>
-      
+
       {!(isProcessing || isSuccess) && (
         <motion.div
           drag="x"
@@ -84,10 +73,10 @@ const SlideToPayButton = ({ onComplete, isProcessing, text }: { onComplete: () =
             }
           }}
           whileDrag={{ scale: 1.05 }}
-          dragSnapToOrigin={true} 
-          className="absolute left-[6px] top-[6px] bottom-[6px] w-[52px] bg-white rounded-[0.85rem] cursor-grab active:cursor-grabbing flex items-center justify-center shadow-md z-20"
+          dragSnapToOrigin={true}
+          className="absolute left-[4px] top-[4px] bottom-[4px] w-[52px] bg-white rounded-lg cursor-grab active:cursor-grabbing flex items-center justify-center shadow-sm"
         >
-          <ChevronRight className="w-5 h-5 text-gat-blue" strokeWidth={3} />
+          <ChevronRight className="w-6 h-6 text-gat-blue" />
         </motion.div>
       )}
     </div>
@@ -337,10 +326,10 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <SlideToPayButton 
-                onComplete={handleCheckout} 
-                isProcessing={checkingOut} 
-                text={`Slide to pay ₹${subtotal.toFixed(2)}`} 
+              <SlideToPayButton
+                onComplete={handleCheckout}
+                isProcessing={checkingOut}
+                text={`Charge ₹${subtotal.toFixed(2)} for ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""} →`}
               />
 
               <p className="text-xs text-gat-steel text-center mt-3">
