@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Search, ChevronRight, ShoppingCart, LogIn, CheckCircle } from "lucide-react";
 import { eventCategories } from "@/data/eventCategories";
 import Link from "next/link";
@@ -29,10 +30,12 @@ const EventPage = () => {
   const [dbEventMap, setDbEventMap] = useState<Map<string, string>>(new Map());
   const [dbEventTypeMap, setDbEventTypeMap] = useState<Map<string, string>>(new Map());
   const [cartedIds, setCartedIds] = useState<Set<string>>(new Set());
+  const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
   const [addingId, setAddingId] = useState<string | null>(null);
   const [userTeams, setUserTeams] = useState<Array<{ id: string; name: string; eventId: string; myRole: string }>>([]);
   const [teamModal, setTeamModal] = useState<{ dbId: string; name: string } | null>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
+  const router = useRouter();
 
   // Fetch DB events for name→UUID lookup (public endpoint)
   useEffect(() => {
@@ -53,10 +56,11 @@ const EventPage = () => {
       .catch(() => {});
   }, []);
 
-  // Sync cart state when auth changes
+  // Sync cart and registered events state when auth changes
   useEffect(() => {
     if (!isLoggedIn) {
       setCartedIds(new Set());
+      setRegisteredIds(new Set());
       return;
     }
     fetch("/api/cart")
@@ -67,6 +71,24 @@ const EventPage = () => {
             data.data.items.map((item: { eventId: string }) => item.eventId)
           );
           setCartedIds(ids);
+        }
+      })
+      .catch(() => {});
+
+    // Fetch orders to track events already ordered / registered
+    fetch("/api/orders")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success) {
+          const ids = new Set<string>();
+          for (const order of data.data.items) {
+            // Exclude REJECTED orders — user may re-register after rejection
+            if (order.status === "REJECTED") continue;
+            for (const item of order.orderItems) {
+              ids.add(item.event.id as string);
+            }
+          }
+          setRegisteredIds(ids);
         }
       })
       .catch(() => {});
@@ -98,6 +120,7 @@ const EventPage = () => {
         if (res.ok) {
           setCartedIds((prev) => new Set([...prev, dbId]));
           toast.success("Added to cart!");
+          router.push("/cart");
         } else if (res.status === 409) {
           setCartedIds((prev) => new Set([...prev, dbId]));
         } else {
@@ -119,6 +142,10 @@ const EventPage = () => {
         toast.error("This event is not yet open for registration.");
         return;
       }
+      if (registeredIds.has(dbId)) {
+        toast.error("You have already registered for this event.");
+        return;
+      }
       if (cartedIds.has(dbId)) return;
       const eventType = dbEventTypeMap.get(eventName);
       if (eventType === "TEAM") {
@@ -128,7 +155,7 @@ const EventPage = () => {
       }
       await doAddToCart(dbId);
     },
-    [dbEventMap, dbEventTypeMap, cartedIds, doAddToCart]
+    [dbEventMap, dbEventTypeMap, cartedIds, registeredIds, doAddToCart]
   );
 
   // Derive unique categories
@@ -273,39 +300,40 @@ const EventPage = () => {
                     </Link>
 
                     {/* Cart CTA — outside Link to avoid nested anchors */}
-                    {(() => {
+                    {isLoggedIn && (() => {
                       const dbId = dbEventMap.get(event.eventName);
+                      const isRegistered = !!dbId && registeredIds.has(dbId);
                       const inCart = !!dbId && cartedIds.has(dbId);
                       const isAdding = !!dbId && dbId === addingId;
-                      return isLoggedIn ? (
+                      const notAvailable = !dbId;
+                      return (
                         <button
                           onClick={() => handleAddToCart(event.eventName)}
-                          disabled={inCart || isAdding || !dbId}
+                          disabled={isRegistered || inCart || isAdding || notAvailable}
                           className={`w-full py-2.5 text-sm font-bold rounded-b-xl flex items-center justify-center gap-2 border border-t-0 border-gat-blue/10 transition-all ${
-                            inCart
+                            isRegistered
+                              ? "bg-gat-off-white text-gat-steel/60 cursor-not-allowed"
+                              : inCart
                               ? "bg-green-50 text-green-700 cursor-default"
                               : isAdding
                               ? "bg-gat-off-white text-gat-steel cursor-wait"
-                              : !dbId
+                              : notAvailable
                               ? "bg-gat-off-white text-gat-steel/40 cursor-not-allowed"
                               : "bg-white text-gat-blue hover:bg-gat-blue hover:text-white hover:border-gat-blue"
                           }`}
                         >
-                          {inCart ? (
-                            <><CheckCircle className="w-4 h-4" /> Added</>
+                          {isRegistered ? (
+                            <><CheckCircle className="w-4 h-4" /> Already Registered</>
+                          ) : inCart ? (
+                            <><CheckCircle className="w-4 h-4" /> In Cart</>
                           ) : isAdding ? (
                             <><span className="w-4 h-4 border-2 border-gat-steel/30 border-t-gat-blue rounded-full animate-spin inline-block" /> Adding...</>
+                          ) : notAvailable ? (
+                            <><ShoppingCart className="w-4 h-4" /> Not Available</>
                           ) : (
                             <><ShoppingCart className="w-4 h-4" /> Add to Cart</>
                           )}
                         </button>
-                      ) : (
-                        <Link
-                          href="/auth/signin"
-                          className="w-full py-2.5 text-sm font-bold rounded-b-xl flex items-center justify-center gap-2 border border-t-0 border-gat-blue/10 bg-white text-gat-steel hover:bg-gat-blue hover:text-white hover:border-gat-blue transition-all"
-                        >
-                          <LogIn className="w-4 h-4" /> Sign In to Register
-                        </Link>
                       );
                     })()}
                   </motion.div>

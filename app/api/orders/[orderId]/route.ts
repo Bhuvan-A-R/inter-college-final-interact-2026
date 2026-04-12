@@ -58,3 +58,40 @@ export async function GET(req: NextRequest, context: RouteContext) {
     return errorResponse("Internal server error.", 500);
   }
 }
+
+// DELETE /api/orders/:orderId — Cancel a PENDING_PAYMENT order (participant only)
+export async function DELETE(req: NextRequest, context: RouteContext) {
+  try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
+
+    const { orderId } = await context.params;
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { id: true, userId: true, status: true },
+    });
+
+    if (!order) {
+      return errorResponse("Order not found.", 404);
+    }
+
+    if (order.userId !== auth.session.id) {
+      return errorResponse("Forbidden.", 403);
+    }
+
+    if (order.status !== "PENDING_PAYMENT") {
+      return errorResponse("Only orders with status PENDING_PAYMENT can be cancelled.", 400);
+    }
+
+    await prisma.$transaction([
+      prisma.orderItem.deleteMany({ where: { orderId } }),
+      prisma.order.delete({ where: { id: orderId } }),
+    ]);
+
+    return successResponse({ message: "Order cancelled successfully." });
+  } catch (error) {
+    console.error("[DELETE /api/orders/:orderId]", error);
+    return errorResponse("Internal server error.", 500);
+  }
+}

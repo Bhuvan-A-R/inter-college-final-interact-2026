@@ -163,17 +163,39 @@ const Footer = () => {
               Event Issues
             </h3>
             <ul className="space-y-3 font-body text-sm text-gat-steel">
-              <li>Coordinator 1: +91 00000 00000</li>
-              <li>Coordinator 2: +91 00000 00000</li>
+              <li>
+                <a
+                  href="callto:+91 95380 06513"
+                  className="hover:text-gat-gold transition-colors"
+                >
+                  Cultural Coordinator - Sohan S K - +91 95380 06513
+                </a>
+              </li>
+              <li>
+                <a
+                  href="callto:+91 83174 62097"
+                  className="hover:text-gat-gold transition-colors"
+                >
+                  Technical Coordinator - Coming Soon ..
+                </a>
+              </li>
+              <li>
+                <a
+                  href="callto:+91 97400 35208"
+                  className="hover:text-gat-gold transition-colors"
+                >
+                  Sports Coordinator - Sharath - +91 97400 35208
+                </a>
+              </li>
             </ul>
 
             <h3 className="font-heading font-bold text-lg text-white mt-6 mb-4 tracking-wide">
               Email Us:{" "}
               <a
-                href="mailto:interact@gat.ac.in"
+                href="mailto:noreply@gatinteract.com"
                 className="space-y-2 font-body text-sm text-gat-steel hover:text-gat-gold transition-colors"
               >
-                interact@gat.ac.in
+                noreply@gatinteract.com
               </a>
             </h3>
           </div>

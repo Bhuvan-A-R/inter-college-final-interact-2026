@@ -28,6 +28,31 @@ export async function POST(req: NextRequest) {
       return errorResponse("Event not found or not available.", 404);
     }
 
+    // Check if user has already registered (active order or confirmed registration)
+    const existingOrder = await prisma.orderItem.findFirst({
+      where: {
+        eventId,
+        order: {
+          userId: auth.session.id,
+          status: { in: ["PENDING_PAYMENT", "PAYMENT_SUBMITTED", "VERIFIED"] },
+        },
+      },
+      select: { id: true },
+    });
+
+    if (existingOrder) {
+      return errorResponse("You have already registered for this event.", 409);
+    }
+
+    const existingRegistration = await prisma.registration.findUnique({
+      where: { userId_eventId: { userId: auth.session.id, eventId } },
+      select: { id: true },
+    });
+
+    if (existingRegistration) {
+      return errorResponse("You have already registered for this event.", 409);
+    }
+
     const existing = await prisma.cartItem.findUnique({
       where: { userId_eventId: { userId: auth.session.id, eventId } },
     });

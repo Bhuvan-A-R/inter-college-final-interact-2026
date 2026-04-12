@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useAuthContext } from "@/contexts/auth-context";
 import { toast } from "sonner";
 
 type Invite = {
@@ -46,6 +47,7 @@ type InvitesResponse = {
 
 export default function InvitesPage() {
   const router = useRouter();
+  const { isLoggedIn } = useAuthContext();
   const [invites, setInvites] = useState<InvitesResponse["data"] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -75,8 +77,12 @@ export default function InvitesPage() {
   };
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      setLoading(false);
+      return;
+    }
     loadInvites();
-  }, []);
+  }, [isLoggedIn]);
 
   const handleRespond = async (
     inviteId: string,
