@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import gat from "@/components/images/gat1.jpg";
+import gat from "@/public/gat-logos/gatsketch.png";
 
 // Credential images
 import affiliationImg from "@/components/images/affiliation.png";
