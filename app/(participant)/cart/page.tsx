@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Trash2, ShoppingBag, PlusCircle } from "lucide-react";
+import { Trash2, ShoppingBag, PlusCircle, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/auth-context";
 import { toast } from "sonner";
@@ -32,6 +35,63 @@ type CartResponse = {
   error?: {
     message?: string;
   };
+};
+
+const SlideToPayButton = ({ onComplete, isProcessing, text }: { onComplete: () => void, isProcessing: boolean, text: string }) => {
+  const [isSuccess, setIsSuccess] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isProcessing && isSuccess) {
+      setIsSuccess(false);
+    }
+  }, [isProcessing, isSuccess]);
+
+  return (
+    <div 
+      ref={containerRef} 
+      className={`relative w-full h-[64px] rounded-[1.25rem] overflow-hidden mt-6 shadow-sm border transition-all duration-300 ${
+        isSuccess || isProcessing ? "bg-gat-off-white border-gat-blue/10" : "bg-gradient-to-r from-gat-blue to-gat-midnight border-gat-midnight hover:shadow-navy focus-within:ring-2 focus-within:ring-gat-blue/30"
+      }`}
+    >
+      {!(isSuccess || isProcessing) && (
+        <div className="absolute inset-y-0 right-4 w-32 opacity-20 pointer-events-none flex items-center justify-end z-0">
+          <Image src={interactLogo} alt="Interact Logo" width={100} height={40} className="object-contain" priority />
+        </div>
+      )}
+
+      <div className={`absolute inset-0 flex items-center justify-center font-heading font-black tracking-widest uppercase text-sm z-10 pointer-events-none ${
+        isSuccess || isProcessing ? "text-gat-steel" : "text-white"
+      }`}>
+        {isProcessing || isSuccess ? "Processing…" : text}
+      </div>
+      
+      {!(isProcessing || isSuccess) && (
+        <motion.div
+          drag="x"
+          dragConstraints={containerRef}
+          dragElastic={0}
+          dragMomentum={false}
+          onDragEnd={(event, info) => {
+            const currentElement = containerRef.current;
+            if (!currentElement) return;
+            const containerWidth = currentElement.getBoundingClientRect().width;
+            const thumbWidth = 68;
+            const threshold = containerWidth - thumbWidth;
+            if (info.offset.x >= threshold * 0.9) {
+              setIsSuccess(true);
+              onComplete();
+            }
+          }}
+          whileDrag={{ scale: 1.05 }}
+          dragSnapToOrigin={true} 
+          className="absolute left-[6px] top-[6px] bottom-[6px] w-[52px] bg-white rounded-[0.85rem] cursor-grab active:cursor-grabbing flex items-center justify-center shadow-md z-20"
+        >
+          <ChevronRight className="w-5 h-5 text-gat-blue" strokeWidth={3} />
+        </motion.div>
+      )}
+    </div>
+  );
 };
 
 export default function CartPage() {
@@ -91,6 +151,7 @@ export default function CartPage() {
       }
 
       toast.success("Item removed.");
+      window.dispatchEvent(new CustomEvent("update-user-stats"));
       loadCart();
     } catch (error) {
       console.error(error);
@@ -116,6 +177,7 @@ export default function CartPage() {
       }
 
       toast.success("Order created. Submit payment to continue.");
+      window.dispatchEvent(new CustomEvent("update-user-stats"));
       router.push(`/orders/${data.data!.orderId}`);
     } catch (error) {
       console.error(error);
@@ -275,15 +337,11 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <Button
-                onClick={handleCheckout}
-                disabled={checkingOut}
-                className="w-full mt-5 bg-gat-blue text-white hover:bg-gat-midnight text-base font-bold py-6"
-              >
-                {checkingOut
-                  ? "Processing…"
-                  : `Pay for All ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""} →`}
-              </Button>
+              <SlideToPayButton 
+                onComplete={handleCheckout} 
+                isProcessing={checkingOut} 
+                text={`Slide to pay ₹${subtotal.toFixed(2)}`} 
+              />
 
               <p className="text-xs text-gat-steel text-center mt-3">
                 One UPI payment covers all events. Upload your screenshot after

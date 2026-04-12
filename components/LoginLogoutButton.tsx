@@ -23,20 +23,27 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
   const [ordersCount, setOrdersCount] = useState(0);
   const [invitesCount, setInvitesCount] = useState(0);
 
-  useEffect(() => {
+  const fetchStats = () => {
     if (!isParticipant) return;
-    fetch("/api/cart")
+    const fetchObj = { cache: "no-store" as RequestCache };
+    fetch("/api/cart", fetchObj)
       .then((r) => r.json())
       .then((d) => { if (d.success) setCartCount(d.data.items?.length ?? 0); })
       .catch(() => {});
-    fetch("/api/orders")
+    fetch("/api/orders", fetchObj)
       .then((r) => r.json())
       .then((d) => { if (d.success) setOrdersCount(d.data.items?.length ?? 0); })
       .catch(() => {});
-    fetch("/api/invites")
+    fetch("/api/invites", fetchObj)
       .then((r) => r.json())
       .then((d) => { if (d.success) setInvitesCount(d.data.items?.length ?? 0); })
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchStats();
+    window.addEventListener("update-user-stats", fetchStats);
+    return () => window.removeEventListener("update-user-stats", fetchStats);
   }, [isParticipant]);
 
   const handleLogout = async () => {

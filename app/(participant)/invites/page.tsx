@@ -102,6 +102,7 @@ export default function InvitesPage() {
       toast.success(
         action === "accept" ? "Invite accepted." : "Invite rejected.",
       );
+      window.dispatchEvent(new CustomEvent("update-user-stats"));
       loadInvites();
     } catch (error) {
       console.error(error);

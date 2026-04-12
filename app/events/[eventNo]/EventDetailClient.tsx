@@ -176,6 +176,7 @@ export default function EventDetailClient({ category, details }: Props) {
       const data = await res.json();
       if (res.ok || res.status === 409) {
         setInCart(true);
+        window.dispatchEvent(new CustomEvent("update-user-stats"));
         toast.success(
           res.status === 409 ? "Already in cart!" : "Added to cart!",
         );
