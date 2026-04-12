@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { UserPlus } from "lucide-react";
+import { UserPlus, ShoppingCart, ClipboardList, Users } from "lucide-react";
 import { useAuthContext } from "@/contexts/auth-context";
 
 // ─── All auth logic below is intentionally untouched ─────────────────────────
@@ -18,6 +18,26 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
   const isParticipant =
     role === "PARTICIPANT" || (isLoggedIn && role !== null && !isAdmin);
   const router = useRouter();
+
+  const [cartCount, setCartCount] = useState(0);
+  const [ordersCount, setOrdersCount] = useState(0);
+  const [invitesCount, setInvitesCount] = useState(0);
+
+  useEffect(() => {
+    if (!isParticipant) return;
+    fetch("/api/cart")
+      .then((r) => r.json())
+      .then((d) => { if (d.success) setCartCount(d.data.items?.length ?? 0); })
+      .catch(() => {});
+    fetch("/api/orders")
+      .then((r) => r.json())
+      .then((d) => { if (d.success) setOrdersCount(d.data.items?.length ?? 0); })
+      .catch(() => {});
+    fetch("/api/invites")
+      .then((r) => r.json())
+      .then((d) => { if (d.success) setInvitesCount(d.data.items?.length ?? 0); })
+      .catch(() => {});
+  }, [isParticipant]);
 
   const handleLogout = async () => {
     try {
@@ -91,40 +111,51 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
                   Dashboard
                 </Link>
                 <Link
-                  id="cart-link"
-                  href="/cart"
-                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
-                >
-                  Cart
-                </Link>
-                <Link
                   id="teams-link"
                   href="/teams"
-                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
+                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""} relative`}
                 >
-                  Teams
+                  <Users size={18} strokeWidth={2} />
+                  <span className="sr-only">Teams</span>
                 </Link>
-                {/* <Link
-                id="invites-link"
-                href="/invites"
-                className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
-              >
-                Invites
-              </Link> */}
                 <Link
                   id="invites-link"
                   href="/invites"
-                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
-                  aria-label="Invites" // Best practice for accessibility when using only icons
+                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""} relative`}
                 >
-                  <UserPlus className="h-5 w-5" /> {/* */}
+                  <UserPlus size={18} strokeWidth={2} />
+                  <span className="sr-only">Invites</span>
+                  {invitesCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
+                      {invitesCount > 9 ? "9+" : invitesCount}
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  id="cart-link"
+                  href="/cart"
+                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""} relative`}
+                >
+                  <ShoppingCart size={18} strokeWidth={2} />
+                  <span className="sr-only">Cart</span>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
+                      {cartCount > 9 ? "9+" : cartCount}
+                    </span>
+                  )}
                 </Link>
                 <Link
                   id="orders-link"
                   href="/orders"
-                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
+                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""} relative`}
                 >
-                  Orders
+                  <ClipboardList size={18} strokeWidth={2} />
+                  <span className="sr-only">Orders</span>
+                  {ordersCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
+                      {ordersCount > 9 ? "9+" : ordersCount}
+                    </span>
+                  )}
                 </Link>
               </>
             ) : null /* role still loading — render nothing until checkAuth resolves */

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Users,
@@ -9,6 +10,7 @@ import {
   AlertCircle,
   ShoppingCart,
   CheckCircle,
+  LogIn,
 } from "lucide-react";
 import { EventCategory } from "@/data/eventCategories";
 import { EventList } from "@/data/eventList";
@@ -150,6 +152,8 @@ export default function EventDetailClient({ category, details }: Props) {
       .catch(() => {});
   }, [isLoggedIn, category.eventNo]);
 
+  const router = useRouter();
+
   const handleAddToCart = useCallback(async () => {
     if (!dbEventId) {
       toast.error("This event is not yet open for registration.");
@@ -175,6 +179,7 @@ export default function EventDetailClient({ category, details }: Props) {
         toast.success(
           res.status === 409 ? "Already in cart!" : "Added to cart!",
         );
+        router.push("/cart");
       } else {
         toast.error(data.error?.message ?? "Failed to add to cart.");
       }
@@ -532,7 +537,14 @@ export default function EventDetailClient({ category, details }: Props) {
                         </button>
                       </div>
                     )
-                  ) : null}
+                  ) : (
+                    <Link
+                      href="/auth/signin"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm bg-gat-gold text-gat-midnight hover:bg-gat-dark-gold hover:text-white transition-colors"
+                    >
+                      <LogIn className="w-4 h-4" /> Sign In to Register
+                    </Link>
+                  )}
                   {category.amount && (
                     <p className="text-xs text-gat-steel text-center mt-2">
                       Registration fee:{" "}

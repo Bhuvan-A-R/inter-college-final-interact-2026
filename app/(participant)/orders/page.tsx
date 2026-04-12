@@ -58,6 +58,26 @@ export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  const handleCancel = async (orderId: string) => {
+    if (!confirm("Are you sure you want to cancel this order?")) return;
+    setCancellingId(orderId);
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, { method: "DELETE" });
+      const data = await res.json();
+      if (res.ok) {
+        setOrders((prev) => prev.filter((o) => o.id !== orderId));
+        toast.success("Order cancelled.");
+      } else {
+        toast.error(data.error?.message ?? "Failed to cancel order.");
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setCancellingId(null);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -165,19 +185,31 @@ export default function OrdersPage() {
                     ))}
                   </div>
 
-                  {/* Action button */}
-                  <Link href={`/orders/${order.id}`}>
-                    <Button
-                      variant={isPending ? "default" : "outline"}
-                      className={
-                        isPending
-                          ? "bg-gat-blue text-white hover:bg-gat-midnight w-full sm:w-auto"
-                          : "w-full sm:w-auto"
-                      }
-                    >
-                      {isPending ? "Complete Payment →" : "View Details"}
-                    </Button>
-                  </Link>
+                  {/* Action buttons */}
+                  <div className="flex flex-wrap gap-2">
+                    <Link href={`/orders/${order.id}`}>
+                      <Button
+                        variant={isPending ? "default" : "outline"}
+                        className={
+                          isPending
+                            ? "bg-gat-blue text-white hover:bg-gat-midnight w-full sm:w-auto"
+                            : "w-full sm:w-auto"
+                        }
+                      >
+                        {isPending ? "Complete Payment →" : "View Details"}
+                      </Button>
+                    </Link>
+                    {isPending && (
+                      <Button
+                        variant="outline"
+                        className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 w-full sm:w-auto"
+                        disabled={cancellingId === order.id}
+                        onClick={() => handleCancel(order.id)}
+                      >
+                        {cancellingId === order.id ? "Cancelling…" : "Cancel Order"}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               );
             })}

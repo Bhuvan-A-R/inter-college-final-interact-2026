@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Search, ChevronRight, ShoppingCart, LogIn, CheckCircle } from "lucide-react";
 import { eventCategories } from "@/data/eventCategories";
 import Link from "next/link";
@@ -33,6 +34,7 @@ const EventPage = () => {
   const [userTeams, setUserTeams] = useState<Array<{ id: string; name: string; eventId: string; myRole: string }>>([]);
   const [teamModal, setTeamModal] = useState<{ dbId: string; name: string } | null>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
+  const router = useRouter();
 
   // Fetch DB events for name→UUID lookup (public endpoint)
   useEffect(() => {
@@ -98,6 +100,7 @@ const EventPage = () => {
         if (res.ok) {
           setCartedIds((prev) => new Set([...prev, dbId]));
           toast.success("Added to cart!");
+          router.push("/cart");
         } else if (res.status === 409) {
           setCartedIds((prev) => new Set([...prev, dbId]));
         } else {
@@ -273,11 +276,11 @@ const EventPage = () => {
                     </Link>
 
                     {/* Cart CTA — outside Link to avoid nested anchors */}
-                    {(() => {
+                    {isLoggedIn && (() => {
                       const dbId = dbEventMap.get(event.eventName);
                       const inCart = !!dbId && cartedIds.has(dbId);
                       const isAdding = !!dbId && dbId === addingId;
-                      return isLoggedIn ? (
+                      return (
                         <button
                           onClick={() => handleAddToCart(event.eventName)}
                           disabled={inCart || isAdding || !dbId}
@@ -299,13 +302,6 @@ const EventPage = () => {
                             <><ShoppingCart className="w-4 h-4" /> Add to Cart</>
                           )}
                         </button>
-                      ) : (
-                        <Link
-                          href="/auth/signin"
-                          className="w-full py-2.5 text-sm font-bold rounded-b-xl flex items-center justify-center gap-2 border border-t-0 border-gat-blue/10 bg-white text-gat-steel hover:bg-gat-blue hover:text-white hover:border-gat-blue transition-all"
-                        >
-                          <LogIn className="w-4 h-4" /> Sign In to Register
-                        </Link>
                       );
                     })()}
                   </motion.div>
