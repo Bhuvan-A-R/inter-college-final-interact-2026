@@ -450,14 +450,14 @@ export default function EventDetailClient({ category, details }: Props) {
                 </div>
 
                 {/* ── Sign In to Register (non-logged-in only) ── */}
-                {!isLoggedIn && (
+                {/* {!isLoggedIn && (
                   <Link
                     href="/auth/signin"
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm bg-gat-gold text-gat-midnight hover:bg-gat-dark-gold hover:text-white transition-colors shadow-gold"
                   >
                     <LogIn className="w-4 h-4" /> Sign In to Register
                   </Link>
-                )}
+                )} */}
 
                 {/* ── Cart CTA ── */}
                 <div className="pt-2 rounded-2xl border border-gat-blue/10 p-4">
