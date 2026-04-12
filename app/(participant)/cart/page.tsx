@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Trash2, ShoppingBag, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuthContext } from "@/contexts/auth-context";
 import { toast } from "sonner";
 
 type CartItem = {
@@ -35,6 +36,7 @@ type CartResponse = {
 
 export default function CartPage() {
   const router = useRouter();
+  const { isLoggedIn } = useAuthContext();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [subtotal, setSubtotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -68,8 +70,12 @@ export default function CartPage() {
   };
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      setLoading(false);
+      return;
+    }
     loadCart();
-  }, []);
+  }, [isLoggedIn]);
 
   const handleRemove = async (cartItemId: string) => {
     setRemoving(cartItemId);
@@ -134,7 +140,10 @@ export default function CartPage() {
           </div>
           {!loading && cartItems.length > 0 && (
             <Link href="/events">
-              <Button variant="outline" className="flex items-center gap-2 text-gat-blue border-gat-blue/30 hover:bg-gat-blue hover:text-white">
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 text-gat-blue border-gat-blue/30 hover:bg-gat-blue hover:text-white"
+              >
                 <PlusCircle className="w-4 h-4" />
                 Add More Events
               </Button>
@@ -170,13 +179,18 @@ export default function CartPage() {
                     <th className="text-left px-5 py-3 font-semibold">Event</th>
                     <th className="text-left px-5 py-3 font-semibold">Type</th>
                     <th className="text-left px-5 py-3 font-semibold">Team</th>
-                    <th className="text-right px-5 py-3 font-semibold">Price</th>
+                    <th className="text-right px-5 py-3 font-semibold">
+                      Price
+                    </th>
                     <th className="px-5 py-3" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gat-blue/10">
                   {cartItems.map((item) => (
-                    <tr key={item.id} className="bg-white hover:bg-gat-blue/5 transition-colors">
+                    <tr
+                      key={item.id}
+                      className="bg-white hover:bg-gat-blue/5 transition-colors"
+                    >
                       <td className="px-5 py-4 font-medium text-gat-midnight">
                         {item.event.name}
                         <span className="block text-xs text-gat-steel font-normal mt-0.5">
@@ -189,7 +203,9 @@ export default function CartPage() {
                         </span>
                       </td>
                       <td className="px-5 py-4 text-gat-steel">
-                        {item.team?.name ?? <span className="italic text-gat-steel/60">—</span>}
+                        {item.team?.name ?? (
+                          <span className="italic text-gat-steel/60">—</span>
+                        )}
                       </td>
                       <td className="px-5 py-4 text-right font-mono font-bold text-gat-dark-gold">
                         ₹{Number(item.event.price).toFixed(2)}
@@ -215,18 +231,31 @@ export default function CartPage() {
               <div className="flex items-center gap-2 mb-4">
                 <ShoppingBag className="w-4 h-4 text-gat-blue" />
                 <h2 className="text-xs font-heading font-bold text-gat-steel uppercase tracking-widest">
-                  Order Summary · {cartItems.length} event{cartItems.length !== 1 ? "s" : ""}
+                  Order Summary · {cartItems.length} event
+                  {cartItems.length !== 1 ? "s" : ""}
                 </h2>
               </div>
 
               <div className="space-y-2 text-sm text-gat-steel divide-y divide-gat-blue/10">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex justify-between pt-2 first:pt-0">
+                  <div
+                    key={item.id}
+                    className="flex justify-between pt-2 first:pt-0"
+                  >
                     <span className="text-gat-charcoal">
                       {item.event.name}
-                      {item.team ? <span className="text-gat-steel"> · {item.team.name}</span> : ""}
+                      {item.team ? (
+                        <span className="text-gat-steel">
+                          {" "}
+                          · {item.team.name}
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </span>
-                    <span className="font-mono">₹{Number(item.event.price).toFixed(2)}</span>
+                    <span className="font-mono">
+                      ₹{Number(item.event.price).toFixed(2)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -236,7 +265,10 @@ export default function CartPage() {
                   <span className="text-xs font-bold uppercase tracking-widest text-gat-steel block">
                     Total Amount to be Paid
                   </span>
-                  <span className="text-xs text-gat-steel/60">Single payment for all {cartItems.length} event{cartItems.length !== 1 ? "s" : ""}</span>
+                  <span className="text-xs text-gat-steel/60">
+                    Single payment for all {cartItems.length} event
+                    {cartItems.length !== 1 ? "s" : ""}
+                  </span>
                 </div>
                 <span className="text-2xl font-heading font-black text-gat-midnight">
                   ₹{subtotal.toFixed(2)}
@@ -248,11 +280,14 @@ export default function CartPage() {
                 disabled={checkingOut}
                 className="w-full mt-5 bg-gat-blue text-white hover:bg-gat-midnight text-base font-bold py-6"
               >
-                {checkingOut ? "Processing…" : `Pay for All ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""} →`}
+                {checkingOut
+                  ? "Processing…"
+                  : `Pay for All ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""} →`}
               </Button>
 
               <p className="text-xs text-gat-steel text-center mt-3">
-                One UPI payment covers all events. Upload your screenshot after checkout.
+                One UPI payment covers all events. Upload your screenshot after
+                checkout.
               </p>
             </div>
           </div>

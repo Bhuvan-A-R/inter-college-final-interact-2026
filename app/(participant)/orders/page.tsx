@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useAuthContext } from "@/contexts/auth-context";
 import { toast } from "sonner";
 
 type OrderItem = {
@@ -56,6 +57,7 @@ const statusConfig: Record<
 
 export default function OrdersPage() {
   const router = useRouter();
+  const { isLoggedIn } = useAuthContext();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
@@ -80,6 +82,10 @@ export default function OrdersPage() {
   };
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      setLoading(false);
+      return;
+    }
     (async () => {
       try {
         const res = await fetch("/api/orders");
@@ -103,7 +109,7 @@ export default function OrdersPage() {
         setLoading(false);
       }
     })();
-  }, [router]);
+  }, [isLoggedIn, router]);
 
   return (
     <div className="min-h-screen bg-gat-off-white pt-24 pb-16">
@@ -124,8 +130,12 @@ export default function OrdersPage() {
         ) : orders.length === 0 ? (
           <div className="rounded-xl bg-white p-12 border border-gat-blue/10 shadow-sm text-center flex flex-col items-center gap-3">
             <p className="text-3xl">🧾</p>
-            <p className="font-heading font-bold text-lg text-gat-midnight">No orders yet</p>
-            <p className="text-sm text-gat-steel">Once you checkout your cart, your orders will appear here.</p>
+            <p className="font-heading font-bold text-lg text-gat-midnight">
+              No orders yet
+            </p>
+            <p className="text-sm text-gat-steel">
+              Once you checkout your cart, your orders will appear here.
+            </p>
             <Link href="/cart">
               <Button className="mt-2">Go to Cart</Button>
             </Link>
@@ -135,11 +145,14 @@ export default function OrdersPage() {
             {orders.map((order) => {
               const cfg = statusConfig[order.status];
               const isPending = order.status === "PENDING_PAYMENT";
-              const date = new Date(order.createdAt).toLocaleDateString("en-IN", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              });
+              const date = new Date(order.createdAt).toLocaleDateString(
+                "en-IN",
+                {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                },
+              );
 
               return (
                 <div
@@ -206,7 +219,9 @@ export default function OrdersPage() {
                         disabled={cancellingId === order.id}
                         onClick={() => handleCancel(order.id)}
                       >
-                        {cancellingId === order.id ? "Cancelling…" : "Cancel Order"}
+                        {cancellingId === order.id
+                          ? "Cancelling…"
+                          : "Cancel Order"}
                       </Button>
                     )}
                   </div>
@@ -219,4 +234,3 @@ export default function OrdersPage() {
     </div>
   );
 }
-

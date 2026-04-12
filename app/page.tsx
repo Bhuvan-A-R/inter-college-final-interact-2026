@@ -1,13 +1,115 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
-import { ArrowRight, MapPin, Calendar, Volume2, VolumeX } from "lucide-react";
+import {
+  ArrowRight,
+  MapPin,
+  Calendar,
+  Volume2,
+  VolumeX,
+  Clapperboard,
+  Music,
+  Mic,
+  Shirt,
+  BookOpen,
+  Palette,
+  Star,
+  Dumbbell,
+  Cpu,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-import { categories, marqueeItems } from "@/data/homeData";
+import { marqueeItems } from "@/data/homeData";
+import { interCollegeEvents } from "@/data/eventCategories";
 import ParticlesBackground from "@/components/ParticlesBackground";
+
+const CATEGORY_META: Record<
+  string,
+  {
+    name: string;
+    icon: LucideIcon;
+    accent: string;
+    accentLight: string;
+    accentBorder: string;
+    order: number;
+  }
+> = {
+  DANCE: {
+    name: "Dance",
+    icon: Music,
+    accent: "hsl(46 90% 51%)",
+    accentLight: "hsl(46 90% 51% / 0.08)",
+    accentBorder: "hsl(46 90% 51% / 0.25)",
+    order: 1,
+  },
+  FASHION: {
+    name: "Fashion",
+    icon: Shirt,
+    accent: "hsl(258 70% 55%)",
+    accentLight: "hsl(258 70% 55% / 0.08)",
+    accentBorder: "hsl(258 70% 55% / 0.25)",
+    order: 2,
+  },
+  FINE_ARTS: {
+    name: "Fine Arts",
+    icon: Palette,
+    accent: "hsl(12 76% 50%)",
+    accentLight: "hsl(12 76% 50% / 0.08)",
+    accentBorder: "hsl(12 76% 50% / 0.22)",
+    order: 3,
+  },
+  GENERAL_EVENTS: {
+    name: "General Events",
+    icon: Star,
+    accent: "hsl(197 70% 45%)",
+    accentLight: "hsl(197 70% 45% / 0.08)",
+    accentBorder: "hsl(197 70% 45% / 0.22)",
+    order: 4,
+  },
+  LITERARY: {
+    name: "Literary",
+    icon: BookOpen,
+    accent: "hsl(38 90% 46%)",
+    accentLight: "hsl(38 90% 46% / 0.08)",
+    accentBorder: "hsl(38 90% 46% / 0.22)",
+    order: 5,
+  },
+  MUSIC: {
+    name: "Music",
+    icon: Mic,
+    accent: "hsl(224 68% 30%)",
+    accentLight: "hsl(224 68% 30% / 0.08)",
+    accentBorder: "hsl(224 68% 30% / 0.2)",
+    order: 6,
+  },
+  SPORTS: {
+    name: "Sports",
+    icon: Dumbbell,
+    accent: "hsl(152 68% 45%)",
+    accentLight: "hsl(152 68% 45% / 0.08)",
+    accentBorder: "hsl(152 68% 45% / 0.22)",
+    order: 7,
+  },
+  TECHNICAL: {
+    name: "Technical",
+    icon: Cpu,
+    accent: "hsl(193 70% 45%)",
+    accentLight: "hsl(193 70% 45% / 0.08)",
+    accentBorder: "hsl(193 70% 45% / 0.22)",
+    order: 8,
+  },
+  THEATRE: {
+    name: "Theatre",
+    icon: Clapperboard,
+    accent: "hsl(221 82% 55%)",
+    accentLight: "hsl(221 82% 55% / 0.08)",
+    accentBorder: "hsl(221 82% 55% / 0.2)",
+    order: 9,
+  },
+};
 
 /* ─────────────────────────────────────────────
     COUNT-UP HOOK
@@ -294,6 +396,41 @@ function IntroSplash({ onDone }: { onDone: () => void }) {
 ───────────────────────────────────────────── */
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
+  const categories = useMemo(() => {
+    const grouped = interCollegeEvents.reduce(
+      (acc, event) => {
+        if (!acc[event.category]) acc[event.category] = [];
+        acc[event.category].push(event);
+        return acc;
+      },
+      {} as Record<string, typeof interCollegeEvents>,
+    );
+
+    return Object.entries(grouped)
+      .map(([key, items]) => {
+        const meta = CATEGORY_META[key] ?? {
+          name: key,
+          icon: Star,
+          accent: "hsl(var(--primary))",
+          accentLight: "hsl(var(--primary) / 0.08)",
+          accentBorder: "hsl(var(--primary) / 0.2)",
+          order: 999,
+        };
+
+        return {
+          key,
+          name: meta.name,
+          count: items.length,
+          icon: meta.icon,
+          accent: meta.accent,
+          accentLight: meta.accentLight,
+          accentBorder: meta.accentBorder,
+          tags: items.map((item) => item.eventName).slice(0, 3),
+          order: meta.order,
+        };
+      })
+      .sort((a, b) => a.order - b.order);
+  }, []);
 
   return (
     <>
@@ -311,7 +448,7 @@ export default function Home() {
           >
             {/* ══ HERO ══════════════════════════════════════════════════════════ */}
             <section
-              className="relative overflow-hidden min-h-screen flex flex-col justify-center pt-24 pb-32"
+              className="relative overflow-hidden min-h-screen flex flex-col justify-center pt-10 pb-10"
               style={{
                 background: `
             radial-gradient(ellipse 65% 55% at 60% 35%, hsl(var(--primary) / 0.09) 0%, transparent 65%),
@@ -325,8 +462,8 @@ export default function Home() {
               <div className="dot-grid absolute inset-0 pointer-events-none opacity-100" />
 
               {/* ghost year watermark */}
-              <div
-                className="absolute top-[12%] select-none pointer-events-none transition-all duration-500 max-[550px]:left-1/2 max-[550px]:-translate-x-1/2 max-[550px]:opacity-[0.05] min-[551px]:right-[-2%] min-[551px]:opacity-[0.9]"
+              {/* <div
+                className="absolute top-auto bottom-[6%] select-none pointer-events-none transition-all duration-500 max-[550px]:left-1/2 max-[550px]:-translate-x-1/2 max-[550px]:opacity-[0.05] max-[550px]:bottom-[2%] min-[551px]:right-[-2%] min-[551px]:opacity-[0.9]"
                 style={{ width: "clamp(280px, 40vw, 700px)" }}
                 aria-hidden
               >
@@ -336,127 +473,222 @@ export default function Home() {
                   className="w-full h-auto object-contain"
                   priority
                 />
-              </div>
+              </div> */}
 
               <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-14 w-full">
-                {/* badge */}
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45 }}
-                >
-                  <span className="pill-badge mb-8 inline-flex">
-                    Global Academy of Technology Presents
-                  </span>
-                </motion.div>
+                <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 items-start">
+                  <div className="order-2 lg:order-1">
+                    {/* badge */}
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.45 }}
+                    >
+                      <span className="pill-badge mb-8 inline-flex">
+                        Global Academy of Technology Presents
+                      </span>
+                    </motion.div>
 
-                {/* headline */}
-                <motion.h1
-                  className="font-display leading-[0.92] mb-5"
-                  style={{
-                    // Reduced from clamp(2.5rem, 8vw, 6.5rem)
-                    fontSize: "clamp(2rem, 6vw, 5rem)",
-                    letterSpacing: "-0.02em",
-                    color: "hsl(var(--foreground))",
-                  }}
-                  initial={{ opacity: 0, y: 32 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                >
-                  NATIONAL LEVEL
-                  <br />
-                  <span style={{ color: "hsl(var(--primary))" }}>
-                    INTER-COLLEGIATE
-                  </span>
-                  <br />
+                    {/* headline */}
+                    <motion.h1
+                      className="font-display leading-[0.92] mb-5"
+                      style={{
+                        // Reduced from clamp(2.5rem, 8vw, 6.5rem)
+                        fontSize: "clamp(1.5rem, 6vw, 4rem)",
+                        letterSpacing: "-0.02em",
+                        color: "hsl(var(--foreground))",
+                      }}
+                      initial={{ opacity: 0, y: 32 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.1 }}
+                    >
+                      NATIONAL LEVEL
+                      <br />
+                      <span style={{ color: "hsl(var(--primary))" }}>
+                        INTER-COLLEGIATE
+                      </span>
+                      <br />
+                      <span
+                        style={{
+                          WebkitTextStroke: "1.5px hsl(var(--secondary))", // Slightly thinner stroke for smaller text
+                          color: "transparent",
+                        }}
+                      >
+                        EVENTS 2026
+                      </span>
+                    </motion.h1>
+
+                    {/* tagline */}
+                    <motion.p
+                      className="font-mono-jb text-sm uppercase tracking-[0.28em] mb-12"
+                      style={{ color: "hsl(var(--muted))" }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.45, delay: 0.3 }}
+                    >
+                      Inter-collegiate Event <br /> Registration Portal
+                    </motion.p>
+
+                    {/* stats */}
+                    <motion.div
+                      className="stats-row flex flex-wrap gap-y-8 mb-12"
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
+                    >
+                      <StatItem
+                        to={categories.reduce((acc, c) => acc + c.count, 0)}
+                        label="Events"
+                      />
+                      <StatItem to={3} label="Days" />
+                      <StatItem to={1000} label="Participants" />
+                      {/* <div className="flex flex-col gap-1">
                   <span
+                    className="font-display text-5xl md:text-4xl font-extrabold leading-none"
+                    style={{ color: "hsl(var(--secondary))" }}
+                  >
+                    ₹2L+
+                  </span>
+                  <span
+                    className="text-xs uppercase tracking-[0.22em] font-semibold"
+                    style={{ color: "hsl(var(--muted))" }}
+                  >
+                    Prize Pool
+                  </span>
+                </div> */}
+                    </motion.div>
+
+                    {/* CTAs */}
+                    <motion.div
+                      className="flex flex-wrap gap-3 mb-10"
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.45, delay: 0.52 }}
+                    >
+                      <Link href="/events" className="btn-primary">
+                        Explore Events <ArrowRight size={16} />
+                      </Link>
+                    </motion.div>
+
+                    {/* meta */}
+                    <motion.div
+                      className="flex flex-wrap items-center gap-5"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.68 }}
+                    >
+                      <span
+                        className="font-mono-jb text-xs flex items-center gap-2"
+                        style={{ color: "hsl(var(--muted))" }}
+                      >
+                        <Calendar size={12} />
+                        May 13–15, 2026
+                      </span>
+                      <span
+                        className="w-px h-3"
+                        style={{ background: "hsl(var(--border))" }}
+                      />
+                      <span
+                        className="font-mono-jb text-xs flex items-center gap-2"
+                        style={{ color: "hsl(var(--muted))" }}
+                      >
+                        <MapPin size={12} />
+                        GAT Campus, Bengaluru
+                      </span>
+                    </motion.div>
+                  </div>
+
+                  {/* theme card */}
+                  <motion.aside
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="order-1 lg:order-2 rounded-3xl p-5 md:p-6"
                     style={{
-                      WebkitTextStroke: "1.5px hsl(var(--secondary))", // Slightly thinner stroke for smaller text
-                      color: "transparent",
+                      background:
+                        "radial-gradient(ellipse 90% 90% at 50% 10%, hsl(var(--primary) / 0.12) 0%, transparent 60%), hsl(var(--secondary) / 0.05)",
+                      border: "1px solid hsl(var(--border))",
                     }}
                   >
-                    EVENTS 2026
-                  </span>
-                </motion.h1>
-
-                {/* tagline */}
-                <motion.p
-                  className="font-mono-jb text-sm uppercase tracking-[0.28em] mb-12"
-                  style={{ color: "hsl(var(--muted))" }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.45, delay: 0.3 }}
-                >
-                  Inter-collegiate Event <br /> Registration Portal
-                </motion.p>
-
-                {/* stats */}
-                <motion.div
-                  className="stats-row flex flex-wrap gap-y-8 mb-12"
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                  <StatItem
-                    to={categories.reduce((acc, c) => acc + c.count, 0)}
-                    label="Events"
-                  />
-                  <StatItem to={3} label="Days" />
-                  <StatItem to={1000} label="Participants" />
-                  {/* <div className="flex flex-col gap-1">
-              <span
-                className="font-display text-5xl md:text-4xl font-extrabold leading-none"
-                style={{ color: "hsl(var(--secondary))" }}
-              >
-                ₹2L+
-              </span>
-              <span
-                className="text-xs uppercase tracking-[0.22em] font-semibold"
-                style={{ color: "hsl(var(--muted))" }}
-              >
-                Prize Pool
-              </span>
-            </div> */}
-                </motion.div>
-
-                {/* CTAs */}
-                <motion.div
-                  className="flex flex-wrap gap-3 mb-10"
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: 0.52 }}
-                >
-                  <Link href="/events" className="btn-primary">
-                    Explore Events <ArrowRight size={16} />
-                  </Link>
-                </motion.div>
-
-                {/* meta */}
-                <motion.div
-                  className="flex flex-wrap items-center gap-5"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.68 }}
-                >
-                  <span
-                    className="font-mono-jb text-xs flex items-center gap-2"
-                    style={{ color: "hsl(var(--muted))" }}
-                  >
-                    <Calendar size={12} />
-                    May 13–15, 2026
-                  </span>
-                  <span
-                    className="w-px h-3"
-                    style={{ background: "hsl(var(--border))" }}
-                  />
-                  <span
-                    className="font-mono-jb text-xs flex items-center gap-2"
-                    style={{ color: "hsl(var(--muted))" }}
-                  >
-                    <MapPin size={12} />
-                    GAT Campus, Bengaluru
-                  </span>
-                </motion.div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div
+                        className="rounded-2xl p-2.5"
+                        style={{
+                          background: "hsl(var(--secondary) / 0.12)",
+                          border: "1px solid hsl(var(--border))",
+                        }}
+                      >
+                        <Image
+                          src={interactLogo}
+                          alt="Interact 2K26"
+                          className="w-12 h-auto object-contain"
+                          priority
+                        />
+                      </div>
+                      <div className="leading-tight">
+                        <span
+                          className="block text-[10px] uppercase tracking-[0.28em] font-semibold"
+                          style={{ color: "hsl(var(--muted))" }}
+                        >
+                          INTERACT 2026 THEME
+                        </span>
+                        <span
+                          className="font-display text-2xl md:text-3xl font-black"
+                          style={{ color: "hsl(var(--secondary))" }}
+                        >
+                          PRAGNYA
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <p
+                        className="text-sm leading-relaxed"
+                        style={{ color: "hsl(var(--muted-foreground))" }}
+                      >
+                        Every edition of INTERACT is driven by a central theme
+                        that defines its identity and experience. In 2025, the
+                        theme was "Brand Karnataka" - a celebration of the
+                        state’s rich culture, traditions, and artistic heritage,
+                        while also embracing the modern, progressive energy of
+                        Bengaluru.
+                      </p>
+                      <p
+                        className="text-sm leading-relaxed"
+                        style={{ color: "hsl(var(--muted-foreground))" }}
+                      >
+                        The theme brought together classical and contemporary
+                        expressions, highlighting Karnataka as both a cultural
+                        powerhouse and a hub of innovation. From folk traditions
+                        to modern performances, the fest created a unified
+                        narrative of identity, pride, and collective cultural
+                        expression.
+                      </p>
+                      <p
+                        className="text-sm leading-relaxed"
+                        style={{ color: "hsl(var(--muted-foreground))" }}
+                      >
+                        Building on this strong foundation of identity and
+                        collective celebration, INTERACT 2026 shifts the focus
+                        inward with its new theme - "PRAGNYA." Pragnya
+                        represents the moment of realisation - the belief in
+                        oneself, the clarity of purpose, and the awakening of
+                        one’s true capabilities. It is about going beyond
+                        participation and stepping into self-discovery. When
+                        effort aligns with belief, and passion is driven by
+                        purpose, that transformation is Pragnya.
+                      </p>
+                      <p
+                        className="text-sm leading-relaxed"
+                        style={{ color: "hsl(var(--muted-foreground))" }}
+                      >
+                        From celebrating a collective identity in 2025 to
+                        igniting individual awakening in 2026, INTERACT evolves
+                        into more than a fest - it becomes a space where belief
+                        turns into performance, and performance into purpose.
+                      </p>
+                    </div>
+                  </motion.aside>
+                </div>
               </div>
 
               {/* diagonal cut to next section */}
@@ -515,7 +747,7 @@ export default function Home() {
                         transition={{ delay: i * 0.08, duration: 0.42 }}
                       >
                         <Link
-                          href={`/events?category=${cat.name.toLowerCase()}`}
+                          href={`/events?category=${cat.key}`}
                           className="cat-card group block rounded-[var(--radius)] p-6"
                           style={{
                             background: "hsl(var(--background))",
@@ -684,17 +916,28 @@ export default function Home() {
                   Just bring your best game.
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
-                  <button
-                    disabled
-                    className="btn-gold"
+                  <Link
+                    href="/auth/signin"
                     style={{
-                      opacity: 1,
-                      cursor: "not-allowed",
-                      pointerEvents: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "13px 28px",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      letterSpacing: "0.04em",
+                      borderRadius: "var(--radius)",
+                      background: "transparent",
+                      color: "hsl(46 90% 51%)",
+                      border: "1.5px solid hsl(46 90% 51% / 0.45)",
+                      cursor: "pointer",
+                      textDecoration: "none",
+                      fontFamily: "'Outfit', sans-serif",
+                      transition: "border-color 0.2s, background 0.2s",
                     }}
                   >
-                    Register Now ( Coming Soon... )
-                  </button>
+                    Register Now
+                  </Link>
                   <Link
                     href="/events"
                     style={{
@@ -707,8 +950,8 @@ export default function Home() {
                       letterSpacing: "0.04em",
                       borderRadius: "var(--radius)",
                       background: "transparent",
-                      color: "hsl(var(--accent-foreground) / 0.8)",
-                      border: "1.5px solid hsl(var(--accent-foreground) / 0.2)",
+                      color: "hsl(46 90% 51%)",
+                      border: "1.5px solid hsl(46 90% 51% / 0.45)",
                       cursor: "pointer",
                       textDecoration: "none",
                       fontFamily: "'Outfit', sans-serif",
