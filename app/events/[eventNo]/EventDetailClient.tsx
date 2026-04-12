@@ -11,9 +11,11 @@ import {
   ShoppingCart,
   CheckCircle,
   LogIn,
+  Trophy,
 } from "lucide-react";
 import { EventCategory } from "@/data/eventCategories";
 import { EventList } from "@/data/eventList";
+import { eventPrizePool } from "@/data/eventPrizePool";
 import { motion } from "framer-motion";
 import { useAuthContext } from "@/contexts/auth-context";
 import { toast } from "sonner";
@@ -34,25 +36,9 @@ type RegisteredEvent = {
 
 const getColorForCategory = (category: string) => {
   const map: Record<string, { bg: string; text: string; split: string }> = {
-    THEATRE: { bg: "bg-gat-blue", text: "text-gat-blue", split: "gat-blue" },
-    DANCE: { bg: "bg-gat-gold", text: "text-gat-gold", split: "gat-gold" },
-    MUSIC: { bg: "bg-gat-navy", text: "text-gat-navy", split: "gat-navy" },
-    FASHION: {
-      bg: "bg-gat-cobalt",
-      text: "text-gat-cobalt",
-      split: "gat-cobalt",
-    },
-    LITERARY: {
-      bg: "bg-gat-dark-gold",
-      text: "text-gat-dark-gold",
-      split: "gat-dark-gold",
-    },
-    FINE_ARTS: { bg: "bg-gat-blue", text: "text-gat-blue", split: "gat-blue" },
-    GENERAL_EVENTS: {
-      bg: "bg-gat-gold",
-      text: "text-gat-gold",
-      split: "gat-gold",
-    },
+    CULTURAL: { bg: "bg-gat-blue", text: "text-gat-blue", split: "gat-blue" },
+    SPORTS: { bg: "bg-gat-gold", text: "text-gat-gold", split: "gat-gold" },
+    TECHNICAL: { bg: "bg-gat-navy", text: "text-gat-navy", split: "gat-navy" },
   };
   return (
     map[category] || {
@@ -67,6 +53,7 @@ export default function EventDetailClient({ category, details }: Props) {
   const colors = getColorForCategory(category.category);
   const hasDetails = details.length > 0;
   const mainDetail = hasDetails ? details[0] : null;
+  const prizeData = eventPrizePool.find((p) => p.eventNo === category.eventNo);
 
   const [activeAccordion, setActiveAccordion] = useState<string | null>(
     "description",
@@ -568,6 +555,66 @@ export default function EventDetailClient({ category, details }: Props) {
               </div>
             </div>
           </div>
+
+          {/* RIGHT COLUMN: Prize Pool */}
+          {prizeData && (
+            <div className="lg:col-span-1">
+              <div className="sticky top-28 rounded-2xl border border-gat-blue/10 bg-white p-5 shadow-sm">
+                <h3 className="flex items-center gap-2 text-lg font-bold font-heading text-gat-midnight mb-4">
+                  <Trophy className="w-5 h-5 text-gat-gold" />
+                  Prize Pool
+                </h3>
+                <div className="space-y-3">
+                  {/* 1st Place */}
+                  <div className="flex items-center justify-between p-3 rounded-lg border border-yellow-300/40 bg-gradient-to-r from-yellow-50 to-amber-50">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">🥇</span>
+                      <div>
+                        <p className="font-bold text-gat-midnight text-sm">1st Place</p>
+                        <p className="text-[11px] text-gat-steel">Winner</p>
+                      </div>
+                    </div>
+                    <span className="font-mono font-black text-base text-amber-700">
+                      ₹{prizeData.first.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                  {/* 2nd Place */}
+                  <div className="flex items-center justify-between p-3 rounded-lg border border-gray-300/40 bg-gradient-to-r from-gray-50 to-slate-50">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">🥈</span>
+                      <div>
+                        <p className="font-bold text-gat-midnight text-sm">2nd Place</p>
+                        <p className="text-[11px] text-gat-steel">Runner-up</p>
+                      </div>
+                    </div>
+                    <span className="font-mono font-black text-base text-slate-600">
+                      ₹{prizeData.second.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                  {/* 3rd Place */}
+                  <div className="flex items-center justify-between p-3 rounded-lg border border-orange-300/40 bg-gradient-to-r from-orange-50 to-amber-50/50">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">🥉</span>
+                      <div>
+                        <p className="font-bold text-gat-midnight text-sm">3rd Place</p>
+                        <p className="text-[11px] text-gat-steel">Second Runner-up</p>
+                      </div>
+                    </div>
+                    <span className="font-mono font-black text-base text-orange-700">
+                      ₹{prizeData.third.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                  {/* Total */}
+                  <div className="mt-2 pt-3 border-t border-gat-steel/10 flex items-center justify-between">
+                    <span className="font-bold text-gat-midnight text-sm">Total Prize Pool</span>
+                    <span className="font-mono font-black text-gat-blue text-base">
+                      ₹{(prizeData.first + prizeData.second + prizeData.third).toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

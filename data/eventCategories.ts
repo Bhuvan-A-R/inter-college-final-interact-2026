@@ -18,7 +18,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 1,
         eventName: "Classical Solo Dance",
-        category: "DANCE",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -31,7 +31,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 2,
         eventName: "Dance Battle",
-        category: "DANCE",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -44,7 +44,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 3,
         eventName: "Semi Classical Group",
-        category: "DANCE",
+        category: "CULTURAL",
         maxParticipant: 14,
         id: "",
         userId: "",
@@ -57,7 +57,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 4,
         eventName: "Western Group Dance",
-        category: "DANCE",
+        category: "CULTURAL",
         maxParticipant: 14,
         id: "",
         userId: "",
@@ -70,7 +70,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 5,
         eventName: "Western Solo Dance",
-        category: "DANCE",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -85,7 +85,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 6,
         eventName: "Group Ramp Walk (Student)",
-        category: "FASHION",
+        category: "CULTURAL",
         maxParticipant: 12,
         id: "",
         userId: "",
@@ -100,7 +100,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 7,
         eventName: "Cartooning",
-        category: "FINE_ARTS",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -113,7 +113,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 8,
         eventName: "Clay Modelling",
-        category: "FINE_ARTS",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -126,7 +126,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 9,
         eventName: "Digital Art",
-        category: "FINE_ARTS",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -139,7 +139,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 10,
         eventName: "On Spot Painting",
-        category: "FINE_ARTS",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -152,7 +152,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 11,
         eventName: "On Spot Photography",
-        category: "FINE_ARTS",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -165,7 +165,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 12,
         eventName: "Rangoli",
-        category: "FINE_ARTS",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -180,7 +180,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 13,
         eventName: "Content Creation",
-        category: "GENERAL_EVENTS",
+        category: "CULTURAL",
         maxParticipant: 3,
         id: "",
         userId: "",
@@ -193,7 +193,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 14,
         eventName: "Radio Jockey",
-        category: "GENERAL_EVENTS",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -206,7 +206,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 15,
         eventName: "Short Film",
-        category: "GENERAL_EVENTS",
+        category: "CULTURAL",
         maxParticipant: 5,
         id: "",
         userId: "",
@@ -221,7 +221,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 16,
         eventName: "Creative Writing",
-        category: "LITERARY",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -234,7 +234,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 17,
         eventName: "Debate",
-        category: "LITERARY",
+        category: "CULTURAL",
         maxParticipant: 2,
         id: "",
         userId: "",
@@ -247,7 +247,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 18,
         eventName: "Elocution",
-        category: "LITERARY",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -260,7 +260,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 19,
         eventName: "Poetry",
-        category: "LITERARY",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -275,7 +275,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 20,
         eventName: "Battle of Bands",
-        category: "MUSIC",
+        category: "CULTURAL",
         maxParticipant: 8,
         id: "",
         userId: "",
@@ -288,7 +288,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 21,
         eventName: "Beatboxing",
-        category: "MUSIC",
+        category: "CULTURAL",
         maxParticipant: 8,
         id: "",
         userId: "",
@@ -301,7 +301,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 22,
         eventName: "Classical Vocal Solo",
-        category: "MUSIC",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -314,7 +314,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 23,
         eventName: "Instrumental Solo",
-        category: "MUSIC",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -327,7 +327,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 24,
         eventName: "Voice of Interact",
-        category: "MUSIC",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -340,7 +340,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 25,
         eventName: "Western Singing Solo",
-        category: "MUSIC",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -567,7 +567,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 42,
         eventName: "Mime",
-        category: "THEATRE",
+        category: "CULTURAL",
         maxParticipant: 6,
         id: "",
         userId: "",
@@ -580,7 +580,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 43,
         eventName: "Mimicry",
-        category: "THEATRE",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -593,7 +593,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 44,
         eventName: "Mono Acting",
-        category: "THEATRE",
+        category: "CULTURAL",
         maxParticipant: 1,
         id: "",
         userId: "",
@@ -606,7 +606,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 45,
         eventName: "Skit",
-        category: "THEATRE",
+        category: "CULTURAL",
         maxParticipant: 6,
         id: "",
         userId: "",

@@ -18,41 +18,9 @@ import { toast } from "sonner";
 // Helper to assign brand colors to categories
 const getColorForCategory = (category: string) => {
   const map: Record<string, { bg: string; text: string; border: string }> = {
-    THEATRE: {
-      bg: "bg-gat-blue",
-      text: "text-gat-blue",
-      border: "border-gat-blue",
-    },
-    DANCE: {
-      bg: "bg-gat-gold",
-      text: "text-gat-gold",
-      border: "border-gat-gold",
-    },
-    MUSIC: {
-      bg: "bg-gat-navy",
-      text: "text-gat-navy",
-      border: "border-gat-navy",
-    },
-    FASHION: {
-      bg: "bg-gat-cobalt",
-      text: "text-gat-cobalt",
-      border: "border-gat-cobalt",
-    },
-    LITERARY: {
-      bg: "bg-gat-dark-gold",
-      text: "text-gat-dark-gold",
-      border: "border-gat-dark-gold",
-    },
-    FINE_ARTS: {
-      bg: "bg-gat-blue",
-      text: "text-gat-blue",
-      border: "border-gat-blue",
-    },
-    GENERAL_EVENTS: {
-      bg: "bg-gat-gold",
-      text: "text-gat-gold",
-      border: "border-gat-gold",
-    },
+    CULTURAL: { bg: "bg-gat-blue", text: "text-gat-blue", border: "border-gat-blue" },
+    SPORTS: { bg: "bg-gat-gold", text: "text-gat-gold", border: "border-gat-gold" },
+    TECHNICAL: { bg: "bg-gat-navy", text: "text-gat-navy", border: "border-gat-navy" },
   };
   return (
     map[category] || {
