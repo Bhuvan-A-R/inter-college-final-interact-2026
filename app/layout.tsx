@@ -49,7 +49,7 @@ export const metadata = {
     "technology events",
   ],
   authors: [{ name: "Bhuvan A R", url: "" }],
-  creator: "Bhuvan S A",
+  creator: "Bhuvan A R",
   publisher: "Global Academy of Technology",
   openGraph: {
     url: "https://www.gatinteract.com",

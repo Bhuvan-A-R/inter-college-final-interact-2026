@@ -244,7 +244,7 @@ function InteractLogoLaunchVideo() {
             <video
               ref={videoRef}
               className="w-full h-full object-contain"
-              src="https://5r9tznfycn.ufs.sh/f/CYCsZkxUjlfJPF0jK9SjXtaQnHPD02o3LlpKUuOhmBS4GfwN"
+              src="https://5r9tznfycn.ufs.sh/f/CYCsZkxUjlfJUBUgWpIvPNB8W5qyhHQKM9Zxop6ns0Dal2iU"
               autoPlay
               muted={muted}
               loop

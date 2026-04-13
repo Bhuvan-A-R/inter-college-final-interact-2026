@@ -56,6 +56,20 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState<string | null>(null);
 
+  // Modals state
+  const [approveModalOpen, setApproveModalOpen] = useState<string | null>(null);
+  const [rejectModalOpen, setRejectModalOpen] = useState<string | null>(null);
+  const [rejectReasonSelection, setRejectReasonSelection] = useState<string>("");
+  const [rejectReasonOther, setRejectReasonOther] = useState<string>("");
+
+  const REJECTION_OPTIONS = [
+    "Invalid or Fake UPI Transaction ID",
+    "Incorrect payment amount",
+    "Screenshot unclear or does not match",
+    "Payment not received in account",
+    "Other"
+  ];
+
   const loadTab = async (tab: Tab) => {
     setLoading(true);
     try {
@@ -89,7 +103,10 @@ export default function AdminDashboardPage() {
 
   const handleRefresh = () => loadTab(activeTab);
 
-  const handleApprove = async (orderId: string) => {
+  const confirmApprove = async () => {
+    if (!approveModalOpen) return;
+    const orderId = approveModalOpen;
+    setApproveModalOpen(null);
     setProcessing(orderId);
     try {
       const res = await fetch(`/api/admin/payments/${orderId}/verify`, {
@@ -123,20 +140,30 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleReject = async (orderId: string) => {
-    const reason = window.prompt("Enter rejection reason (required):");
-    if (reason === null) return;
-    if (!reason.trim()) {
+  const confirmReject = async () => {
+    if (!rejectModalOpen) return;
+    const orderId = rejectModalOpen;
+    
+    let finalReason = rejectReasonSelection;
+    if (finalReason === "Other") {
+      finalReason = rejectReasonOther;
+    }
+    
+    if (!finalReason.trim()) {
       toast.error("Rejection reason cannot be empty.");
       return;
     }
 
+    setRejectModalOpen(null);
+    setRejectReasonSelection("");
+    setRejectReasonOther("");
     setProcessing(orderId);
+
     try {
       const res = await fetch(`/api/admin/payments/${orderId}/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ REJECTED_REASON: reason.trim() }),
+        body: JSON.stringify({ REJECTED_REASON: finalReason.trim() }),
       });
       const data = await res.json();
 
@@ -164,6 +191,16 @@ export default function AdminDashboardPage() {
     } finally {
       setProcessing(null);
     }
+  };
+
+  const handleApproveClick = (orderId: string) => {
+    setApproveModalOpen(orderId);
+  };
+
+  const handleRejectClick = (orderId: string) => {
+    setRejectReasonSelection("");
+    setRejectReasonOther("");
+    setRejectModalOpen(orderId);
   };
 
   const orders = ordersByTab[activeTab];
@@ -376,7 +413,7 @@ export default function AdminDashboardPage() {
                               <Button
                                 size="sm"
                                 disabled={isProcessing}
-                                onClick={() => handleApprove(order.id)}
+                                onClick={() => handleApproveClick(order.id)}
                                 className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-4 font-semibold"
                               >
                                 {isProcessing ? "…" : "Approve"}
@@ -385,7 +422,7 @@ export default function AdminDashboardPage() {
                                 size="sm"
                                 variant="outline"
                                 disabled={isProcessing}
-                                onClick={() => handleReject(order.id)}
+                                onClick={() => handleRejectClick(order.id)}
                                 className="text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400 text-xs h-8 px-4 font-semibold"
                               >
                                 {isProcessing ? "…" : "Reject"}
@@ -427,6 +464,94 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Approve Modal */}
+      {approveModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+            <h2 className="text-xl font-bold text-gat-midnight mb-2">Confirm Approval</h2>
+            <p className="text-sm text-gat-steel mb-6">
+              Are you sure you want to approve this payment? This will create registrations for the selected event(s) and cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setApproveModalOpen(null)}
+                className="font-semibold"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmApprove}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+              >
+                Confirm Approve
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Modal */}
+      {rejectModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+            <h2 className="text-xl font-bold text-red-600 mb-2">Reject Payment</h2>
+            <p className="text-sm text-gat-steel mb-4">
+              Please select or enter a reason for rejecting this payment.
+            </p>
+            
+            <div className="mb-4 space-y-2">
+              <label className="text-sm font-semibold text-gat-midnight">Select Reason <span className="text-red-500">*</span></label>
+              <select 
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                value={rejectReasonSelection}
+                onChange={(e) => setRejectReasonSelection(e.target.value)}
+              >
+                <option value="" disabled>Select a reason...</option>
+                {REJECTION_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </div>
+
+            {rejectReasonSelection === "Other" && (
+              <div className="mb-6 space-y-2">
+                <label className="text-sm font-semibold text-gat-midnight">Specify Reason <span className="text-red-500">*</span></label>
+                <input 
+                  type="text"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Enter rejection reason..."
+                  value={rejectReasonOther}
+                  onChange={(e) => setRejectReasonOther(e.target.value)}
+                  autoFocus
+                />
+              </div>
+            )}
+
+            <div className="flex gap-3 justify-end mt-6">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setRejectModalOpen(null);
+                  setRejectReasonSelection("");
+                  setRejectReasonOther("");
+                }}
+                className="font-semibold"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmReject}
+                disabled={!rejectReasonSelection || (rejectReasonSelection === "Other" && !rejectReasonOther.trim())}
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold"
+              >
+                Confirm Reject
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
