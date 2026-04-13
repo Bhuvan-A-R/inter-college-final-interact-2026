@@ -505,7 +505,7 @@ export default function Home() {
                       NATIONAL LEVEL
                       <br />
                       <span style={{ color: "hsl(var(--primary))" }}>
-                        INTER-COLLEGIATE
+                        INTER-COLLEGE
                       </span>
                       <br />
                       <span
@@ -514,7 +514,7 @@ export default function Home() {
                           color: "transparent",
                         }}
                       >
-                        EVENTS 2026
+                        INTERACT 2026
                       </span>
                     </motion.h1>
 
@@ -541,7 +541,7 @@ export default function Home() {
                         label="Events"
                       />
                       <StatItem to={3} label="Days" />
-                      <StatItem to={1000} label="Participants" />
+                      <StatItem to={5000} label="Participants" />
                       {/* <div className="flex flex-col gap-1">
                   <span
                     className="font-display text-5xl md:text-4xl font-extrabold leading-none"
