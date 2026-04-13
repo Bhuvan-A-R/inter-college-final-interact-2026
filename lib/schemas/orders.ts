@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 export const submitPaymentSchema = z.object({
-  upiTransactionId: z.string().min(1, "UPI transaction ID is required"),
+  upiTransactionId: z
+    .string()
+    // .min(12, "UPI transaction ID must be at least 12 characters")
+    .regex(/^[a-zA-Z0-9]+$/, "UPI transaction ID must be alphanumeric"),
   paymentScreenshotUrl: z.string().url("A valid screenshot URL is required"),
 });
 

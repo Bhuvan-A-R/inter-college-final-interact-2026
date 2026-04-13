@@ -24,6 +24,21 @@ export async function POST(req: NextRequest, context: RouteContext) {
 
     const { upiTransactionId, paymentScreenshotUrl } = parsed.data;
 
+    // Check for duplicate UPI transaction ID
+    const duplicateOrder = await prisma.order.findFirst({
+      where: {
+        upiTransactionId,
+        id: { not: orderId },
+      },
+    });
+
+    if (duplicateOrder) {
+      return errorResponse(
+        "This UPI Transaction ID has already been used for another submission. Please ensure it is entered correctly.",
+        400
+      );
+    }
+
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
