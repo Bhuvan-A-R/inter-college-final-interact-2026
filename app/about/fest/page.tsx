@@ -43,7 +43,7 @@ const AboutFestPage = () => {
                 onto a single stage.
               </p>
               <p>
-                With participation from 200+ colleges, over 4,000 students, and
+                With participation from 100+ colleges, over 4,000 students, and
                 a footfall exceeding 20,000, INTERACT operates at a scale that
                 places it among the most impactful student-driven festivals in
                 the region. The fest spans multiple domains, including cultural,
