@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import gatLogo from "@/public/gat-logos/GAT_Linear Logo.png";
@@ -38,6 +38,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [logoOnly, setLogoOnly] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -57,6 +58,10 @@ const Navbar = () => {
   useEffect(() => {
     if (logoOnly) setMobileMenuOpen(false);
   }, [logoOnly]);
+
+  const toggleMobileMenu = (label: string) => {
+    setExpandedMenu((prev) => ({ ...prev, [label]: !prev[label] }));
+  };
 
   return (
     <>
@@ -106,7 +111,7 @@ const Navbar = () => {
 
             {/* Desktop Nav */}
             {!logoOnly && (
-              <nav className="hidden md:flex items-center gap-8">
+              <nav className="hidden min-[1200px]:flex items-center gap-8">
                 {navLinks.map((link) => {
                   if (link.children) {
                     return (
@@ -153,7 +158,7 @@ const Navbar = () => {
 
             {/* Right Cluster */}
             {!logoOnly && (
-              <div className="hidden md:flex flex-row items-center gap-4">
+              <div className="hidden min-[1200px]:flex flex-row flex-wrap items-center gap-3 max-w-[360px]">
                 {/* <button className={`flex items-center gap-2 px-3 py-2 text-sm border rounded-lg transition-colors ${
                 scrolled ? "border-gat-steel/30 text-gat-steel hover:text-white" : "border-gat-steel/30 text-gat-steel hover:text-gat-charcoal bg-transparent"
               }`}>
@@ -168,7 +173,7 @@ const Navbar = () => {
             {/* Mobile Nav Toggle */}
             {!logoOnly && (
               <button
-                className={`md:hidden p-2 rounded focus:outline-none ${scrolled ? "text-white" : "text-gat-midnight"}`}
+                className={`min-[1200px]:hidden p-2 rounded focus:outline-none ${scrolled ? "text-white" : "text-gat-midnight"}`}
                 onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? (
@@ -185,29 +190,51 @@ const Navbar = () => {
         <AnimatePresence>
           {!logoOnly && isMobileMenuOpen && (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="md:hidden overflow-hidden bg-gat-midnight text-white border-t border-gat-cobalt/30"
+              initial={{ opacity: 0, x: 16 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 16 }}
+              className="min-[1200px]:hidden fixed right-0 top-0 h-screen w-full sm:w-80 overflow-y-auto bg-gat-midnight text-white border-l border-gat-cobalt/30 shadow-2xl"
             >
-              <div className="px-4 pt-2 pb-6 space-y-4 shadow-xl flex flex-col">
+              <div className="px-4 pt-20 pb-6 space-y-4 flex flex-col">
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="absolute right-4 top-4 rounded-full p-2 text-white/80 hover:text-white hover:bg-white/10"
+                  aria-label="Close menu"
+                >
+                  <X className="h-6 w-6" />
+                </button>
                 {navLinks.map((link) => {
                   if (link.children) {
+                    const isExpanded = Boolean(expandedMenu[link.label]);
                     return (
                       <div key={link.label} className="space-y-2">
-                        <div className="px-3 text-xs font-bold uppercase tracking-wider text-white/60">
-                          {link.label}
-                        </div>
-                        {link.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="block px-3 py-3 rounded-md text-base font-heading font-bold text-white hover:bg-gat-cobalt/30 uppercase tracking-wider"
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
+                        <button
+                          type="button"
+                          onClick={() => toggleMobileMenu(link.label)}
+                          className="w-full flex items-center justify-between px-3 py-3 rounded-md text-base font-heading font-bold text-white hover:bg-gat-cobalt/30 uppercase tracking-wider"
+                        >
+                          <span>{link.label}</span>
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform ${
+                              isExpanded ? "rotate-180" : "rotate-0"
+                            }`}
+                          />
+                        </button>
+                        {isExpanded && (
+                          <div className="pl-3 space-y-2">
+                            {link.children.map((child) => (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="block px-3 py-2 rounded-md text-sm font-heading font-semibold text-white/90 hover:bg-gat-cobalt/30 uppercase tracking-wider"
+                              >
+                                {child.label}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     );
                   }
@@ -235,7 +262,7 @@ const Navbar = () => {
 
       {/* Mobile Bottom Nav Bar */}
       {!logoOnly && (
-        <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gat-blue/10 flex items-center justify-around h-16 px-2 safe-area-pb shadow-[0_-4px_24px_rgba(35,98,236,0.05)]">
+        <nav className="min-[1200px]:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gat-blue/10 flex items-center justify-around h-16 px-2 safe-area-pb shadow-[0_-4px_24px_rgba(35,98,236,0.05)]">
           <Link
             href="/"
             className="flex flex-col items-center justify-center w-full text-gat-blue p-2 rounded-lg bg-gat-blue/10"

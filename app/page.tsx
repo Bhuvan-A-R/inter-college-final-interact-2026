@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
@@ -19,6 +19,7 @@ import {
   Star,
   Dumbbell,
   Cpu,
+  X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion, useInView } from "framer-motion";
@@ -394,6 +395,171 @@ function IntroSplash({ onDone }: { onDone: () => void }) {
 /* ─────────────────────────────────────────────
     PAGE
 ───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────
+    RUN FOR HUNGER MODAL
+───────────────────────────────────────────── */
+function RunForHungerModal() {
+  const [showModal, setShowModal] = useState(false);
+  const [modalShown, setModalShown] = useState(false);
+  const [countdown, setCountdown] = useState(5);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const closeModal = useCallback(() => {
+    setShowModal(false);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (modalShown) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !modalShown) {
+          setShowModal(true);
+          setModalShown(true);
+        }
+      },
+      { threshold: 0.4 }
+    );
+    const el = triggerRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, [modalShown]);
+
+  useEffect(() => {
+    if (!showModal) return;
+    setCountdown(10);
+    intervalRef.current = setInterval(() => {
+      setCountdown((c) => {
+        if (c <= 1) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          return 0;
+        }
+        return c - 1;
+      });
+    }, 1000);
+    timerRef.current = setTimeout(() => {
+      setShowModal(false);
+    }, 10000);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [showModal]);
+
+  return (
+    <>
+      {/* Invisible scroll trigger — placed just below the video */}
+      <div ref={triggerRef} className="w-full h-px" />
+
+      {showModal && (
+        <div
+          className="fixed inset-0 z-[9998] flex items-center justify-center p-4"
+          style={{ animation: "rfhFadeIn 0.35s ease forwards" }}
+        >
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: "rgba(5,5,10,0.78)",
+              backdropFilter: "blur(10px)",
+            }}
+            onClick={closeModal}
+          />
+
+          {/* Modal */}
+          <div
+            className="relative z-10 flex flex-col items-center w-full max-w-sm"
+            style={{ animation: "rfhSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards" }}
+          >
+            {/* Close button — large, prominent */}
+            <button
+              onClick={closeModal}
+              aria-label="Close"
+              className="absolute -top-4 -right-4 z-20 flex items-center justify-center w-11 h-11 rounded-full text-white font-bold shadow-lg transition-transform hover:scale-110"
+              style={{
+                background: "hsl(var(--primary))",
+                border: "2px solid rgba(255,255,255,0.25)",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+              }}
+            >
+              <X size={18} strokeWidth={2.5} />
+            </button>
+
+            {/* Countdown progress bar */}
+            <div className="w-full mb-3 rounded-full overflow-hidden h-1" style={{ background: "rgba(255,255,255,0.15)" }}>
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${(countdown / 5) * 100}%`,
+                  background: "hsl(var(--secondary))",
+                  transition: "width 0.9s linear",
+                }}
+              />
+            </div>
+
+            {/* Poster image — full, no zoom */}
+            <div
+              className="w-full overflow-hidden shadow-2xl"
+              style={{ border: "3px solid rgba(255,255,255,0.12)", borderRadius: 0 }}
+            >
+              <Image
+                src="/events/Interact 2026 FlashMob Poster.png"
+                alt="Run for Hunger 4.0 — Poster"
+                width={1200}
+                height={900}
+                className="w-full h-auto object-contain block"
+                priority
+              />
+            </div>
+
+            {/* Register Now button */}
+            {/* <Link
+              href="https://linktr.ee/runforhunger4.0"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeModal}
+              className="mt-5 inline-flex items-center gap-2 font-semibold rounded-full transition-all duration-700"
+              style={{
+                padding: "14px 36px",
+                fontSize: 15,
+                background: "hsl(var(--secondary))",
+                color: "hsl(var(--background))",
+                boxShadow: "0 0 28px hsl(var(--secondary) / 0.45)",
+                letterSpacing: "0.05em",
+                fontFamily: "'Outfit', sans-serif",
+                transition: "transform 0.7s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.7s ease",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.06)";
+                (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 0 42px hsl(var(--secondary) / 0.65)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)";
+                (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 0 28px hsl(var(--secondary) / 0.45)";
+              }}
+            >
+              🏃‍♂️ Register for Run for Hunger 4.0
+              <ArrowRight size={16} />
+            </Link> */}
+
+            <p className="mt-2.5 text-xs" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Outfit', sans-serif" }}>
+              Closes in {countdown}s · Click outside to dismiss
+            </p>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes rfhFadeIn  { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes rfhSlideUp { from { opacity: 0; transform: translateY(36px) scale(0.96) } to { opacity: 1; transform: translateY(0) scale(1) } }
+      `}</style>
+    </>
+  );
+}
+
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const categories = useMemo(() => {
@@ -439,6 +605,7 @@ export default function Home() {
       ) : (
         <>
           <InteractLogoLaunchVideo />
+          <RunForHungerModal />
           <div
             className="min-h-screen"
             style={{

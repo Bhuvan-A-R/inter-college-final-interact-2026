@@ -14,7 +14,8 @@ type LoginLogoutButtonProps = {
 
 const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
   const { isLoggedIn, role, setIsLoggedIn } = useAuthContext();
-  const isAdmin = role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN";
+  const isAdmin =
+    role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN";
   const isParticipant =
     role === "PARTICIPANT" || (isLoggedIn && role !== null && !isAdmin);
   const router = useRouter();
@@ -28,15 +29,21 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
     const fetchObj = { cache: "no-store" as RequestCache };
     fetch("/api/cart", fetchObj)
       .then((r) => r.json())
-      .then((d) => { if (d.success) setCartCount(d.data.items?.length ?? 0); })
+      .then((d) => {
+        if (d.success) setCartCount(d.data.items?.length ?? 0);
+      })
       .catch(() => {});
     fetch("/api/orders", fetchObj)
       .then((r) => r.json())
-      .then((d) => { if (d.success) setOrdersCount(d.data.items?.length ?? 0); })
+      .then((d) => {
+        if (d.success) setOrdersCount(d.data.items?.length ?? 0);
+      })
       .catch(() => {});
     fetch("/api/invites", fetchObj)
       .then((r) => r.json())
-      .then((d) => { if (d.success) setInvitesCount(d.data.items?.length ?? 0); })
+      .then((d) => {
+        if (d.success) setInvitesCount(d.data.items?.length ?? 0);
+      })
       .catch(() => {});
   };
 
@@ -66,9 +73,10 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
   // ─── Visual layer only changes below ─────────────────────────────────────
 
   const baseBtn =
-    "inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold tracking-wide border transition-all duration-300 ";
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-[10px] sm:text-[11px] font-semibold tracking-wide border transition-all duration-300 px-2 py-1.5 sm:px-2.5 sm:py-1.5 ";
 
   const stackedBtn = "w-full";
+  const iconBtn = `${baseBtn} ${variant === "stacked" ? stackedBtn : "w-8 h-8 p-0"}`;
 
   const glassBtn =
     baseBtn +
@@ -83,7 +91,7 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
       className={
         variant === "stacked"
           ? "flex w-full flex-col gap-2"
-          : "flex flex-wrap items-center gap-2"
+          : "flex flex-wrap items-center gap-1.5 max-w-[360px]"
       }
     >
       {isLoggedIn ? (
@@ -119,53 +127,61 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
                 >
                   Dashboard
                 </Link>
-                <Link
-                  id="teams-link"
-                  href="/teams"
-                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""} relative`}
+                <div
+                  className={
+                    variant === "stacked"
+                      ? "grid grid-cols-2 gap-2"
+                      : "flex items-center gap-1.5"
+                  }
                 >
-                  <Users size={18} strokeWidth={2} />
-                  <span className="sr-only">Teams</span>
-                </Link>
-                <Link
-                  id="invites-link"
-                  href="/invites"
-                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""} relative`}
-                >
-                  <UserPlus size={18} strokeWidth={2} />
-                  <span className="sr-only">Invites</span>
-                  {invitesCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
-                      {invitesCount > 9 ? "9+" : invitesCount}
-                    </span>
-                  )}
-                </Link>
-                <Link
-                  id="cart-link"
-                  href="/cart"
-                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""} relative`}
-                >
-                  <ShoppingCart size={18} strokeWidth={2} />
-                  <span className="sr-only">Cart</span>
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
-                      {cartCount > 9 ? "9+" : cartCount}
-                    </span>
-                  )}
-                </Link>
-                <Link
-                  id="orders-link"
-                  href="/orders"
-                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""} relative`}
-                >
-                  <ClipboardList size={18} strokeWidth={2} />
-                  <span className="sr-only">Orders</span>
-                  {ordersCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
-                      {ordersCount > 9 ? "9+" : ordersCount}
-                    </span>
-                  )}
-                </Link>
+                  <Link
+                    id="teams-link"
+                    href="/teams"
+                    className={`${iconBtn} relative`}
+                  >
+                    <Users size={18} strokeWidth={2} />
+                    <span className="sr-only">Teams</span>
+                  </Link>
+                  <Link
+                    id="invites-link"
+                    href="/invites"
+                    className={`${iconBtn} relative`}
+                  >
+                    <UserPlus size={18} strokeWidth={2} />
+                    <span className="sr-only">Invites</span>
+                    {invitesCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
+                        {invitesCount > 9 ? "9+" : invitesCount}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
+                    id="cart-link"
+                    href="/cart"
+                    className={`${iconBtn} relative`}
+                  >
+                    <ShoppingCart size={18} strokeWidth={2} />
+                    <span className="sr-only">Cart</span>
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
+                        {cartCount > 9 ? "9+" : cartCount}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
+                    id="orders-link"
+                    href="/orders"
+                    className={`${iconBtn} relative`}
+                  >
+                    <ClipboardList size={18} strokeWidth={2} />
+                    <span className="sr-only">Orders</span>
+                    {ordersCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
+                        {ordersCount > 9 ? "9+" : ordersCount}
+                      </span>
+                    )}
+                  </Link>
+                </div>
               </>
             ) : null /* role still loading — render nothing until checkAuth resolves */
           }

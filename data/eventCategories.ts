@@ -380,7 +380,7 @@ export const interCollegeEvents: EventCategory[] = [
     },
     {
         eventNo: 28,
-        eventName: "Crossfit ( M & W )",
+        eventName: "Crossfit (M & W) - Open Category",
         category: "SPORTS",
         maxParticipant: 1,
         id: "",
