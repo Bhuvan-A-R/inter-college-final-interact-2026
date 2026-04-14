@@ -646,7 +646,7 @@ export default function SignUp() {
                             <Input
                               className="h-11"
                               style={inputStyle}
-                              placeholder="e.g. 1BG21CS001"
+                              placeholder="e.g. 1GA00AA000"
                               {...field}
                             />
                           </FormControl>
