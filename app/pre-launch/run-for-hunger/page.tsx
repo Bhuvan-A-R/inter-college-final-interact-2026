@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Ticket
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export const metadata = {
@@ -42,6 +43,21 @@ const RunForHungerPage = () => {
         <p className="text-xl md:text-2xl font-medium max-w-2xl mx-auto text-center mb-10 text-gat-midnight/80">
           Lace up. Show up. <span className="text-gat-blue font-bold">Make a difference.</span>
         </p>
+
+        {/* Hero Image Section */}
+        <div className="w-full max-w-4xl mb-12 group">
+          <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white transition-transform duration-500 group-hover:scale-[1.02]">
+            <Image 
+              src="/events/Run for Hunger.jpeg" 
+              alt="Run for Hunger 4.0" 
+              width={1600} 
+              height={900} 
+              className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-gat-midnight/40 to-transparent opacity-60" />
+          </div>
+        </div>
 
         {/* Action Button & Deadline - Top */}
         <div className="flex flex-col items-center gap-4 mb-16">
