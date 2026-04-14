@@ -126,6 +126,14 @@ const Footer = () => {
                   Gallery
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="https://interdepartment.gatinteract.com/"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  Inter - Department Details
+                </Link>
+              </li>
             </ul>
           </div>
 
