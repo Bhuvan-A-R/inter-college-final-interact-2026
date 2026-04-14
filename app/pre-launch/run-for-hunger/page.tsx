@@ -280,18 +280,22 @@ const RunForHungerPage = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 w-full lg:w-auto relative z-10">
-                            <div className="flex flex-col bg-gat-off-white/50 p-6 rounded-2xl border border-gat-blue/5 group hover:bg-white hover:border-gat-blue/20 transition-all">
-                                <span className="text-xl font-black text-gat-midnight font-heading tracking-tight group-hover:text-gat-blue transition-colors">+91 99867 70082</span>
-                                <span className="text-sm font-bold text-gat-steel mt-1 uppercase">Lt. Saravanan</span>
+                        <div className="flex flex-col gap-6 w-full lg:w-auto relative z-10">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full lg:w-auto">
+                                <div className="flex flex-col bg-gat-off-white/50 p-6 rounded-2xl border border-gat-blue/5 group hover:bg-white hover:border-gat-blue/20 transition-all">
+                                    <span className="text-xl font-black text-gat-midnight font-heading tracking-tight group-hover:text-gat-blue transition-colors">+91 99867 70082</span>
+                                    <span className="text-sm font-bold text-gat-steel mt-1 uppercase">Lt. Saravanan</span>
+                                </div>
+                                <div className="flex flex-col bg-gat-off-white/50 p-6 rounded-2xl border border-gat-blue/5 group hover:bg-white hover:border-gat-blue/20 transition-all">
+                                    <span className="text-xl font-black text-gat-midnight font-heading tracking-tight group-hover:text-gat-blue transition-colors">+91 95355 81538</span>
+                                    <span className="text-sm font-bold text-gat-steel mt-1 uppercase">SAI KRISHNA M S</span>
+                                </div>
                             </div>
-                            <div className="flex flex-col bg-gat-off-white/50 p-6 rounded-2xl border border-gat-blue/5 group hover:bg-white hover:border-gat-blue/20 transition-all">
-                                <span className="text-xl font-black text-gat-midnight font-heading tracking-tight group-hover:text-gat-blue transition-colors">+91 95355 81538</span>
-                                <span className="text-sm font-bold text-gat-steel mt-1 uppercase">SAI KRISHNA M S</span>
-                            </div>
-                            <div className="flex flex-col bg-gat-off-white/50 p-6 rounded-2xl border border-gat-blue/5 group hover:bg-white hover:border-gat-blue/20 transition-all">
-                                <span className="text-xl font-black text-gat-midnight font-heading tracking-tight group-hover:text-gat-blue transition-colors">+91 98451 46769</span>
-                                <span className="text-sm font-bold text-gat-steel mt-1 uppercase">KUSUMA B</span>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full lg:w-auto">
+                                <div className="flex flex-col bg-gat-off-white/50 p-6 rounded-2xl border border-gat-blue/5 group hover:bg-white hover:border-gat-blue/20 transition-all">
+                                    <span className="text-xl font-black text-gat-midnight font-heading tracking-tight group-hover:text-gat-blue transition-colors">+91 98451 46769</span>
+                                    <span className="text-sm font-bold text-gat-steel mt-1 uppercase">KUSUMA B</span>
+                                </div> 
                             </div>
                         </div>
                     </div>
