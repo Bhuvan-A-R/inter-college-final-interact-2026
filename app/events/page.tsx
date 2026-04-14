@@ -15,6 +15,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuthContext } from "@/contexts/auth-context";
 import { toast } from "sonner";
 
+
+
 // Helper to assign brand colors to categories
 const getColorForCategory = (category: string) => {
   const map: Record<string, { bg: string; text: string; border: string }> = {
