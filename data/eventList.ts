@@ -468,7 +468,7 @@ export const eventsList: EventList[] = [
         eventNo: 28,
         category: "Sports",
         image: eventImage,
-        name: "Crossfit (M & W)",
+        name: "Crossfit (M & W) - Open Category",
         rules: [
             "Participants must complete the given Workout of the Day (WOD).",
             "Format may be time-based, AMRAP, or EMOM.",
