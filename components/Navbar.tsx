@@ -23,6 +23,13 @@ const navLinks = [
     ],
   },
   { href: "/events", label: "Events" },
+  {
+    label: "Pre-Launch Event",
+    children: [
+      { href: "/pre-launch/flashmob", label: "Flashmob" },
+      { href: "/pre-launch/run-for-hunger", label: "Run for Hunger 4.0" },
+    ],
+  },
   // { href: "/spoc-details", label: "SPOC's Details" },
   // { href: "/schedule", label: "Schedule" },
 ];
