@@ -367,7 +367,7 @@ export const interCollegeEvents: EventCategory[] = [
     },
     {
         eventNo: 27,
-        eventName: "Best Physique",
+        eventName: "Best Physique (M)",
         category: "SPORTS",
         maxParticipant: 1,
         id: "",
@@ -419,7 +419,7 @@ export const interCollegeEvents: EventCategory[] = [
     },
     {
         eventNo: 31,
-        eventName: "Short Pitch Cricket",
+        eventName: "Short Pitch Cricket (M)",
         category: "SPORTS",
         maxParticipant: 8,
         id: "",

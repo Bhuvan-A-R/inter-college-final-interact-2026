@@ -524,7 +524,7 @@ export const eventsList: EventList[] = [
         eventNo: 31,
         category: "Sports",
         image: eventImage,
-        name: "Short Pitch Cricket",
+        name: "Short Pitch Cricket (M)",
         rules: [
             "Each team consists of 7 players + 1 substitute.",
             "Aadhar Card and College ID of the participant is mandatory.",
