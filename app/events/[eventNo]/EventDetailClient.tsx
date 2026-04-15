@@ -54,6 +54,16 @@ export default function EventDetailClient({ category, details }: Props) {
   const hasDetails = details.length > 0;
   const mainDetail = hasDetails ? details[0] : null;
   const prizeData = eventPrizePool.find((p) => p.eventNo === category.eventNo);
+  const hasSecondPrize =
+    typeof prizeData?.second === "number" && prizeData.second > 0;
+  const hasThirdPrize =
+    hasSecondPrize &&
+    typeof prizeData?.third === "number" &&
+    prizeData.third > 0;
+  const totalPrizePool =
+    (prizeData?.first ?? 0) +
+    (hasSecondPrize ? prizeData!.second : 0) +
+    (hasThirdPrize ? prizeData!.third : 0);
 
   const [activeAccordion, setActiveAccordion] = useState<string | null>(
     "description",
@@ -570,7 +580,9 @@ export default function EventDetailClient({ category, details }: Props) {
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">🥇</span>
                       <div>
-                        <p className="font-bold text-gat-midnight text-sm">1st Place</p>
+                        <p className="font-bold text-gat-midnight text-sm">
+                          1st Place
+                        </p>
                         <p className="text-[11px] text-gat-steel">Winner</p>
                       </div>
                     </div>
@@ -579,36 +591,50 @@ export default function EventDetailClient({ category, details }: Props) {
                     </span>
                   </div>
                   {/* 2nd Place */}
-                  <div className="flex items-center justify-between p-3 rounded-lg border border-gray-300/40 bg-gradient-to-r from-gray-50 to-slate-50">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">🥈</span>
-                      <div>
-                        <p className="font-bold text-gat-midnight text-sm">2nd Place</p>
-                        <p className="text-[11px] text-gat-steel">Runner-up</p>
+                  {hasSecondPrize && (
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-gray-300/40 bg-gradient-to-r from-gray-50 to-slate-50">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">🥈</span>
+                        <div>
+                          <p className="font-bold text-gat-midnight text-sm">
+                            2nd Place
+                          </p>
+                          <p className="text-[11px] text-gat-steel">
+                            Runner-up
+                          </p>
+                        </div>
                       </div>
+                      <span className="font-mono font-black text-base text-slate-600">
+                        ₹{prizeData.second.toLocaleString("en-IN")}
+                      </span>
                     </div>
-                    <span className="font-mono font-black text-base text-slate-600">
-                      ₹{prizeData.second.toLocaleString("en-IN")}
-                    </span>
-                  </div>
+                  )}
                   {/* 3rd Place */}
-                  <div className="flex items-center justify-between p-3 rounded-lg border border-orange-300/40 bg-gradient-to-r from-orange-50 to-amber-50/50">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">🥉</span>
-                      <div>
-                        <p className="font-bold text-gat-midnight text-sm">3rd Place</p>
-                        <p className="text-[11px] text-gat-steel">Second Runner-up</p>
+                  {hasThirdPrize && (
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-orange-300/40 bg-gradient-to-r from-orange-50 to-amber-50/50">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">🥉</span>
+                        <div>
+                          <p className="font-bold text-gat-midnight text-sm">
+                            3rd Place
+                          </p>
+                          <p className="text-[11px] text-gat-steel">
+                            Second Runner-up
+                          </p>
+                        </div>
                       </div>
+                      <span className="font-mono font-black text-base text-orange-700">
+                        ₹{prizeData.third.toLocaleString("en-IN")}
+                      </span>
                     </div>
-                    <span className="font-mono font-black text-base text-orange-700">
-                      ₹{prizeData.third.toLocaleString("en-IN")}
-                    </span>
-                  </div>
+                  )}
                   {/* Total */}
                   <div className="mt-2 pt-3 border-t border-gat-steel/10 flex items-center justify-between">
-                    <span className="font-bold text-gat-midnight text-sm">Total Prize Pool</span>
+                    <span className="font-bold text-gat-midnight text-sm">
+                      Total Prize Pool
+                    </span>
                     <span className="font-mono font-black text-gat-blue text-base">
-                      ₹{(prizeData.first + prizeData.second + prizeData.third).toLocaleString("en-IN")}
+                      ₹{totalPrizePool.toLocaleString("en-IN")}
                     </span>
                   </div>
                 </div>

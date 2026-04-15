@@ -195,7 +195,7 @@ const Footer = () => {
                   href="callto:+91 83174 62097"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  Aditi Rajesh - +91 81479 53199
+                  {/* Aditi Rajesh - +91 81479 53199 */} 
                 </a>
               </li>
               <li className="text-gat-gold">
