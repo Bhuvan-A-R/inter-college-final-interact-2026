@@ -16,7 +16,7 @@ export const interactTeamSections: TeamSection[] = [
       {
         name: "Lt. Saravanan ",
         role: "Faculty Convenor",
-        photo: "/images/placeholder.jpg",
+        photo: "/convenors/snr.jpeg",
       },
       // {
       //   name: "Prof. Ajay Kulkarni",
@@ -31,42 +31,42 @@ export const interactTeamSections: TeamSection[] = [
       {
         "name": "Anoop S J",
         "role": "Media",
-        "photo": "/images/placeholder.jpg"
+        "photo": "/convenors/Anoop S J.png"
       },
       {
         "name": "Bhuvan A R",
         "role": "Technical / Registration",
-        "photo": "/images/placeholder.jpg"
+        "photo": "/convenors/Bhuvan A R.png"
       },
       {
         "name": "Kusuma",
         "role": "Logistics / Creative",
-        "photo": "/images/placeholder.jpg"
+        "photo": "/convenors/Kusuma.png"
       },
       {
         "name": "Sagar",
         "role": "Stage / Hospitality",
-        "photo": "/images/placeholder.jpg"
+        "photo": "/convenors/Sagar.png"
       },
       {
         "name": "Samarth Anoop",
         "role": "Marketing / Sponsorship",
-        "photo": "/images/placeholder.jpg"
+        "photo": "/convenors/Samarth Anoop.png"
       },
       {
         "name": "Sharath",
         "role": "Sports / Accommodation",
-        "photo": "/images/placeholder.jpg"
+        "photo": "/convenors/Sharath.png"
       },
       {
         "name": "Sohan S K",
         "role": "Culturals / Program",
-        "photo": "/images/placeholder.jpg"
+        "photo": "/convenors/Sohan S K.png"
       },
       {
         "name": "Tejas Varma",
         "role": "Discipline / Transportation",
-        "photo": "/images/placeholder.jpg"
+        "photo": "/convenors/Tejas Varma.png"
       }
     ]
   },
