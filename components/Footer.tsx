@@ -46,8 +46,8 @@ const Footer = () => {
                   @interact2026
                 </span>
               </a>
-              </div>
-              <div className="flex items-center gap-4">
+            </div>
+            <div className="flex items-center gap-4">
               <a
                 href="https://www.instagram.com/gatbengaluru/"
                 target="_blank"
@@ -192,10 +192,10 @@ const Footer = () => {
               <li className="text-gat-gold">
                 Technical Coordinator <br />
                 <a
-                  href="callto:+91 83174 62097"
+                  href="callto:+91 89511 85530"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  {/* Aditi Rajesh - +91 81479 53199 */} 
+                  Vignesh - +91 89511 85530
                 </a>
               </li>
               <li className="text-gat-gold">

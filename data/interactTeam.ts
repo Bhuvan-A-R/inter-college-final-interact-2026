@@ -16,7 +16,7 @@ export const interactTeamSections: TeamSection[] = [
       {
         name: "Lt. Saravanan ",
         role: "Faculty Convenor",
-        photo: "/images/placeholder.jpg",
+        photo: "/convenors/snr.jpeg",
       },
       // {
       //   name: "Prof. Ajay Kulkarni",
