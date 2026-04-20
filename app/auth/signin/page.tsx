@@ -171,7 +171,7 @@ export default function SignIn() {
               className="text-xs font-bold uppercase tracking-[0.18em] mx-12 flex-shrink-0"
               style={{ color: "hsl(var(--foreground) / 0.5)" }}
             >
-              Registrations Starting Soon · Stay tuned for updates · INTERACT 2K26 ·
+              Registrations Live Now !! · INTERACT 2K26
             </span>
           ))}
         </div>
