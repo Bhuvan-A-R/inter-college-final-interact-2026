@@ -63,6 +63,7 @@ model Team {
   TeamInvite TeamInvite[]
   members    TeamMember[]
 
+  @@unique([name])
   @@unique([leaderId, eventId])
   @@index([eventId])
 }

@@ -55,6 +55,9 @@ export default function TeamsPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [teamName, setTeamName] = useState<string>("");
   const [eventId, setEventId] = useState<string>("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
+
 
   const teamEvents = useMemo(() => {
     const filteredEvents = events.filter((event) => event.type === "TEAM" && event.isActive);
@@ -115,6 +118,7 @@ export default function TeamsPage() {
       return;
     }
 
+    setIsCreating(true);
     try {
       const res = await fetch("/api/teams", {
         method: "POST",
@@ -124,19 +128,28 @@ export default function TeamsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error?.message || "Failed to create team.");
+        if (res.status === 409 && data.error?.data?.suggestions) {
+          setSuggestions(data.error.data.suggestions);
+          toast.error(data.error.message || "Team name already taken.");
+        } else {
+          toast.error(data.error?.message || "Failed to create team.");
+        }
         return;
       }
 
       toast.success("Team created successfully.");
       setTeamName("");
       setEventId("");
+      setSuggestions([]);
       loadData();
     } catch (error) {
       console.error(error);
       toast.error("Unable to create team.");
+    } finally {
+      setIsCreating(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gat-off-white pt-24 pb-16">
@@ -172,9 +185,34 @@ export default function TeamsPage() {
                 </option>
               ))}
             </select>
-            <Button onClick={handleCreateTeam}>Create</Button>
+            <Button onClick={handleCreateTeam} disabled={isCreating}>
+              {isCreating ? "Creating..." : "Create"}
+            </Button>
           </div>
+
+          {suggestions.length > 0 && (
+            <div className="mt-4 p-4 bg-gat-blue/5 border border-gat-blue/10 rounded-lg max-w-2xl">
+              <p className="text-sm font-bold text-gat-blue uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                Suggested Names
+              </p>
+              <div className="flex flex-wrap gap-2 text-sm">
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => {
+                      setTeamName(suggestion);
+                      setSuggestions([]);
+                    }}
+                    className="bg-white border border-gat-blue/20 px-3 py-1.5 rounded-full hover:border-gat-blue hover:text-gat-blue transition-colors shadow-sm"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+
 
         {loading ? (
           <div className="rounded-xl bg-white p-6 border border-gat-blue/10 shadow-sm">

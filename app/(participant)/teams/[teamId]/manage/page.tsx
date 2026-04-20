@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { Edit2, Check, X, Sparkles } from "lucide-react";
+
 
 type Member = {
   id: string;
@@ -68,6 +70,13 @@ export default function ManageTeamPage() {
   const [email, setEmail] = useState("");
   const [inviting, setInviting] = useState(false);
 
+  // Renaming state
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [renaming, setRenaming] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -97,7 +106,9 @@ export default function ManageTeamPage() {
 
       if (teamData.data?.team) {
         setTeam(teamData.data.team);
+        setNewName(teamData.data.team.name);
       }
+
 
       if (profileRes.ok && profileData.data?.user?.id) {
         setCurrentUserId(profileData.data.user.id);
@@ -146,6 +157,50 @@ export default function ManageTeamPage() {
     }
   };
 
+  const handleRename = async () => {
+    if (!newName.trim()) {
+      toast.error("Team name cannot be empty.");
+      return;
+    }
+
+    if (newName.trim() === team?.name) {
+      setIsEditingName(false);
+      setSuggestions([]);
+      return;
+    }
+
+    setRenaming(true);
+    try {
+      const res = await fetch(`/api/teams/${teamId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName.trim() }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 409 && data.error?.data?.suggestions) {
+          setSuggestions(data.error.data.suggestions);
+          toast.error(data.error.message || "Team name already taken.");
+        } else {
+          toast.error(data.error?.message || "Failed to rename team.");
+        }
+        return;
+      }
+
+      toast.success("Team renamed successfully.");
+      setIsEditingName(false);
+      setSuggestions([]);
+      loadData();
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to rename team.");
+    } finally {
+      setRenaming(false);
+    }
+  };
+
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gat-off-white pt-24 pb-16">
@@ -192,9 +247,87 @@ export default function ManageTeamPage() {
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-gat-steel mt-3">
             Team
           </p>
-          <h1 className="text-3xl md:text-4xl font-heading font-black text-gat-midnight">
-            {team.name}
-          </h1>
+          <div className="flex items-center gap-3 group">
+            {isEditingName ? (
+              <div className="flex-1 max-w-md">
+                <div className="flex gap-2">
+                  <Input
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleRename();
+                      if (e.key === "Escape") {
+                        setIsEditingName(false);
+                        setSuggestions([]);
+                      }
+                    }}
+                    placeholder="New team name"
+                    className="text-xl font-heading font-bold h-12"
+                    autoFocus
+                  />
+                  <Button
+                    size="icon"
+                    onClick={handleRename}
+                    disabled={renaming}
+                    className="h-12 w-12 bg-gat-blue text-white"
+                  >
+                    <Check className="h-5 w-5" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      setIsEditingName(false);
+                      setSuggestions([]);
+                      setNewName(team.name);
+                    }}
+                    disabled={renaming}
+                    className="h-12 w-12 text-gat-steel"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                
+                {suggestions.length > 0 && (
+                  <div className="mt-3 p-4 bg-gat-blue/5 border border-gat-blue/10 rounded-lg">
+                    <p className="text-xs font-bold text-gat-blue uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Sparkles className="h-3 w-3" /> Suggestions
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {suggestions.map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          onClick={() => {
+                            setNewName(suggestion);
+                            setSuggestions([]);
+                          }}
+                          className="text-xs bg-white border border-gat-blue/20 px-3 py-1.5 rounded-full hover:border-gat-blue hover:text-gat-blue transition-colors shadow-sm"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <h1 className="text-3xl md:text-4xl font-heading font-black text-gat-midnight">
+                  {team.name}
+                </h1>
+                {isLeader && (
+                  <button
+                    onClick={() => setIsEditingName(true)}
+                    className="p-2 text-gat-steel hover:text-gat-blue transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                    title="Rename Team"
+                  >
+                    <Edit2 className="h-5 w-5" />
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+
           <p className="text-sm text-gat-steel mt-1">
             {team.event.name} • {team.event.category}
           </p>

@@ -7,7 +7,7 @@ import { cache } from "react";
 export type AuthPayload = {
   id: string;
   email: string;
-  role: "PARTICIPANT" | "ADMIN" | "SUPER_ADMIN";
+  role: "PARTICIPANT" | "SUPER_ADMIN" | "REG_ADMIN";
   paymentUrl?: string | boolean | null; 
 };
 
