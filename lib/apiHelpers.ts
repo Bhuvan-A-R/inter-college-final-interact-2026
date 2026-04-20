@@ -13,10 +13,16 @@ export function successResponse(data: any, status = 200, message?: string) {
 export function errorResponse(
   message: string,
   status = 400,
-  issues?: unknown[]
+  data?: any
 ) {
-  const error: Record<string, unknown> = { message };
-  if (issues) error.issues = issues;
+  const error: Record<string, any> = { message };
+  if (data) {
+    if (Array.isArray(data)) {
+      error.issues = data;
+    } else {
+      error.data = data;
+    }
+  }
   return NextResponse.json({ success: false, error }, { status });
 }
 

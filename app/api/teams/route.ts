@@ -7,6 +7,8 @@ import {
   errorResponse,
 } from "@/lib/apiHelpers";
 import { createTeamSchema } from "@/lib/schemas/teams";
+import { generateTeamNameSuggestions } from "@/lib/teamUtils";
+
 
 // GET /api/teams — List teams the authenticated user belongs to
 export async function GET() {
@@ -64,6 +66,21 @@ export async function POST(req: NextRequest) {
     if (parsed.error) return parsed.error;
 
     const { name, eventId } = parsed.data;
+
+    // Check for team name uniqueness
+    const existingTeamByName = await prisma.team.findFirst({
+      where: { name: { equals: name, mode: "insensitive" } },
+    });
+
+    if (existingTeamByName) {
+      const suggestions = await generateTeamNameSuggestions(name);
+      return errorResponse(
+        "A team with this name already exists.",
+        409,
+        { suggestions }
+      );
+    }
+
 
     // Verify event exists, is active, and is a TEAM event
     const event = await prisma.event.findUnique({
