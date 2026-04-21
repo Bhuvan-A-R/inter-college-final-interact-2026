@@ -61,7 +61,7 @@ const RunForHungerPage = () => {
 
                 {/* Action Button & Deadline - Top */}
                 <div className="flex flex-col items-center gap-4 mb-16">
-                    <Link
+                    {/* <Link
                         href="https://linktr.ee/runforhunger4.0"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -69,7 +69,7 @@ const RunForHungerPage = () => {
                     >
                         REGISTER NOW
                         <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1.5 transition-transform" />
-                    </Link>
+                    </Link> */}
                     <div className="text-sm font-bold flex items-center text-red-600 bg-red-500/10 px-5 py-2.5 rounded-full border border-red-500/20 shadow-sm backdrop-blur-sm shadow-red-500/10 animate-pulse">
                         <Clock className="w-4 h-4 mr-2" />
                         Registrations CLOSE on April 24th! Spots are filling fast!
@@ -140,7 +140,7 @@ const RunForHungerPage = () => {
                                         <span className="text-4xl font-heading font-black text-gat-midnight">₹349</span>
                                     </div>
                                     <Link
-                                        href="https://linktr.ee/runforhunger4.0"
+                                        href="https://docs.google.com/forms/d/e/1FAIpQLScjm-bdzVT4X0vOurs1wjTbH9kBDBKbW-mCv4mt15trMAJAuQ/viewform?usp=sharing&ouid=111257223821631545325"
                                         target="_blank"
                                         className="w-full block text-center py-3.5 rounded-xl bg-gat-off-white hover:bg-gat-blue/10 text-gat-midnight hover:text-gat-blue border border-gat-blue/10 hover:border-gat-blue/30 transition-all font-bold text-lg"
                                     >
@@ -164,7 +164,7 @@ const RunForHungerPage = () => {
                                         <span className="text-4xl font-heading font-black text-gat-midnight">₹499</span>
                                     </div>
                                     <Link
-                                        href="https://linktr.ee/runforhunger4.0"
+                                        href="https://docs.google.com/forms/d/e/1FAIpQLScjm-bdzVT4X0vOurs1wjTbH9kBDBKbW-mCv4mt15trMAJAuQ/viewform?usp=sharing&ouid=111257223821631545325"
                                         target="_blank"
                                         className="w-full block text-center py-3.5 rounded-xl bg-gat-off-white hover:bg-gat-blue/10 text-gat-midnight hover:text-gat-blue border border-gat-blue/10 hover:border-gat-blue/30 transition-all font-bold text-lg"
                                     >
@@ -188,7 +188,7 @@ const RunForHungerPage = () => {
                                         <span className="text-4xl font-heading font-black text-gat-midnight">₹399</span>
                                     </div>
                                     <Link
-                                        href="https://linktr.ee/runforhunger4.0"
+                                        href="https://docs.google.com/forms/d/e/1FAIpQLSdpZIg2e0wtu5ZMIw9W3OXGRe0K2-84o6Ay0hP5P8d4KLjFTA/viewform?usp=sharing&ouid=111257223821631545325"
                                         target="_blank"
                                         className="w-full block text-center py-3.5 rounded-xl bg-gat-off-white hover:bg-gat-midnight/10 text-gat-midnight transition-all font-bold text-lg border border-gat-blue/10"
                                     >

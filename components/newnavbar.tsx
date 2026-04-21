@@ -111,7 +111,7 @@ const NavBar = () => {
                     <NavigationMenu>
                         <NavigationMenuList className="bg-inherit">
                             <NavigationMenuItem className="bg-inherit">
-                                <Link href="https://vtufestinteract.com/" legacyBehavior passHref>
+                                <Link href="https://gatinteract.com/" legacyBehavior passHref>
                                     <NavigationMenuLink
                                         className={cn(
                                             navigationMenuTriggerStyle(),

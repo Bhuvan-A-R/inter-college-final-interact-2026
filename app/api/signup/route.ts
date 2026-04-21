@@ -171,6 +171,7 @@ export async function POST(request: Request) {
             const mailOptions = {
                 from: process.env.SMTP_EMAIL,
                 to: email,
+                cc: ["interact2k26@gmail.com"],
                 subject:
                     "Login Credentials for Interact-2025 Registration Portal",
                 html: `
@@ -215,8 +216,8 @@ export async function POST(request: Request) {
     <p style="margin-bottom: 16px;">Please use these credentials to log in and complete the participant registration process for the fest.</p>
     <p style="margin-bottom: 16px;">
       <strong>Website Link:</strong>
-      <a href="https://vtufestinteract.com" target="_blank" style="color: #2563eb; text-decoration: none;">
-        vtufestinteract.com
+      <a href="https://gatinteract.com" target="_blank" style="color: #2563eb; text-decoration: none;">
+        gatinteract.com
       </a>
     </p>
     <p style="margin-bottom: 16px;">

