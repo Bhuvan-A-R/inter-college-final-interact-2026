@@ -128,10 +128,10 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="https://www.gatinteract.com/"
+                  href="https://interdepartment.gatinteract.com/"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  Inter - College Website
+                  Inter - Department Website
                 </Link>
               </li>
             </ul>
