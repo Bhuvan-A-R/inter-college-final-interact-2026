@@ -49,14 +49,14 @@ export const interactTeamSections: TeamSection[] = [
         "photo": "/convenors/Sagar.png"
       },
       {
-        "name": "Samarth Anoop",
-        "role": "Marketing / Sponsorship",
-        "photo": "/convenors/Samarth Anoop.png"
-      },
-      {
         "name": "Sharath",
         "role": "Sports / Accommodation",
         "photo": "/convenors/Sharath.png"
+      },
+      {
+        "name": "ShivaGanesh G R",
+        "role": "Marketing / Sponsorship",
+        "photo": "/convenors/ShivaGanesh G R.png"
       },
       {
         "name": "Sohan S K",
