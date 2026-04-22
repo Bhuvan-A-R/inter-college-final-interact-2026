@@ -220,6 +220,47 @@ const Footer = () => {
             </h3>
           </div>
 
+          <div>
+            {/* <h3 className="font-heading font-bold text-lg text-white mb-1 tracking-wide">
+              Website Issues
+            </h3>
+            <ul className="space-y-3 font-body text-sm text-gat-steel">
+              <li className="text-gat-gold">
+                Bhuvan A R <br />
+                <a
+                  href="callto:+91 83174 62097"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  +91 83174 62097
+                </a>
+              </li>
+            </ul> */}
+
+            <h3 className="font-heading font-bold text-lg text-white mt-3 mb-1 tracking-wide">
+              Registration & Payment Issues
+            </h3>
+            <ul className="space-y-2 font-body text-sm text-gat-steel">
+              <li className="text-gat-gold">
+                Registration Coordinator <br />
+                <a
+                  href="callto:+91 93805 33506"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  Yashaswi P M - +91 93805 33506
+                </a>
+              </li>
+              <li className="text-gat-gold">
+                Payment Coordinator <br />
+                <a
+                  href="callto:+91 72593 43558"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  Siri P - +91 72593 43558
+                </a>
+              </li>
+            </ul>
+          </div>
+
           {/* Column 5: Legal & Contact */}
           {/* <div>
             <h3 className="font-heading font-bold text-lg text-white mb-6 tracking-wide">
