@@ -85,7 +85,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/about/gat"
+                  href="https://www.gatinteract.com/about/gat"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
                   About GAT
@@ -93,7 +93,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/about/fest"
+                  href="https://www.gatinteract.com/about/fest"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
                   About FEST
@@ -101,7 +101,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/about/management"
+                  href="https://www.gatinteract.com/about/management"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
                   Management Team
@@ -109,7 +109,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/about/interact-team"
+                  href="https://www.gatinteract.com/about/interact-team"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
                   Interact Team
@@ -120,7 +120,7 @@ const Footer = () => {
               </li> */}
               <li>
                 <Link
-                  href="/gallery"
+                  href="https://www.gatinteract.com/gallery"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
                   Gallery
@@ -128,10 +128,10 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="https://interdepartment.gatinteract.com/"
+                  href="https://www.gatinteract.com/"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  Inter - Department Details
+                  Inter - College Website
                 </Link>
               </li>
             </ul>
