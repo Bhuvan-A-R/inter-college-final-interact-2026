@@ -8,7 +8,7 @@ const eventsData: Prisma.EventCreateManyInput[] = [
     // THEATRE
     {
         name: "Mime",
-        category: "THEATRE",
+        category: "CULTURAL",
         type: "TEAM",
         price: 600,
         minTeamSize: 2,
@@ -18,7 +18,7 @@ const eventsData: Prisma.EventCreateManyInput[] = [
     },
     {
         name: "Skit",
-        category: "THEATRE",
+        category: "CULTURAL",
         type: "TEAM",
         price: 600,
         minTeamSize: 2,
@@ -28,7 +28,7 @@ const eventsData: Prisma.EventCreateManyInput[] = [
     },
     {
         name: "Mono Acting",
-        category: "THEATRE",
+        category: "CULTURAL",
         type: "SOLO",
         price: 200,
         maxTeamSize: 1,
@@ -37,7 +37,7 @@ const eventsData: Prisma.EventCreateManyInput[] = [
     },
     {
         name: "Mimicry",
-        category: "THEATRE",
+        category: "CULTURAL",
         type: "SOLO",
         price: 200,
         maxTeamSize: 1,
@@ -287,7 +287,7 @@ const eventsData: Prisma.EventCreateManyInput[] = [
         isActive: true,
     },
     {
-        name: "Best Physique",
+        name: "Best Physique (M)",
         category: "SPORTS",
         type: "SOLO",
         price: 200,
@@ -295,7 +295,7 @@ const eventsData: Prisma.EventCreateManyInput[] = [
         isActive: true,
     },
     {
-        name: "Crossfit ( M & W )",
+        name: "Crossfit (M & W) - Open Category",
         category: "SPORTS",
         type: "SOLO",
         price: 200,
@@ -319,7 +319,7 @@ const eventsData: Prisma.EventCreateManyInput[] = [
         isActive: true,
     },
     {
-        name: "Short Pitch Cricket",
+        name: "Short Pitch Cricket (M)",
         category: "SPORTS",
         type: "TEAM",
         price: 1000,
@@ -435,18 +435,33 @@ async function main() {
         console.log(`Renamed "Group Ramp Walk" → "Group Ramp Walk (Student)"`)
     }
 
-    // Step 3: Create any events that don't yet exist by name
+    // Step 3: Create or update events
     let created = 0
+    let updated = 0
     for (const event of eventsData) {
         const existing = await prisma.event.findFirst({ where: { name: event.name } })
         if (!existing) {
             await prisma.event.create({ data: event })
             console.log(`  Created: ${event.name}`)
             created++
+        } else {
+            // Update existing event to ensure parameters match
+            await prisma.event.update({
+                where: { id: existing.id },
+                data: {
+                    minTeamSize: event.minTeamSize,
+                    maxTeamSize: event.maxTeamSize,
+                    price: event.price,
+                    type: event.type,
+                    category: event.category,
+                    isActive: true,
+                }
+            })
+            updated++
         }
     }
 
-    console.log(`Done. ${created} new events created.`)
+    console.log(`Done. ${created} new events created, ${updated} events updated.`)
 }
 
 main()

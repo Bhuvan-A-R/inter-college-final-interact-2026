@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback, Suspense } from "react";
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+  Suspense,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
@@ -15,14 +21,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuthContext } from "@/contexts/auth-context";
 import { toast } from "sonner";
 
-
-
 // Helper to assign brand colors to categories
 const getColorForCategory = (category: string) => {
   const map: Record<string, { bg: string; text: string; border: string }> = {
-    CULTURAL: { bg: "bg-gat-blue", text: "text-gat-blue", border: "border-gat-blue" },
-    SPORTS: { bg: "bg-gat-gold", text: "text-gat-gold", border: "border-gat-gold" },
-    TECHNICAL: { bg: "bg-gat-navy", text: "text-gat-navy", border: "border-gat-navy" },
+    CULTURAL: {
+      bg: "bg-gat-blue",
+      text: "text-gat-blue",
+      border: "border-gat-blue",
+    },
+    SPORTS: {
+      bg: "bg-gat-gold",
+      text: "text-gat-gold",
+      border: "border-gat-gold",
+    },
+    TECHNICAL: {
+      bg: "bg-gat-navy",
+      text: "text-gat-navy",
+      border: "border-gat-navy",
+    },
   };
   return (
     map[category] || {
@@ -483,6 +499,28 @@ const EventPageInner = () => {
                             return;
                           }
                           const { dbId } = teamModal;
+
+                          // Validate team size
+                          try {
+                            const teamRes = await fetch(
+                              `/api/teams/${selectedTeamId}`,
+                            );
+                            const teamData = await teamRes.json();
+                            if (teamData.data?.team) {
+                              const team = teamData.data.team;
+                              const minSize = team.event.minTeamSize;
+                              if (minSize && team.members.length < minSize) {
+                                toast.error(
+                                  `This team needs at least ${minSize} member(s). Currently has ${team.members.length}.`,
+                                );
+                                return;
+                              }
+                            }
+                          } catch (e) {
+                            console.error("Failed to validate team:", e);
+                            // Continue anyway if validation fails
+                          }
+
                           setTeamModal(null);
                           await doAddToCart(dbId, selectedTeamId);
                         }}
@@ -504,7 +542,13 @@ const EventPageInner = () => {
 
 export default function EventPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gat-off-white pt-24 pb-16 text-center font-heading font-bold text-gat-steel">Loading events...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gat-off-white pt-24 pb-16 text-center font-heading font-bold text-gat-steel">
+          Loading events...
+        </div>
+      }
+    >
       <EventPageInner />
     </Suspense>
   );
