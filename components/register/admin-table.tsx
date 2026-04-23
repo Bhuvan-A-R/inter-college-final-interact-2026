@@ -12,6 +12,7 @@ import {
   ArrowUpDown,
   ChevronDown,
   MoreHorizontal,
+  RefreshCcw,
 } from "lucide-react";
 import * as React from "react";
 import {
@@ -51,20 +52,17 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Image from "next/image";
+import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
 
 export type Data = {
   id: string;
-  collegeCode: string;
   photo: string;
   name: string;
   collegeName: string;
-  usn: string;
   phone: string;
   email: string;
-  blood: string; // used here as DOB per your original code
-  gender: string;
-  type: "Participant" | "";
+  idcardUrl: string;
   events: { eventName: string; role?: "Participant" }[];
   status: "Pending" | "Processing" | "Success" | "Failed";
 };
@@ -812,6 +810,27 @@ export function DataTable({ data }: { data: Data[] }) {
   const [view, setView] = React.useState<"registrants" | "colleges">(
     "registrants",
   );
+  const [syncing, setSyncing] = React.useState(false);
+
+  const handleSyncToSheets = async () => {
+    setSyncing(true);
+    try {
+      const response = await fetch("/api/admin/sync-sheets", {
+        method: "POST",
+      });
+      const result = await response.json();
+      if (response.ok) {
+        toast.success(result.data.message || "Synced successfully!");
+      } else {
+        toast.error(result.error?.message || "Sync failed.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred during sync.");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const handleUpdate = React.useCallback(
     (id: string) => {
@@ -981,22 +1000,44 @@ export function DataTable({ data }: { data: Data[] }) {
         ),
       },
       {
-        accessorKey: "usn",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() =>
-              column.toggleSorting((column.getIsSorted() as string) === "asc")
-            }
-          >
-            USN <ArrowUpDown className="p-1" />
-          </Button>
-        ),
-        cell: ({ row }) => (
-          <div className="uppercase text-black">
-            {row.getValue("usn") as string}
+        id: "events",
+        accessorFn: (row) => (row.events || []).map((e) => e.eventName).join(", "),
+        header: ({ column, table }) => (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Events <ArrowUpDown className="p-1" />
+            </Button>
+            <EventFilter column={column} table={table} />
           </div>
         ),
+        cell: ({ row }) => {
+          const events = row.original.events || [];
+          if (events.length === 0) {
+            return <span className="text-gat-steel italic text-xs">No events</span>;
+          }
+          return (
+            <div className="flex flex-wrap gap-1 max-w-[250px]">
+              {events.map((e, i) => (
+                <span
+                  key={i}
+                  className="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-tight"
+                >
+                  {e.eventName}
+                </span>
+              ))}
+            </div>
+          );
+        },
+        filterFn: (row, columnId, filterValue) => {
+          if (!filterValue) return true;
+          const events = row.original.events;
+          return events.some((e) => e.eventName === filterValue);
+        },
       },
       {
         accessorKey: "phone",
@@ -1015,20 +1056,6 @@ export function DataTable({ data }: { data: Data[] }) {
         ),
       },
       {
-        accessorKey: "gender",
-        header: "Gender",
-        cell: ({ row }) => (
-          <div className="text-black">{row.getValue("gender") as string}</div>
-        ),
-      },
-      {
-        accessorKey: "blood",
-        header: "DOB",
-        cell: ({ row }) => (
-          <div className="text-black">{row.getValue("blood") as string}</div>
-        ),
-      },
-      {
         accessorKey: "collegeName",
         header: ({ column, table }) => (
           <CollegeNameFilter column={column} table={table} />
@@ -1044,63 +1071,23 @@ export function DataTable({ data }: { data: Data[] }) {
         },
       },
       {
-        accessorKey: "type",
-        header: ({ column, table }) => (
-          <TypeFilter column={column} table={table} />
-        ),
-        cell: ({ row }) => (
-          <div className="capitalize text-black">
-            {row.getValue("type") as string}
-          </div>
-        ),
-        filterFn: (row, columnId, filterValue) => {
-          if (!filterValue) return true;
-          return (row.getValue(columnId) as string) === filterValue;
-        },
-      },
-      {
-        accessorKey: "events",
-        header: ({ column, table }) => (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              Events <ArrowUpDown className="p-1" />
-            </Button>
-            <EventFilter column={column} table={table} />
-          </div>
-        ),
-        sortingFn: (rowA, rowB, columnId) => {
-          const aStr = (rowA.getValue(columnId) as { eventName: string }[])
-            .map((e) => e.eventName)
-            .sort()
-            .join(", ");
-          const bStr = (rowB.getValue(columnId) as { eventName: string }[])
-            .map((e) => e.eventName)
-            .sort()
-            .join(", ");
-          return aStr.localeCompare(bStr);
-        },
+        accessorKey: "idcardUrl",
+        header: "ID Card",
         cell: ({ row }) => {
-          const events = row.getValue("events") as {
-            eventName: string;
-            role?: string;
-          }[];
+          const imageUrl = row.getValue("idcardUrl") as string;
+          if (!imageUrl) return <span className="text-xs text-gat-steel italic">No ID</span>;
+          const fullImageUrl = getImageUrl(imageUrl);
           return (
-            <div className="capitalize text-black">
-              {events.map((e) => e.eventName).join(", ")}
-            </div>
+            <Link href={fullImageUrl} target="_blank">
+              <Button size="sm" variant="outline" className="text-[10px] h-7 px-2">
+                VIEW ID
+              </Button>
+            </Link>
           );
         },
-        filterFn: (row, columnId, filterValue) => {
-          if (!filterValue) return true;
-          const events = row.getValue(columnId) as { eventName: string }[];
-          return events.some((e) => e.eventName === filterValue);
-        },
       },
+
+
       {
         accessorKey: "Action",
         id: "actions",
@@ -1193,10 +1180,7 @@ export function DataTable({ data }: { data: Data[] }) {
         "SL No",
         "Student Code",
         "Name",
-        "USN",
         "Phone",
-        "Gender",
-        "DOB",
         "Email",
         "Events Participating In",
       ]);
@@ -1208,10 +1192,7 @@ export function DataTable({ data }: { data: Data[] }) {
           index + 1,
           codeCounter,
           participant.name || "",
-          participant.usn || "",
           participant.phone || "",
-          participant.gender || "",
-          participant.blood || "",
           (participant.email || "").toLowerCase(),
           eventsParticipating,
         ]);
@@ -1261,7 +1242,6 @@ export function DataTable({ data }: { data: Data[] }) {
           (event: { eventName: string; role?: string }) => {
             collegeEventsData[collegeName].push({
               studentName: row.original.name,
-              usn: row.original.usn,
               eventName: event.eventName,
             });
           },
@@ -1272,12 +1252,11 @@ export function DataTable({ data }: { data: Data[] }) {
     Object.keys(collegeEventsData).forEach((collegeName) => {
       const eventsArr = collegeEventsData[collegeName];
       excelData.push([`College: ${collegeName}`]);
-      excelData.push(["SL No", "Student Name", "USN", "Event Name"]);
+      excelData.push(["SL No", "Student Name", "Event Name"]);
       eventsArr.forEach((entry, index) => {
         excelData.push([
           index + 1,
           entry.studentName,
-          entry.usn,
           entry.eventName,
         ]);
       });
@@ -1317,11 +1296,9 @@ export function DataTable({ data }: { data: Data[] }) {
     excelData.push([]);
     Object.keys(collegeData).forEach((collegeName) => {
       const rowsForCollege = collegeData[collegeName].rows;
-      const vtuCode = rowsForCollege[0].collegeCode || "N/A";
       const collegeAssignedCode = (rowsForCollege[0] as any).vtuCode || "N/A";
       excelData.push([`College: ${collegeName}`]);
       excelData.push([`College Assigned Code: ${collegeAssignedCode}`]);
-      excelData.push([`VTU Code: ${vtuCode}`]);
       excelData.push([]);
       const participantRows = rowsForCollege;
       if (participantRows.length > 0) {
@@ -1329,7 +1306,6 @@ export function DataTable({ data }: { data: Data[] }) {
         excelData.push([
           "SL No",
           "Name",
-          "USN",
           "Email",
           "Events Participating In",
           "Candidate Signature",
@@ -1342,7 +1318,6 @@ export function DataTable({ data }: { data: Data[] }) {
           excelData.push([
             index + 1,
             row.name || "",
-            row.usn || "",
             email,
             eventsParticipating,
             "",
@@ -1409,10 +1384,7 @@ export function DataTable({ data }: { data: Data[] }) {
           "SL No",
           "Student Code",
           "Name",
-          "USN",
           "Phone",
-          "Gender",
-          "DOB",
           "Email",
           "Events Participating In",
         ]);
@@ -1425,10 +1397,7 @@ export function DataTable({ data }: { data: Data[] }) {
             index + 1,
             codeCounter,
             participant.name || "",
-            participant.usn || "",
             participant.phone || "",
-            participant.gender || "",
-            participant.blood || "",
             (participant.email || "").toLowerCase(),
             eventsParticipating,
           ]);
@@ -1480,16 +1449,10 @@ export function DataTable({ data }: { data: Data[] }) {
 
     // Loop over each college in your aggregated data
     collegesData.forEach((college) => {
-      // Get all rows for this college from the full rows list
-      const collegeRows = rows.filter(
-        (row) => row.collegeName === college.collegeName,
-      );
       excelData.push([
         college.collegeName,
         college.collegeCode,
         college.registrants,
-        college.maleCount,
-        college.femaleCount,
       ]);
     });
 
@@ -1531,31 +1494,15 @@ export function DataTable({ data }: { data: Data[] }) {
       // Find the corresponding mapping entry (case-insensitive match)
       const mappingEntry = collegeMapping.find(
         (m) =>
-          m.collegeName.toLowerCase() === college.collegeName.toLowerCase(),
+          (m.collegeName || "").toLowerCase() === (college.collegeName || "").toLowerCase(),
       );
       // Use the mapping's collegeCode as the assigned code (or "N/A" if not found)
       const assignedCode = mappingEntry ? mappingEntry.collegeCode : "N/A";
-
-      // Get all rows for the current college
-      const collegeRows = rows.filter(
-        (row) => row.collegeName === college.collegeName,
-      );
-      let participantMale = 0;
-      let participantFemale = 0;
-      collegeRows.forEach((row) => {
-        if (row.gender.toLowerCase() === "male") {
-          participantMale++;
-        } else if (row.gender.toLowerCase() === "female") {
-          participantFemale++;
-        }
-      });
 
       excelData.push([
         college.collegeName,
         college.collegeCode,
         assignedCode,
-        participantMale,
-        participantFemale,
       ]);
     });
 
@@ -1592,30 +1539,21 @@ export function DataTable({ data }: { data: Data[] }) {
         collegeCode: string;
         events: Set<string>;
         registrants: number;
-        maleCount: number;
-        femaleCount: number;
       }
     >();
     rows.forEach((row) => {
-      const collegeName = row.collegeName;
+      const collegeName = row.collegeName || "Unknown";
       if (!map.has(collegeName)) {
         map.set(collegeName, {
           collegeName,
-          collegeCode: row.collegeCode,
+          collegeCode: row.collegeCode || "",
           events: new Set<string>(),
           registrants: 0,
-          maleCount: 0,
-          femaleCount: 0,
         });
       }
       const college = map.get(collegeName)!;
       college.registrants += 1;
-      if (row.gender.toLowerCase() === "male") {
-        college.maleCount += 1;
-      } else if (row.gender.toLowerCase() === "female") {
-        college.femaleCount += 1;
-      }
-      row.events.forEach((e) => {
+      (row.events || []).forEach((e) => {
         if (e.eventName) {
           college.events.add(e.eventName);
         }
@@ -1701,18 +1639,6 @@ export function DataTable({ data }: { data: Data[] }) {
         cell: ({ row }) => row.original.registrants,
         enableSorting: true,
       },
-      {
-        accessorKey: "maleCount",
-        header: "Male Participants",
-        cell: ({ row }) => row.original.maleCount,
-        enableSorting: true,
-      },
-      {
-        accessorKey: "femaleCount",
-        header: "Female Participants",
-        cell: ({ row }) => row.original.femaleCount,
-        enableSorting: true,
-      },
     ],
     [allCollegeEvents],
   );
@@ -1783,11 +1709,20 @@ export function DataTable({ data }: { data: Data[] }) {
             </Button>
             <Button
               variant="outline"
-              className="ml-auto bg-green-500 text-white hover:scale-105 hover:bg-green-500 hover:text-white"
+              className="ml-auto bg-green-600 text-white hover:scale-105 hover:bg-green-700 hover:text-white"
               onClick={handleExportCodeWiseExcel}
             >
               <FileDown className="mr-2 h-4 w-4" />
               Download Code Wise Excel
+            </Button>
+            <Button
+              variant="outline"
+              className="ml-auto bg-blue-600 text-white hover:scale-105 hover:bg-blue-700 hover:text-white"
+              onClick={handleSyncToSheets}
+              disabled={syncing}
+            >
+              <RefreshCcw className={`mr-2 h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+              {syncing ? "Syncing..." : "Sync to Sheets"}
             </Button>
             <Button
               variant="outline"
