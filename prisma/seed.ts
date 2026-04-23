@@ -417,6 +417,15 @@ const eventsData: Prisma.EventCreateManyInput[] = [
         maxTeamSize: 3,
         isActive: true,
     },
+    {
+        name: "Capture The Flag (CTF)",
+        category: "TECHNICAL",
+        type: "TEAM",
+        price: 400,
+        minTeamSize: 1,
+        maxTeamSize: 2,
+        isActive: true,
+    },
 ];
 
 async function main() {

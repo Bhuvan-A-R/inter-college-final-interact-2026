@@ -636,6 +636,20 @@ export const interCollegeEvents: EventCategory[] = [
         date: "13th May",
         time: "2 PM TO 4 PM",
     },
+    {
+        eventNo: 46,
+        eventName: "Capture The Flag (CTF)",
+        category: "TECHNICAL",
+        maxParticipant: 2,
+        minParticipant: 1,
+        id: "",
+        userId: "",
+        registeredParticipant: 0,
+        amount: 400,
+        venue: "Auditorium",
+        date: "13th May",
+        time: "2 PM TO 4 PM",
+    },
 ];
 
 export const eventCategories = interCollegeEvents;
