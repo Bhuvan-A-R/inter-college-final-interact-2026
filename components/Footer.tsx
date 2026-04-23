@@ -243,19 +243,19 @@ const Footer = () => {
               <li className="text-gat-gold">
                 Registration Coordinator <br />
                 <a
-                  href="callto:+91 93805 33506"
+                  href="callto:+91 72593 43558"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  Yashaswi P M - +91 93805 33506
+                  Siri P - +91 72593 43558
                 </a>
               </li>
               <li className="text-gat-gold">
                 Payment Coordinator <br />
                 <a
-                  href="callto:+91 72593 43558"
+                  href="callto:+91 93805 33506"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  Siri P - +91 72593 43558
+                  Yashaswi P M - +91 93805 33506
                 </a>
               </li>
             </ul>

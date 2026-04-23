@@ -72,7 +72,7 @@ const RunForHungerPage = () => {
                     </Link> */}
                     <div className="text-sm font-bold flex items-center text-red-600 bg-red-500/10 px-5 py-2.5 rounded-full border border-red-500/20 shadow-sm backdrop-blur-sm shadow-red-500/10 animate-pulse">
                         <Clock className="w-4 h-4 mr-2" />
-                        Registrations CLOSE on April 30th! Spots are filling fast!
+                        Registrations CLOSE on April 29th! Spots are filling fast!
                     </div>
                 </div>
 
