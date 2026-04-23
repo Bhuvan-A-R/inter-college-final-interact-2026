@@ -68,7 +68,12 @@ export async function POST(req: NextRequest) {
 
       const team = await prisma.team.findUnique({
         where: { id: teamId },
-        select: { id: true, leaderId: true, eventId: true },
+        select: {
+          id: true,
+          leaderId: true,
+          eventId: true,
+          members: { select: { id: true } },
+        },
       });
 
       if (!team) {
@@ -81,6 +86,19 @@ export async function POST(req: NextRequest) {
 
       if (team.leaderId !== auth.session.id) {
         return errorResponse("Only the team leader can add this item.", 403);
+      }
+
+      const eventDetails = await prisma.event.findUnique({
+        where: { id: eventId },
+        select: { minTeamSize: true },
+      });
+
+      const minSize = eventDetails?.minTeamSize ?? 2;
+      if (team.members.length < minSize) {
+        return errorResponse(
+          `Team must have at least ${minSize} members to register. Current: ${team.members.length}`,
+          400
+        );
       }
     }
 

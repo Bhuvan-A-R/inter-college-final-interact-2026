@@ -8,6 +8,7 @@ interface RegisterEvent {
     eventName: string;
     category: string;
     maxParticipant: number;
+    minParticipant?: number;
     amount: number;
 }
 
@@ -47,11 +48,25 @@ export async function PUT(request: Request) {
                             category: evt.category,
                             type: evt.maxParticipant > 1 ? "TEAM" : "SOLO",
                             price: new Prisma.Decimal(evt.amount ?? 0),
-                            minTeamSize: evt.maxParticipant > 1 ? 2 : 1,
+                            minTeamSize: evt.minParticipant ?? (evt.maxParticipant > 1 ? 2 : 1),
                             maxTeamSize: evt.maxParticipant ?? 1,
                             isActive: true,
                         },
                     });
+                } else {
+                    // Update event if min/max team size changed
+                    const newMin = evt.minParticipant ?? (evt.maxParticipant > 1 ? 2 : 1);
+                    const newMax = evt.maxParticipant ?? 1;
+                    if (event.minTeamSize !== newMin || event.maxTeamSize !== newMax) {
+                        event = await tx.event.update({
+                            where: { id: event.id },
+                            data: {
+                                minTeamSize: newMin,
+                                maxTeamSize: newMax,
+                                type: evt.maxParticipant > 1 ? "TEAM" : "SOLO",
+                            }
+                        });
+                    }
                 }
                 eventIds.push(event.id);
             }

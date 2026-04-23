@@ -24,6 +24,14 @@ type CartItem = {
   } | null;
 };
 
+type TeamValidation = {
+  teamId: string;
+  teamName: string;
+  eventName: string;
+  currentMembers: number;
+  minMembers: number | null;
+};
+
 type CartResponse = {
   success: boolean;
   data?: {
@@ -35,7 +43,17 @@ type CartResponse = {
   };
 };
 
-const SlideToPayButton = ({ onComplete, isProcessing, text }: { onComplete: () => void, isProcessing: boolean, text: string }) => {
+const SlideToPayButton = ({
+  onComplete,
+  isProcessing,
+  text,
+  disabled,
+}: {
+  onComplete: () => void;
+  isProcessing: boolean;
+  text: string;
+  disabled?: boolean;
+}) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -48,14 +66,23 @@ const SlideToPayButton = ({ onComplete, isProcessing, text }: { onComplete: () =
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-[60px] rounded-xl overflow-hidden mt-5 shadow-sm transition-colors ${isSuccess || isProcessing ? "bg-gat-off-white border border-gat-blue/10" : "bg-gat-blue hover:bg-gat-midnight"
-        }`}
+      className={`relative w-full h-[60px] rounded-xl overflow-hidden mt-5 shadow-sm transition-colors ${
+        disabled || isSuccess || isProcessing
+          ? "bg-gat-off-white border border-gat-blue/10 cursor-not-allowed"
+          : "bg-gat-blue hover:bg-gat-midnight"
+      }`}
     >
-      <div className={`absolute inset-0 flex items-center justify-center font-bold text-base pointer-events-none ${isSuccess || isProcessing ? "text-gat-steel" : "text-white"}`}>
-        {isProcessing || isSuccess ? "Processing…" : text}
+      <div
+        className={`absolute inset-0 flex items-center justify-center font-bold text-base pointer-events-none ${isSuccess || isProcessing || disabled ? "text-gat-steel" : "text-white"}`}
+      >
+        {isProcessing || isSuccess
+          ? "Processing…"
+          : disabled
+            ? "Fill all team requirements first"
+            : text}
       </div>
 
-      {!(isProcessing || isSuccess) && (
+      {!(isProcessing || isSuccess || disabled) && (
         <motion.div
           drag="x"
           dragConstraints={containerRef}
@@ -91,6 +118,7 @@ export default function CartPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [checkingOut, setCheckingOut] = useState<boolean>(false);
   const [removing, setRemoving] = useState<string | null>(null);
+  const [teamValidations, setTeamValidations] = useState<TeamValidation[]>([]);
 
   const loadCart = async () => {
     setLoading(true);
@@ -126,6 +154,40 @@ export default function CartPage() {
     loadCart();
   }, [isLoggedIn]);
 
+  // Validate all team events
+  useEffect(() => {
+    const validateTeams = async () => {
+      const teamItems = cartItems.filter((item) => item.team?.id);
+      if (teamItems.length === 0) {
+        setTeamValidations([]);
+        return;
+      }
+
+      const validations: TeamValidation[] = [];
+      for (const item of teamItems) {
+        try {
+          const teamRes = await fetch(`/api/teams/${item.team!.id}`);
+          const teamData = await teamRes.json();
+          if (teamData.data?.team) {
+            const team = teamData.data.team;
+            validations.push({
+              teamId: item.team!.id,
+              teamName: item.team!.name,
+              eventName: item.event.name,
+              currentMembers: team.members.length,
+              minMembers: team.event.minTeamSize,
+            });
+          }
+        } catch (e) {
+          console.error("Failed to validate team:", e);
+        }
+      }
+      setTeamValidations(validations);
+    };
+
+    validateTeams();
+  }, [cartItems]);
+
   const handleRemove = async (cartItemId: string) => {
     setRemoving(cartItemId);
     try {
@@ -153,6 +215,39 @@ export default function CartPage() {
   const handleCheckout = async () => {
     setCheckingOut(true);
     try {
+      // Validate team sizes for all team events in cart
+      const teamValidationPromises = cartItems
+        .filter((item) => item.team?.id) // Only team events
+        .map(async (item) => {
+          try {
+            const teamRes = await fetch(`/api/teams/${item.team!.id}`);
+            const teamData = await teamRes.json();
+            if (teamData.data?.team) {
+              const team = teamData.data.team;
+              const minSize = team.event.minTeamSize;
+              if (minSize && team.members.length < minSize) {
+                return {
+                  valid: false,
+                  message: `Team "${item.team!.name}" for "${item.event.name}" needs at least ${minSize} member(s). Currently has ${team.members.length}.`,
+                };
+              }
+            }
+            return { valid: true };
+          } catch (e) {
+            console.error("Failed to validate team:", e);
+            return { valid: true }; // Continue if validation fails
+          }
+        });
+
+      const validationResults = await Promise.all(teamValidationPromises);
+      const invalidTeam = validationResults.find((r) => !r.valid);
+
+      if (invalidTeam && "message" in invalidTeam) {
+        toast.error(invalidTeam.message);
+        setCheckingOut(false);
+        return;
+      }
+
       const res = await fetch("/api/orders/checkout", { method: "POST" });
       const data: {
         success: boolean;
@@ -201,6 +296,30 @@ export default function CartPage() {
             </Link>
           )}
         </div>
+
+        {/* Team Validation Warnings */}
+        {teamValidations.length > 0 && (
+          <div className="mb-6 space-y-3">
+            {teamValidations
+              .filter((v) => v.minMembers && v.currentMembers < v.minMembers)
+              .map((validation) => (
+                <div
+                  key={validation.teamId}
+                  className="p-4 rounded-lg bg-amber-50 border border-amber-200"
+                >
+                  <p className="text-sm font-semibold text-amber-800">
+                    ⚠ Team "{validation.teamName}" requires{" "}
+                    {validation.minMembers} members for "{validation.eventName}"
+                  </p>
+                  <p className="text-xs text-amber-700 mt-1">
+                    Currently has {validation.currentMembers} member(s). Add{" "}
+                    {validation.minMembers! - validation.currentMembers} more to
+                    complete registration.
+                  </p>
+                </div>
+              ))}
+          </div>
+        )}
 
         {loading ? (
           <div className="rounded-xl bg-white p-6 border border-gat-blue/10 shadow-sm text-gat-steel">
@@ -329,6 +448,9 @@ export default function CartPage() {
               <SlideToPayButton
                 onComplete={handleCheckout}
                 isProcessing={checkingOut}
+                disabled={teamValidations.some(
+                  (v) => v.minMembers && v.currentMembers < v.minMembers,
+                )}
                 text={`Charge ₹${subtotal.toFixed(2)} for ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""} →`}
               />
 

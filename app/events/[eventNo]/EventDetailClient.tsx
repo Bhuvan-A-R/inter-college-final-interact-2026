@@ -161,6 +161,30 @@ export default function EventDetailClient({ category, details }: Props) {
       toast.error("Please select a team first.");
       return;
     }
+
+    // Validate minimum team size if team event
+    if (isTeamEvent && selectedTeamId && userTeams.length > 0) {
+      const selectedTeam = userTeams.find((t) => t.id === selectedTeamId);
+      if (selectedTeam && mainDetail?.minParticipants) {
+        // We need to fetch team details to check member count
+        try {
+          const teamRes = await fetch(`/api/teams/${selectedTeamId}`);
+          const teamData = await teamRes.json();
+          if (teamData.data?.team) {
+            const team = teamData.data.team;
+            if (team.members.length < mainDetail.minParticipants) {
+              toast.error(
+                `This team needs at least ${mainDetail.minParticipants} members. Currently has ${team.members.length} member(s).`,
+              );
+              return;
+            }
+          }
+        } catch {
+          console.error("Failed to validate team size");
+        }
+      }
+    }
+
     setAdding(true);
     try {
       const body: Record<string, string> = { eventId: dbEventId };
@@ -186,7 +210,7 @@ export default function EventDetailClient({ category, details }: Props) {
     } finally {
       setAdding(false);
     }
-  }, [dbEventId, inCart, isTeamEvent, selectedTeamId]);
+  }, [dbEventId, inCart, isTeamEvent, selectedTeamId, userTeams, mainDetail]);
 
   return (
     <div className="min-h-screen bg-gat-off-white font-body pt-24 pb-20">
@@ -238,6 +262,13 @@ export default function EventDetailClient({ category, details }: Props) {
                 ? `TEAM (${category.maxParticipant})`
                 : "SOLO"}
             </span>
+            {mainDetail &&
+              mainDetail.minParticipants &&
+              mainDetail.minParticipants > 1 && (
+                <span className="px-2.5 py-1 rounded-md text-xs font-heading font-bold tracking-widest uppercase bg-blue-50 border border-gat-blue/20 text-gat-blue">
+                  Min {mainDetail.minParticipants} Members
+                </span>
+              )}
             <span className="px-2.5 py-1 rounded-md text-xs font-heading font-bold tracking-widest uppercase bg-gat-off-white border border-gat-steel/20 text-gat-steel">
               Event #{String(category.eventNo).padStart(2, "0")}
             </span>

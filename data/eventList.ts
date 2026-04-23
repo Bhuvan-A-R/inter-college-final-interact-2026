@@ -8,6 +8,7 @@ export interface EventList {
     image: StaticImageData;
     name: string;
     rules: string[];
+    minParticipants?: number;
     coordinator?: {
         name: string;
         mobile: string;
@@ -63,6 +64,7 @@ export const eventsList: EventList[] = [
         category: "Dance",
         image: eventImage,
         name: "Semi Classical Group Dance",
+        minParticipants: 6,
         rules: [
             "Participation: Groups of 6 to 14 members.",
             "Time: Must be between 5 to 10 minutes.",
@@ -82,6 +84,7 @@ export const eventsList: EventList[] = [
         category: "Dance",
         image: eventImage,
         name: "Western Group Dance",
+        minParticipants: 6,
         rules: [
             "Participation: Groups of 6 to 14 members.",
             "Time: Must be between 5 to 10 minutes.",
@@ -102,7 +105,7 @@ export const eventsList: EventList[] = [
         name: "Western Solo Dance",
         rules: [
             "Only 1 participant per institute.",
-            "The performance duration must be between 2 to 4 minutes.",
+            "The performance duration must be between 3 to 5 minutes.",
             "Participants may perform in any Western dance style (Hip-hop, Contemporary, Jazz, etc.).",
             "Pre-recorded music must be submitted to the co-ordinators in MP3 format prior to the event.",
             "Participants must ensure that their track is properly edited and cued; no extra time will be given for technical delays.",
@@ -120,8 +123,9 @@ export const eventsList: EventList[] = [
         category: "Fashion",
         image: eventImage,
         name: "Group Ramp Walk",
+        minParticipants: 8,
         rules: [
-            "Team size: Minimum of 8 and maximum of 12 members.",
+            "Team size: Minimum of 8 and maximum of 12 members.  ( Additional 5 Accompanists are allowed).",
             "Time limit: 9+1 minutes. Exceeding the time limit will lead to negative marking.",
             "Walking barefoot is not allowed.",
             "No gender restrictions on team constitution.",
@@ -234,6 +238,7 @@ export const eventsList: EventList[] = [
         category: "General Events",
         image: eventImage,
         name: "Content Creation (Reels/Vlogs)",
+        minParticipants: 1,
         rules: [
             "Participation: Individual or teams of up to 3 members.",
             "Duration: The content (Reels, TikTok-style videos, or Vlogs) must be between 60 to 90 seconds.",
@@ -262,6 +267,7 @@ export const eventsList: EventList[] = [
         category: "General Events",
         image: eventImage,
         name: "Short Film",
+        minParticipants: 1,
         rules: [
             "Participation: Teams can consist of up to 5 members.",
             "Duration: The film must be between 3 to 7 minutes in length (including credits).",
@@ -283,6 +289,7 @@ export const eventsList: EventList[] = [
         rules: [
             "Only 1 participant per institute.",
             "Duration: 1 Hour.",
+            "Word Limit: 700 to 1000 Words.",
             "The medium of expression shall be English or Kannada.",
             "Plagiarism and use of AI is strictly prohibited.",
             "Use of derogatory words or suggestive words is strictly prohibited.",
@@ -331,7 +338,7 @@ export const eventsList: EventList[] = [
         name: "Poetry",
         rules: [
             "Only 1 participant per institute.",
-            "Duration: 45 minutes.",
+            "Duration: 1 Hour.",
             "The medium of expression shall be English or Kannada.",
             "Plagiarism and use of AI is strictly prohibited.",
             "Use of derogatory words or suggestive words is strictly prohibited.",
@@ -348,9 +355,10 @@ export const eventsList: EventList[] = [
         category: "Music",
         image: eventImage,
         name: "Battle of Bands",
+        minParticipants: 4,
         rules: [
-            "Participation: A minimum of 3 and a maximum of 8 members per team.",
-            "Duration: 20 minutes (including Plug-and-Play set-up and clearance).",
+            "Participation: A minimum of 4 and a maximum of 8 members per team.",
+            "Duration: 10 to 20 minutes (including Plug-and-Play set-up and clearance).",
             "The organizers will provide a basic Backline (Drum kit, Bass amp, Guitar amps). Bands must bring their own guitars, processors, and drumsticks.",
             "Pre-recorded sequences or programmed tracks are strictly not allowed. Every sound must be produced live.",
             "High-decibel levels are expected, but any activity that endangers the stage equipment or audience is prohibited.",
@@ -361,12 +369,13 @@ export const eventsList: EventList[] = [
         category: "Music",
         image: eventImage,
         name: "Beatboxing",
+        minParticipants: 1,
         rules: [
-            "Participation: A minimum of 3 and a maximum of 8 members per team.",
-            "Duration: 20 minutes (including Plug-and-Play set-up and clearance).",
-            "The organizers will provide a basic Backline (Drum kit, Bass amp, Guitar amps). Bands must bring their own guitars, processors, and drumsticks.",
-            "Pre-recorded sequences or programmed tracks are strictly not allowed. Every sound must be produced live.",
-            "High-decibel levels are expected, but any activity that endangers the stage equipment or audience is prohibited.",
+            "Duration: 3 to 5 minutes ( including sound check).",
+            "Equipment: Only a standard vocal microphone will be provided. No loop stations, effects pedals, or external sounds are allowed. ",
+            "Originality: Routine must be original. Using 'covers' of famous beatbox routines is discouraged.",
+            "Flow: The performance should demonstrate a variety of sounds (Bass, Scratching, Percussion) and maintain a consistent tempo.",
+            "Conduct: No 'dissing' or offensive gestures directed at other participants or the audience. ",
         ],
     },
     {
@@ -376,10 +385,9 @@ export const eventsList: EventList[] = [
         name: "Classical Vocal Solo",
         rules: [
             "Only 1 participant per institute.",
-            "Duration: 15 minutes (including set-up and clearance time).",
+            "Duration: 5 to 15 minutes (including set-up and clearance time).",
             "The performance must strictly adhere to either Hindustani or Carnatic classical traditions.",
-            "Electronic Tanpura/Sruti box is allowed. Maximum of two live accompanists (Tabla/Mridangam/Harmonium/Violin) are permitted.",
-            "Karaoke and film-based semi-classical songs are strictly prohibited.",
+            "Electronic Tanpura/Sruti box is allowed. Maximum of two live accompanists (Tabla/Mridangam/Harmonium/Violin) are permitted. Karaoke and film-based semi-classical songs are strictly prohibited.",
             "The choice of Raga, Thala, and the complexity of the Bandish/Kriti will be key factors in evaluation.",
         ],
     },
@@ -390,8 +398,8 @@ export const eventsList: EventList[] = [
         name: "Instrumental Solo",
         rules: [
             "Only 1 participant per institute.",
-            "Duration: 7 minutes (including set-up and clearance time).",
-            "Participants must bring their own instruments and necessary cables/processors. A standard drum kit or keyboard may be provided based on venue availability.",
+            "Duration: 4 to 8 minutes (including set-up and clearance time).",
+            "2 Instruments: Participants must bring their own instruments and necessary cables/processors. A standard drum kit or keyboard may be provided based on venue availability",
             "Karaoke/Backing tracks are allowed only for rhythm/percussion accompaniment and must not contain the lead melody. Must be submitted prior to the performance.",
             "Any genre (Classical, Jazz, Pop, Rock, etc.) is permitted.",
             "Performance will be judged on technique, tonal quality, and improvisation.",
@@ -404,11 +412,12 @@ export const eventsList: EventList[] = [
         name: "Voice of Interact",
         rules: [
             "Only 1 participant per institute.",
-            "Duration: 8 minutes (including set-up and clearance time).",
+            "Duration: 4 to 8 minutes (including set-up and clearance time).",
             "No language bar; however, lyrics must be appropriate and free from offensive content.",
             "This category focuses on audience engagement and stage presence alongside vocal prowess.",
             "Karaoke is allowed (no lead vocals) or a maximum of one acoustic instrument for accompaniment.",
             "Karaoke tracks must be submitted to the organizers at least 15 minutes prior to the event.",
+            "Submissions may belong to any genre.",
         ],
     },
     {
@@ -418,7 +427,7 @@ export const eventsList: EventList[] = [
         name: "Western Singing Solo",
         rules: [
             "Only 1 participant per institute.",
-            "Duration: 7 minutes (including set-up and clearance time).",
+            "Duration: 4 to 6 minutes (including set-up and clearance time).",
             "Songs must be performed in English only.",
             "Karaoke is allowed, provided it contains no lead or prominent backing vocals. Tracks must be provided in MP3 format and submitted prior to the performance.",
             "Participants may self-accompany on a guitar or keyboard if they prefer an acoustic set.",
@@ -433,6 +442,7 @@ export const eventsList: EventList[] = [
         category: "Sports",
         image: eventImage,
         name: "Basketball (5v5) (M & W)",
+        minParticipants: 7,
         rules: [
             "Each team consists of 7 players (5 playing + 2 substitutes).",
             "Game is played on a full court.",
@@ -525,6 +535,7 @@ export const eventsList: EventList[] = [
         category: "Sports",
         image: eventImage,
         name: "Short Pitch Cricket (M)",
+        minParticipants: 7,
         rules: [
             "Each team consists of 7 players + 1 substitute.",
             "Aadhar Card and College ID of the participant is mandatory.",
@@ -545,6 +556,7 @@ export const eventsList: EventList[] = [
         category: "Sports",
         image: eventImage,
         name: "Throwball (W)",
+        minParticipants: 9,
         rules: [
             "Each team has 7 players + 2 substitutes.",
             "First two sets are played to 25 points, final set to 15 points.",
@@ -562,6 +574,7 @@ export const eventsList: EventList[] = [
         category: "Sports",
         image: eventImage,
         name: "Volleyball (M & W)",
+        minParticipants: 8,
         rules: [
             "Each team consists of 8 players (6 playing + 2 substitutes).",
             "Matches are played as best of 3 sets.",
@@ -599,6 +612,7 @@ export const eventsList: EventList[] = [
         category: "Technical",
         image: eventImage,
         name: "Bits & Bytes",
+        minParticipants: 1,
         rules: [
             "Participation is individual or team of 2.",
             "Same team must continue throughout all rounds.",
@@ -618,6 +632,7 @@ export const eventsList: EventList[] = [
         category: "Technical",
         image: eventImage,
         name: "E-Sports (BGMI / Free Fire)",
+        minParticipants: 1,
         rules: [
             "Participation allowed as Solo / Duo / Squad (1–3 players).",
             "No team changes after registration.",
@@ -637,6 +652,7 @@ export const eventsList: EventList[] = [
         category: "Technical",
         image: eventImage,
         name: "Frontend Frenzy",
+        minParticipants: 2,
         rules: [
             "Team size: 2–3 members.",
             "Total time: 60 minutes.",
@@ -673,6 +689,7 @@ export const eventsList: EventList[] = [
         category: "Technical",
         image: eventImage,
         name: "Re-brand It & Slay It",
+        minParticipants: 2,
         rules: [
             "Team size: 2–3 members.",
             "Total time: 60 minutes.",
@@ -691,6 +708,7 @@ export const eventsList: EventList[] = [
         category: "Technical",
         image: eventImage,
         name: "ReWeb: Reverse the Website",
+        minParticipants: 2,
         rules: [
             "Participation is in teams (as specified).",
             "Total time: 90 minutes.",
@@ -710,6 +728,7 @@ export const eventsList: EventList[] = [
         category: "Technical",
         image: eventImage,
         name: "Shark Tank Pitch",
+        minParticipants: 2,
         rules: [
             "Team size: 2–3 members.",
             "Teams must prepare a PPT/PDF presentation.",
@@ -731,9 +750,10 @@ export const eventsList: EventList[] = [
         category: "Theatre",
         image: eventImage,
         name: "Mime",
+        minParticipants: 2,
         rules: [
             "Only up to 6 participants per team.",
-            "Duration: 6 minutes.",
+            "Duration: 5+1 minutes.",
             "Background music is to be submitted at the reporting time to the event in-charge.",
         ],
     },
@@ -744,7 +764,7 @@ export const eventsList: EventList[] = [
         name: "Mimicry",
         rules: [
             "Only 1 participant per institute.",
-            "Duration: Up to 5 minutes.",
+            "Duration: 3 to 5 minutes.",
             "Participants may mimic voices and speech of well-known personalities, as well as other common sounds.",
             "Profanity, suggestive speech, euphemisms and vulgarity in action or speech is strictly prohibited. Satire and humor that is devoid of the above is accepted.",
         ],
@@ -756,7 +776,7 @@ export const eventsList: EventList[] = [
         name: "Mono Acting",
         rules: [
             "Only 1 participant per institute.",
-            "Duration: Up to 5 minutes.",
+            "Duration: 3 to 5 minutes.",
             "The participant can play numerous roles in the same scene.",
             "Profanity, suggestive speech, euphemisms and vulgarity in action or speech is strictly prohibited. Satire and humour that is devoid of the above is accepted.",
         ],
@@ -766,9 +786,10 @@ export const eventsList: EventList[] = [
         category: "Theatre",
         image: eventImage,
         name: "Skit",
+        minParticipants: 2,
         rules: [
             "Only up to 6 participants per team.",
-            "Duration: 10 minutes (including set-up and clearance time).",
+            "Duration: 8 to 10 minutes (including set-up and clearance time).",
             "A maximum of 3 accompanists are allowed.",
             "Use of make-up, backdrops and background music is allowed.",
             "Each team should submit three copies of the synopsis of the skit in the language of presentation (English, Kannada) at the reporting time to the event co-ordinator.",

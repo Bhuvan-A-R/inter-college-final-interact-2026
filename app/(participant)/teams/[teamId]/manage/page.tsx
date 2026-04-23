@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Edit2, Check, X, Sparkles } from "lucide-react";
 
-
 type Member = {
   id: string;
   userId: string;
@@ -76,7 +75,6 @@ export default function ManageTeamPage() {
   const [renaming, setRenaming] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
-
   const loadData = async () => {
     setLoading(true);
     try {
@@ -109,7 +107,6 @@ export default function ManageTeamPage() {
         setNewName(teamData.data.team.name);
       }
 
-
       if (profileRes.ok && profileData.data?.user?.id) {
         setCurrentUserId(profileData.data.user.id);
       }
@@ -123,7 +120,7 @@ export default function ManageTeamPage() {
 
   useEffect(() => {
     loadData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamId]);
 
   const handleInvite = async () => {
@@ -199,7 +196,6 @@ export default function ManageTeamPage() {
       setRenaming(false);
     }
   };
-
 
   if (loading) {
     return (
@@ -287,7 +283,7 @@ export default function ManageTeamPage() {
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
-                
+
                 {suggestions.length > 0 && (
                   <div className="mt-3 p-4 bg-gat-blue/5 border border-gat-blue/10 rounded-lg">
                     <p className="text-xs font-bold text-gat-blue uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -343,6 +339,38 @@ export default function ManageTeamPage() {
               </span>
             )}
           </h2>
+
+          {/* Minimum Members Requirement */}
+          {team.event.minTeamSize !== null && (
+            <div
+              className={`mb-4 p-3 rounded-lg border ${
+                team.members.length >= team.event.minTeamSize
+                  ? "bg-green-50 border-green-200"
+                  : "bg-amber-50 border-amber-200"
+              }`}
+            >
+              <p
+                className={`text-sm font-semibold ${
+                  team.members.length >= team.event.minTeamSize
+                    ? "text-green-800"
+                    : "text-amber-800"
+                }`}
+              >
+                {team.members.length >= team.event.minTeamSize ? (
+                  <>
+                    ✓ Minimum members reached ({team.members.length} /{" "}
+                    {team.event.minTeamSize})
+                  </>
+                ) : (
+                  <>
+                    ⚠ You need at least {team.event.minTeamSize} member(s) to
+                    register this team. Currently have {team.members.length}.
+                  </>
+                )}
+              </p>
+            </div>
+          )}
+
           <div className="space-y-3">
             {team.members.map((member) => (
               <div
@@ -380,7 +408,9 @@ export default function ManageTeamPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && !inviting && handleInvite()}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && !inviting && handleInvite()
+                  }
                   placeholder="Enter registered email address"
                   className="flex-1"
                 />
