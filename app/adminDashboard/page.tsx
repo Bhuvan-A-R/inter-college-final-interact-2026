@@ -47,16 +47,10 @@ export default async function Page() {
     return {
       id: user.id,
       name: user.name,
-      usn: user.usn ?? "",
       collegeName: user.collegeName,
       photo: user.photoUrl ?? "",
       email: user.email,
       phone: user.phone,
-      // Fields removed from schema — passed as empty strings for table compatibility
-      collegeCode: "",
-      gender: "",
-      blood: "",
-      type: events.length > 0 ? "Participant" : "",
       events,
       status: "Pending" as const,
     };
