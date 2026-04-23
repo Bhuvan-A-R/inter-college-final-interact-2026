@@ -68,4 +68,6 @@ export const eventPrizePool: PrizePool[] = [
     { eventNo: 43, first: 2000},
     { eventNo: 44, first: 2000},
     { eventNo: 45, first: 5000},
+
+    { eventNo: 46, first: 5000},
 ];
