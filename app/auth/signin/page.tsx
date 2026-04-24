@@ -30,8 +30,9 @@ import { useAuthContext } from "@/contexts/auth-context";
 import { newLoginSchema } from "@/lib/schemas/newAuth";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Eye, EyeOff, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { Eye, EyeOff, Sparkles, Wrench } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Info, AlertCircle } from "lucide-react";
 
 // Import logos and background image – paths unchanged
 import gatLogo from "@/public/images/gat-logo.png";
@@ -45,6 +46,15 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { setIsLoggedIn, checkAuth } = useAuthContext();
   const [visibility, setVisibility] = useState<boolean>(false);
+  const [showMaintenanceModal, setShowMaintenanceModal] = useState<boolean>(true);
+
+  // Auto-hide modal after 5 seconds
+  useState(() => {
+    const timer = setTimeout(() => {
+      setShowMaintenanceModal(false);
+    }, 5000);
+    return () => clearTimeout(timer);
+  });
 
   const form = useForm<z.infer<typeof newLoginSchema>>({
     resolver: zodResolver(newLoginSchema),
@@ -177,6 +187,58 @@ export default function SignIn() {
         </div>
       </div>
 
+      {/* ── Maintenance Modal ────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showMaintenanceModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowMaintenanceModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-primary/20">
+                <motion.div 
+                  initial={{ width: "100%" }}
+                  animate={{ width: "0%" }}
+                  transition={{ duration: 5, ease: "linear" }}
+                  className="h-full bg-primary"
+                />
+              </div>
+
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <AlertCircle className="w-8 h-8 text-primary" />
+                </div>
+                
+                <h2 className="text-2xl font-display font-bold mb-3 text-foreground">
+                  Data Check Required
+                </h2>
+                
+                <p className="text-muted-foreground leading-relaxed mb-8">
+                  We recently updated our systems. Please check your dashboard and inform us if any of your registration data is missing.
+                </p>
+
+                <button
+                  onClick={() => setShowMaintenanceModal(false)}
+                  className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl hover:opacity-90 transition-opacity"
+                >
+                  Got it, thanks!
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Sign-in card ──────────────────────────────────────────────────────── */}
       <motion.div
         id="signin-card"
@@ -244,6 +306,20 @@ export default function SignIn() {
 
           {/* Form */}
           <div className="px-8 py-7">
+            {/* Maintenance Notice */}
+            {/* <div 
+              className="mb-6 p-4 rounded-xl border flex gap-3 items-start"
+              style={{
+                background: "hsl(var(--primary) / 0.05)",
+                borderColor: "hsl(var(--primary) / 0.2)",
+              }}
+            >
+              <Wrench className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "hsl(var(--primary))" }} />
+              <p className="text-sm leading-relaxed" style={{ color: "hsl(var(--foreground))" }}>
+                <span className="font-bold">System Update:</span> We recently performed maintenance to improve our systems. If you notice any missing data, please inform us immediately.
+              </p>
+            </div> */}
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 {/* Email */}
