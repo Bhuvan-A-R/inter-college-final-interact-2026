@@ -115,6 +115,15 @@ export default function AdminMaintenancePage() {
           </h1>
           <p className="text-muted-foreground mt-2">Control the website's availability and schedule maintenance windows.</p>
         </div>
+        <div className="flex gap-4">
+          <a
+            href="/api/admin/maintenance/backup"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors border"
+          >
+            <Save className="w-4 h-4" />
+            Download Full Backup
+          </a>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

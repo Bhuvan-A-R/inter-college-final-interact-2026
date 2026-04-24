@@ -9,7 +9,10 @@
     "lint": "next lint",
     "generate": "prisma generate",
     "generate-admin": "node scripts/generate-admin-hash.js",
-    "seed:admins": "tsx scripts/seed-admin-users.ts"
+    "seed:admins": "tsx scripts/seed-admin-users.ts",
+    "backup": "tsx scripts/backup-db.ts",
+    "restore": "tsx scripts/restore-db.ts",
+    "migrate:direct": "tsx scripts/migrate-direct.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
