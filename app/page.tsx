@@ -430,7 +430,7 @@ function RunForHungerModal() {
 
   useEffect(() => {
     if (!showModal) return;
-    setCountdown(10);
+    setCountdown(5);
     intervalRef.current = setInterval(() => {
       setCountdown((c) => {
         if (c <= 1) {
@@ -439,10 +439,10 @@ function RunForHungerModal() {
         }
         return c - 1;
       });
-    }, 1000);
+    }, 500);
     timerRef.current = setTimeout(() => {
       setShowModal(false);
-    }, 10000);
+    }, 5000);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -506,7 +506,7 @@ function RunForHungerModal() {
               style={{ border: "3px solid rgba(255,255,255,0.12)", borderRadius: 0 }}
             >
               <Image
-                src="/events/Interact 2026 FlashMob Poster.png"
+                src="/events/Run for Hunger.jpeg"
                 alt="Run for Hunger 4.0 — Poster"
                 width={1200}
                 height={900}
@@ -516,8 +516,8 @@ function RunForHungerModal() {
             </div>
 
             {/* Register Now button */}
-            {/* <Link
-              href="https://linktr.ee/runforhunger4.0"
+            <Link
+              href="https://www.gatinteract.com/pre-launch/run-for-hunger"
               target="_blank"
               rel="noopener noreferrer"
               onClick={closeModal}
@@ -543,7 +543,7 @@ function RunForHungerModal() {
             >
               🏃‍♂️ Register for Run for Hunger 4.0
               <ArrowRight size={16} />
-            </Link> */}
+            </Link>
 
             <p className="mt-2.5 text-xs" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Outfit', sans-serif" }}>
               Closes in {countdown}s · Click outside to dismiss
@@ -605,7 +605,7 @@ export default function Home() {
       ) : (
         <>
           <InteractLogoLaunchVideo />
-          {/* <RunForHungerModal /> */}
+          <RunForHungerModal />
           <div
             className="min-h-screen"
             style={{
