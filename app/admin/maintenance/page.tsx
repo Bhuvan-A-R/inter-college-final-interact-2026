@@ -109,7 +109,7 @@ export default function AdminMaintenancePage() {
     <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
+          <h1 className="text-3xl mt-20 font-bold flex items-center gap-3">
             <Settings className="w-8 h-8 text-blue-600" />
             Maintenance Management
           </h1>
