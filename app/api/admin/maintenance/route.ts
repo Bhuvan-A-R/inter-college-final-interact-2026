@@ -15,8 +15,21 @@ export async function GET() {
         config: { startTime: null, endTime: null, isActive: false } 
       });
     }
+
+    // Convert back to IST string for the input fields
+    const toISTString = (date: Date) => {
+      const istDate = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
+      return istDate.toISOString().slice(0, 16);
+    };
     
-    return NextResponse.json({ success: true, config });
+    return NextResponse.json({ 
+      success: true, 
+      config: {
+        ...config,
+        startTime: config.startTime ? toISTString(config.startTime) : null,
+        endTime: config.endTime ? toISTString(config.endTime) : null,
+      } 
+    });
   } catch (error: any) {
     console.error("Maintenance GET error:", error);
     return NextResponse.json({ 
@@ -31,17 +44,25 @@ export async function POST(request: Request) {
   try {
     const { startTime, endTime, isActive } = await request.json();
 
+    // Force IST offset (+05:30) if not provided
+    const forceIST = (dateStr: string) => {
+      if (!dateStr) return null;
+      return dateStr.includes("+") || dateStr.includes("Z") 
+        ? new Date(dateStr) 
+        : new Date(`${dateStr}:00+05:30`);
+    };
+
     const config = await prisma.maintenanceConfig.upsert({
       where: { id: "singleton" },
       update: {
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
+        startTime: forceIST(startTime)!,
+        endTime: forceIST(endTime)!,
         isActive,
       },
       create: {
         id: "singleton",
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
+        startTime: forceIST(startTime)!,
+        endTime: forceIST(endTime)!,
         isActive,
       },
     });
