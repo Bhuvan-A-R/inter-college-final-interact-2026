@@ -89,15 +89,34 @@ export async function middleware(request: NextRequest) {
 
     // Maintenance Check
     try {
-        if (redis && !path.startsWith("/maintenance") && !path.startsWith("/api/maintenance") && !path.startsWith("/api/admin") && !path.startsWith("/_next") && !path.startsWith("/static") && !path.includes(".")) {
-            const maintenanceData: any = await redis.get("maintenance:config");
-            if (maintenanceData) {
-                const config = typeof maintenanceData === 'string' ? JSON.parse(maintenanceData) : maintenanceData;
+        if (!path.startsWith("/maintenance") && !path.startsWith("/api/maintenance") && !path.startsWith("/api/admin") && !path.startsWith("/_next") && !path.startsWith("/static") && !path.includes(".")) {
+            let config: any = null;
+
+            if (redis) {
+                const maintenanceData: any = await redis.get("maintenance:config");
+                if (maintenanceData) {
+                    config = typeof maintenanceData === 'string' ? JSON.parse(maintenanceData) : maintenanceData;
+                }
+            } 
+            
+            // Fallback to internal API if Redis is missing or doesn't have the config
+            if (!config) {
+                const protocol = request.nextUrl.protocol;
+                const host = request.headers.get("host");
+                const res = await fetch(`${protocol}//${host}/api/maintenance/status`, {
+                    next: { revalidate: 60 } // Cache for 60 seconds
+                });
+                if (res.ok) {
+                    config = await res.json();
+                }
+            }
+
+            if (config && config.isActive) {
                 const now = new Date();
                 const startTime = new Date(config.startTime);
                 const endTime = new Date(config.endTime);
                 
-                if (config.isActive && now >= startTime && now <= endTime) {
+                if (now >= startTime && now <= endTime) {
                     const sessionToken = request.cookies.get("session")?.value || request.cookies.get("auth_token")?.value;
                     const session = sessionToken ? await verifyToken(sessionToken) : null;
                     
