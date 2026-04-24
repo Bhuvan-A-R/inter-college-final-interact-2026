@@ -1683,7 +1683,7 @@ export function DataTable({ data }: { data: Data[] }) {
               Clear Filters
             </Button>
             {/* Five Excel Download Buttons */}
-            <Button
+            {/* <Button
               variant="outline"
               className="ml-auto bg-primary text-white hover:scale-105 hover:text-white"
               onClick={handleExportParticipantsExcel}
@@ -1714,7 +1714,7 @@ export function DataTable({ data }: { data: Data[] }) {
             >
               <FileDown className="mr-2 h-4 w-4" />
               Download Code Wise Excel
-            </Button>
+            </Button> */}
             <Button
               variant="outline"
               className="ml-auto bg-blue-600 text-white hover:scale-105 hover:bg-blue-700 hover:text-white"

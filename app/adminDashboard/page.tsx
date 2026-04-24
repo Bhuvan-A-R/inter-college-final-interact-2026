@@ -58,7 +58,7 @@ export default async function Page() {
 
   return (
     <div className="bg-background min-h-screen pt-10">
-      <div className="mt-4 justify-center flex flex-col gap-4">
+      <div className="mt-20 justify-center flex flex-col gap-4">
         <div className="max-w-4xl mx-auto p-4">
           <h1 className="text-primary font-bold text-5xl md:text-5xl xl:text-5xl mb-6">
             Admin Dashboard

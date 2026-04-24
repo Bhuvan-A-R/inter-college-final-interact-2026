@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import FooterTime from "./FooterTime";
 import insta from "@/public/images/flogo2.png";
 import yt from "@/public/images/flogo1.png";
 import linkedin from "@/public/images/flogo4.png";
@@ -295,13 +296,17 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-gat-cobalt/30 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gat-steel font-body">
-            Copyright © 2026 Global Academy of Technology · All Rights Reserved.
-          </p>
-          <p className="text-xs text-gat-steel font-body">
-            Developed with ♥ by the Interact 2026 Website Team
-          </p>
+        <div className="mt-16 pt-8 border-t border-gat-cobalt/30 flex flex-col items-center gap-6">
+          <FooterTime />
+
+          <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4">
+            <p className="text-xs text-gat-steel font-body">
+              Copyright © 2026 Interact Global Academy of Technology · All Rights Reserved.
+            </p>
+            <p className="text-xs text-gat-steel font-body">
+              Developed with ♥ by the Interact 2026 Website Team
+            </p>
+          </div>
         </div>
       </div>
     </footer>
@@ -309,3 +314,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
