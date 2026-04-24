@@ -280,3 +280,17 @@ enum TeamRole {
   LEADER
   MEMBER
 }
+
+model MaintenanceConfig {
+  id        String   @id @default("singleton")
+  startTime DateTime
+  endTime   DateTime
+  isActive  Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+}
+
+model MaintenanceSubscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}

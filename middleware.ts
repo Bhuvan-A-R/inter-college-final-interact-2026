@@ -87,6 +87,30 @@ const registrationTeamRoutes: string[] = [
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
+    // Maintenance Check
+    try {
+        if (redis && !path.startsWith("/maintenance") && !path.startsWith("/api/maintenance") && !path.startsWith("/api/admin") && !path.startsWith("/_next") && !path.startsWith("/static") && !path.includes(".")) {
+            const maintenanceData: any = await redis.get("maintenance:config");
+            if (maintenanceData) {
+                const config = typeof maintenanceData === 'string' ? JSON.parse(maintenanceData) : maintenanceData;
+                const now = new Date();
+                const startTime = new Date(config.startTime);
+                const endTime = new Date(config.endTime);
+                
+                if (config.isActive && now >= startTime && now <= endTime) {
+                    const sessionToken = request.cookies.get("session")?.value || request.cookies.get("auth_token")?.value;
+                    const session = sessionToken ? await verifyToken(sessionToken) : null;
+                    
+                    if (!session || (session.role !== "ADMIN" && session.role !== "SUPER_ADMIN" && session.role !== "REG_ADMIN")) {
+                        return NextResponse.redirect(new URL("/maintenance", request.nextUrl));
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Middleware maintenance check error:", err);
+    }
+
     // Extract IP address
     const ip =
         request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||

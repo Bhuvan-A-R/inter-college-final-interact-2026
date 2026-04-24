@@ -121,3 +121,32 @@ export async function sendPaymentRejectedEmail(
     `,
   });
 }
+
+export async function sendMaintenanceEndEmail(
+  emails: string[]
+): Promise<void> {
+  if (emails.length === 0) return;
+  
+  const transporter = createTransporter();
+  await transporter.sendMail({
+    from: `"INTERACT 2K26" <${process.env.SMTP_EMAIL}>`,
+    bcc: emails,
+    subject: "INTERACT 2K26 is Back Online!",
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
+        <h2 style="color:#111827;margin-bottom:8px;">INTERACT 2K26</h2>
+        <p style="color:#6b7280;margin-bottom:18px;">
+          The maintenance is complete and the INTERACT 2K26 website is now live! 
+          You can now login, register for events, and continue your journey with us.
+        </p>
+        <div style="margin-top:24px;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://interact2k26.com'}" 
+             style="display:inline-block;background:#111827;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-weight:600;">
+            Go to Website
+          </a>
+        </div>
+        <p style="color:#9ca3af;font-size:12px;margin-top:24px;">Global Academy of Technology · INTERACT 2K26</p>
+      </div>
+    `,
+  });
+}
