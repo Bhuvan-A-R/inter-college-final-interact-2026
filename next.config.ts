@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     reactStrictMode: true,
+    env: {
+        NEXT_PUBLIC_BUILD_TIME: new Date().toISOString(),
+    },
 
     eslint: {
         ignoreDuringBuilds: true, // Ensures best practices are followed
