@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from ".././components/Footer";
+import MaintenanceBanner from "@/components/MaintenanceBanner";
 import "./globals.css";
 import AuthContextProvider from "@/contexts/auth-context";
 import { ThemeProvider } from "@/contexts/theme-provider";
@@ -89,6 +90,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <body className="font-body text-gat-charcoal bg-white antialiased">
         <ThemeProvider>
           <AuthContextProvider>
+            <MaintenanceBanner />
             <Navbar />
             <main className="min-h-screen">
               {children}
