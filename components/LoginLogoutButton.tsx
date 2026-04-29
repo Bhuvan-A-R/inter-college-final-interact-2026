@@ -16,8 +16,9 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
   const { isLoggedIn, role, setIsLoggedIn } = useAuthContext();
   const isAdmin =
     role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN";
+  const isDomainAdmin = ["TECH_ADMIN", "SPORTS_ADMIN", "CULTURALS_ADMIN"].includes(role as string);
   const isParticipant =
-    role === "PARTICIPANT" || (isLoggedIn && role !== null && !isAdmin);
+    role === "PARTICIPANT" || (isLoggedIn && role !== null && !isAdmin && !isDomainAdmin);
   const router = useRouter();
 
   const [cartCount, setCartCount] = useState(0);
@@ -117,6 +118,14 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
                   Payments
                 </Link>
               </>
+            ) : isDomainAdmin ? (
+              <Link
+                id="dashboard-link"
+                href="/adminDashboard"
+                className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
+              >
+                Admin Dashboard
+              </Link>
             ) : isParticipant ? (
               // PARTICIPANT (or any non-admin logged-in user): full nav
               <>

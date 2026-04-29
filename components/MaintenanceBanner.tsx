@@ -18,7 +18,8 @@ export default function MaintenanceBanner() {
           setConfig(data.config);
         }
       } catch (error) {
-        console.error("Failed to fetch maintenance status for banner");
+        // Silent catch to prevent Next.js dev server error overlay
+        // console.warn("Failed to fetch maintenance status for banner");
       }
     };
     fetchStatus();

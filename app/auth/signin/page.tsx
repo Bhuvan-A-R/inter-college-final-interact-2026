@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -49,12 +49,12 @@ export default function SignIn() {
   const [showMaintenanceModal, setShowMaintenanceModal] = useState<boolean>(true);
 
   // Auto-hide modal after 5 seconds
-  useState(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       setShowMaintenanceModal(false);
     }, 5000);
     return () => clearTimeout(timer);
-  });
+  }, []);
 
   const form = useForm<z.infer<typeof newLoginSchema>>({
     resolver: zodResolver(newLoginSchema),
@@ -81,6 +81,8 @@ export default function SignIn() {
         const role = response.data.data?.user?.role;
         if (role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN") {
           router.push("/admin");
+        } else if (["TECH_ADMIN", "SPORTS_ADMIN", "CULTURALS_ADMIN"].includes(role)) {
+          router.push("/adminDashboard");
         } else {
           router.push("/dashboard");
         }
@@ -189,7 +191,7 @@ export default function SignIn() {
 
       {/* ── Maintenance Modal ────────────────────────────────────────────────── */}
       <AnimatePresence>
-        {showMaintenanceModal && (
+        {false && showMaintenanceModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

@@ -76,6 +76,7 @@ const protectedRoutes: string[] = [
 
 const adminRoutes: string[] = [
     "/admin",
+    "/adminDashboard",
     "/api/admin",
 ];
 
@@ -120,7 +121,7 @@ export async function middleware(request: NextRequest) {
                     const sessionToken = request.cookies.get("session")?.value || request.cookies.get("auth_token")?.value;
                     const session = sessionToken ? await verifyToken(sessionToken) : null;
                     
-                    if (!session || (session.role !== "ADMIN" && session.role !== "SUPER_ADMIN" && session.role !== "REG_ADMIN")) {
+                    if (!session || !["ADMIN", "SUPER_ADMIN", "REG_ADMIN", "TECH_ADMIN", "SPORTS_ADMIN", "CULTURALS_ADMIN"].includes(session.role)) {
                         return NextResponse.redirect(new URL("/maintenance", request.nextUrl));
                     }
                 }
@@ -197,7 +198,7 @@ export async function middleware(request: NextRequest) {
         if (!session?.id) {
             return NextResponse.redirect(new URL("/auth/signin", request.nextUrl));
         }
-        if (session.role !== "ADMIN" && session.role !== "SUPER_ADMIN" && session.role !== "REG_ADMIN") {
+        if (!["ADMIN", "SUPER_ADMIN", "REG_ADMIN", "TECH_ADMIN", "SPORTS_ADMIN", "CULTURALS_ADMIN"].includes(session.role)) {
             return NextResponse.redirect(new URL("/dashboard?error=unauthorized", request.nextUrl));
         }
     }

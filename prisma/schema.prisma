@@ -268,6 +268,9 @@ enum Role {
   PARTICIPANT
   SUPER_ADMIN
   REG_ADMIN
+  TECH_ADMIN
+  SPORTS_ADMIN
+  CULTURALS_ADMIN
 }
 
 enum TeamInviteStatus {
