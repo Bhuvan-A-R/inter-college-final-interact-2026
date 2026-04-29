@@ -134,3 +134,46 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
   }
 }
 
+// DELETE /api/teams/:teamId — Delete team
+export async function DELETE(req: NextRequest, context: RouteContext) {
+  try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
+
+    const { teamId } = await context.params;
+
+    const team = await prisma.team.findUnique({
+      where: { id: teamId },
+      include: {
+        OrderItem: true,
+      },
+    });
+
+    if (!team) {
+      return errorResponse("Team not found.", 404);
+    }
+
+    if (team.leaderId !== auth.session.id && auth.session.role !== "SUPER_ADMIN") {
+      return errorResponse("Only the team leader can delete the team.", 403);
+    }
+
+    if (team.OrderItem.length > 0) {
+      return errorResponse("Cannot delete team because it has associated orders.", 400);
+    }
+
+    // Delete the cart items first since they don't have Cascade onDelete
+    await prisma.cartItem.deleteMany({
+      where: { teamId: teamId },
+    });
+
+    await prisma.team.delete({
+      where: { id: teamId },
+    });
+
+    return successResponse(null, 200, "Team deleted successfully.");
+  } catch (error) {
+    console.error("[DELETE /api/teams/:teamId]", error);
+    return errorResponse("Internal server error.", 500);
+  }
+}
+

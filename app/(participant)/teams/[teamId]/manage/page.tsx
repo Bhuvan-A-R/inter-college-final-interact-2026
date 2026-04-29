@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Edit2, Check, X, Sparkles } from "lucide-react";
+import { Edit2, Check, X, Sparkles, Trash2, UserMinus } from "lucide-react";
 
 type Member = {
   id: string;
@@ -74,6 +74,11 @@ export default function ManageTeamPage() {
   const [newName, setNewName] = useState("");
   const [renaming, setRenaming] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // Deletion states
+  const [deletingTeam, setDeletingTeam] = useState(false);
+  const [removingMember, setRemovingMember] = useState<string | null>(null);
+  const [cancelingInvite, setCancelingInvite] = useState<string | null>(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -194,6 +199,66 @@ export default function ManageTeamPage() {
       toast.error("Unable to rename team.");
     } finally {
       setRenaming(false);
+    }
+  };
+
+  const handleDeleteTeam = async () => {
+    if (!confirm("Are you sure you want to delete this team? This action cannot be undone.")) return;
+    setDeletingTeam(true);
+    try {
+      const res = await fetch(`/api/teams/${teamId}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error?.message || "Failed to delete team.");
+        return;
+      }
+      toast.success("Team deleted successfully.");
+      router.push("/teams");
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to delete team.");
+    } finally {
+      setDeletingTeam(false);
+    }
+  };
+
+  const handleRemoveMember = async (memberId: string) => {
+    if (!confirm("Are you sure you want to remove this member?")) return;
+    setRemovingMember(memberId);
+    try {
+      const res = await fetch(`/api/teams/${teamId}/members/${memberId}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error?.message || "Failed to remove member.");
+        return;
+      }
+      toast.success("Member removed successfully.");
+      loadData();
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to remove member.");
+    } finally {
+      setRemovingMember(null);
+    }
+  };
+
+  const handleCancelInvite = async (inviteId: string) => {
+    if (!confirm("Are you sure you want to cancel this invite?")) return;
+    setCancelingInvite(inviteId);
+    try {
+      const res = await fetch(`/api/teams/${teamId}/invites/${inviteId}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error?.message || "Failed to cancel invite.");
+        return;
+      }
+      toast.success("Invite cancelled successfully.");
+      loadData();
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to cancel invite.");
+    } finally {
+      setCancelingInvite(null);
     }
   };
 
@@ -343,18 +408,16 @@ export default function ManageTeamPage() {
           {/* Minimum Members Requirement */}
           {team.event.minTeamSize !== null && (
             <div
-              className={`mb-4 p-3 rounded-lg border ${
-                team.members.length >= team.event.minTeamSize
+              className={`mb-4 p-3 rounded-lg border ${team.members.length >= team.event.minTeamSize
                   ? "bg-green-50 border-green-200"
                   : "bg-amber-50 border-amber-200"
-              }`}
+                }`}
             >
               <p
-                className={`text-sm font-semibold ${
-                  team.members.length >= team.event.minTeamSize
+                className={`text-sm font-semibold ${team.members.length >= team.event.minTeamSize
                     ? "text-green-800"
                     : "text-amber-800"
-                }`}
+                  }`}
               >
                 {team.members.length >= team.event.minTeamSize ? (
                   <>
@@ -386,9 +449,21 @@ export default function ManageTeamPage() {
                     {member.user.collegeName}
                   </p>
                 </div>
-                <span className="text-xs font-bold uppercase tracking-widest text-gat-blue bg-gat-blue/10 px-3 py-1 rounded-full">
-                  {member.role}
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold uppercase tracking-widest text-gat-blue bg-gat-blue/10 px-3 py-1 rounded-full">
+                    {member.role}
+                  </span>
+                  {isLeader && member.role !== "LEADER" && (
+                    <button
+                      onClick={() => handleRemoveMember(member.id)}
+                      disabled={removingMember === member.id}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                      title="Remove Member"
+                    >
+                      <UserMinus className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -441,11 +516,10 @@ export default function ManageTeamPage() {
                     return (
                       <div
                         key={invite.id}
-                        className={`flex items-center justify-between p-3 rounded-lg border ${
-                          isPending
+                        className={`flex items-center justify-between p-3 rounded-lg border ${isPending
                             ? "border-amber-200 bg-amber-50/40"
                             : "border-red-200 bg-red-50/40"
-                        }`}
+                          }`}
                       >
                         <div>
                           <p className="text-sm font-medium text-gat-midnight">
@@ -464,20 +538,50 @@ export default function ManageTeamPage() {
                             </p>
                           )}
                         </div>
-                        <span
-                          className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
-                            isPending
-                              ? "text-amber-600 bg-amber-100"
-                              : "text-red-600 bg-red-100"
-                          }`}
-                        >
-                          {invite.status}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full ${isPending
+                                ? "text-amber-600 bg-amber-100"
+                                : "text-red-600 bg-red-100"
+                              }`}
+                          >
+                            {invite.status}
+                          </span>
+                          {isLeader && isPending && (
+                            <button
+                              onClick={() => handleCancelInvite(invite.id)}
+                              disabled={cancelingInvite === invite.id}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                              title="Cancel Invite"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
                 </div>
               )}
+            </div>
+
+            {/* Danger Zone */}
+            <div className="bg-white border border-red-200 rounded-xl p-5 shadow-sm mt-6 mb-6">
+              <h2 className="text-lg font-heading font-bold text-red-600 mb-2">
+                Danger Zone
+              </h2>
+              <p className="text-sm text-gat-steel mb-4">
+                Once you delete a team, there is no going back. All members will be removed and any pending invites will be cancelled. Please be certain.
+              </p>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteTeam}
+                disabled={deletingTeam}
+                className="bg-red-600 text-white hover:bg-red-700"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {deletingTeam ? "Deleting..." : "Delete Team"}
+              </Button>
             </div>
           </>
         )}
