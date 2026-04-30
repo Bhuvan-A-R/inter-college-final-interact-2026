@@ -53,6 +53,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
             },
           },
         },
+        OrderItem: {
+          select: {
+            order: {
+              select: { status: true },
+            },
+          },
+        },
       },
     });
 
@@ -130,6 +137,64 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     return successResponse({ team: updatedTeam }, 200, "Team renamed successfully.");
   } catch (error) {
     console.error("[PATCH /api/teams/:teamId]", error);
+    return errorResponse("Internal server error.", 500);
+  }
+}
+
+// DELETE /api/teams/:teamId — Delete team
+export async function DELETE(req: NextRequest, context: RouteContext) {
+  try {
+    const auth = await requireAuth();
+    if (auth.error) return auth.error;
+
+    const { teamId } = await context.params;
+
+    const team = await prisma.team.findUnique({
+      where: { id: teamId },
+      include: {
+        OrderItem: {
+          include: {
+            order: {
+              select: { status: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!team) {
+      return errorResponse("Team not found.", 404);
+    }
+
+    if (team.leaderId !== auth.session.id && auth.session.role !== "SUPER_ADMIN") {
+      return errorResponse("Only the team leader can delete the team.", 403);
+    }
+
+    // Block deletion if payment has been submitted or verified for this team
+    const hasPaidOrder = team.OrderItem.some(
+      (item) =>
+        item.order.status === "PAYMENT_SUBMITTED" ||
+        item.order.status === "VERIFIED"
+    );
+    if (hasPaidOrder) {
+      return errorResponse(
+        "Cannot delete this team because a payment has been submitted or verified for it. Contact an admin if you need help.",
+        400
+      );
+    }
+
+    // Delete the cart items first since they don't have Cascade onDelete
+    await prisma.cartItem.deleteMany({
+      where: { teamId: teamId },
+    });
+
+    await prisma.team.delete({
+      where: { id: teamId },
+    });
+
+    return successResponse(null, 200, "Team deleted successfully.");
+  } catch (error) {
+    console.error("[DELETE /api/teams/:teamId]", error);
     return errorResponse("Internal server error.", 500);
   }
 }

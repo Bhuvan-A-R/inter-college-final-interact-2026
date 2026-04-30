@@ -804,7 +804,7 @@ const CollegeEventFilter: React.FC<CollegeEventFilterProps> = ({
 //////////////////////////
 // DataTable
 //////////////////////////
-export function DataTable({ data }: { data: Data[] }) {
+export function DataTable({ data, role }: { data: Data[]; role?: string }) {
   const router = useRouter();
   const [rows, setRows] = React.useState<Data[]>(data);
   const [view, setView] = React.useState<"registrants" | "colleges">(
@@ -1088,11 +1088,11 @@ export function DataTable({ data }: { data: Data[] }) {
       },
 
 
-      {
+      ...(role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN" ? [{
         accessorKey: "Action",
         id: "actions",
         enableHiding: false,
-        cell: ({ row }) => {
+        cell: ({ row }: any) => {
           const data = row.original;
           return (
             <DropdownMenu>
@@ -1123,9 +1123,9 @@ export function DataTable({ data }: { data: Data[] }) {
             </DropdownMenu>
           );
         },
-      },
+      }] : []),
     ],
-    [handleUpdate, handleRemove],
+    [handleUpdate, handleRemove, role],
   );
 
   const table = useReactTable({
@@ -1715,23 +1715,27 @@ export function DataTable({ data }: { data: Data[] }) {
               <FileDown className="mr-2 h-4 w-4" />
               Download Code Wise Excel
             </Button> */}
-            <Button
-              variant="outline"
-              className="ml-auto bg-blue-600 text-white hover:scale-105 hover:bg-blue-700 hover:text-white"
-              onClick={handleSyncToSheets}
-              disabled={syncing}
-            >
-              <RefreshCcw className={`mr-2 h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
-              {syncing ? "Syncing..." : "Sync to Sheets"}
-            </Button>
-            <Button
-              variant="outline"
-              className="bg-red-500 text-white hover:scale-105 hover:bg-red-500 hover:text-primary-foreground ml-auto"
-              onClick={() => handleDeleteSelected()}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Selected
-            </Button>
+            {(role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN") && (
+              <>
+                <Button
+                  variant="outline"
+                  className="ml-auto bg-blue-600 text-white hover:scale-105 hover:bg-blue-700 hover:text-white"
+                  onClick={handleSyncToSheets}
+                  disabled={syncing}
+                >
+                  <RefreshCcw className={`mr-2 h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+                  {syncing ? "Syncing..." : "Sync to Sheets"}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="bg-red-500 text-white hover:scale-105 hover:bg-red-500 hover:text-primary-foreground ml-auto"
+                  onClick={() => handleDeleteSelected()}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Selected
+                </Button>
+              </>
+            )}
           </>
         ) : (
           <>
