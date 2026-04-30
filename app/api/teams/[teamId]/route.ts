@@ -53,6 +53,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
             },
           },
         },
+        OrderItem: {
+          select: {
+            order: {
+              select: { status: true },
+            },
+          },
+        },
       },
     });
 
@@ -145,7 +152,13 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     const team = await prisma.team.findUnique({
       where: { id: teamId },
       include: {
-        OrderItem: true,
+        OrderItem: {
+          include: {
+            order: {
+              select: { status: true },
+            },
+          },
+        },
       },
     });
 
@@ -157,8 +170,17 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
       return errorResponse("Only the team leader can delete the team.", 403);
     }
 
-    if (team.OrderItem.length > 0) {
-      return errorResponse("Cannot delete team because it has associated orders.", 400);
+    // Block deletion if payment has been submitted or verified for this team
+    const hasPaidOrder = team.OrderItem.some(
+      (item) =>
+        item.order.status === "PAYMENT_SUBMITTED" ||
+        item.order.status === "VERIFIED"
+    );
+    if (hasPaidOrder) {
+      return errorResponse(
+        "Cannot delete this team because a payment has been submitted or verified for it. Contact an admin if you need help.",
+        400
+      );
     }
 
     // Delete the cart items first since they don't have Cascade onDelete

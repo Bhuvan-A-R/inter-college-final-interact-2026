@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { CalendarClock, AlertTriangle } from "lucide-react";
 
 type EventOption = {
   id: string;
@@ -58,6 +59,9 @@ export default function TeamsPage() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isCreating, setIsCreating] = useState(false);
 
+  // Team edit config
+  const [editConfig, setEditConfig] = useState<{ allowed: boolean; deadline: string | null; reason: string | null } | null>(null);
+
 
   const teamEvents = useMemo(() => {
     const filteredEvents = events.filter((event) => event.type === "TEAM" && event.isActive);
@@ -76,13 +80,19 @@ export default function TeamsPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [teamsRes, eventsRes] = await Promise.all([
+      const [teamsRes, eventsRes, editConfigRes] = await Promise.all([
         fetch("/api/teams"),
         fetch("/api/events"),
+        fetch("/api/team-edit-config"),
       ]);
 
       const teamsData: TeamsResponse = await teamsRes.json();
       const eventsData: EventsResponse = await eventsRes.json();
+
+      if (editConfigRes.ok) {
+        const ecData = await editConfigRes.json();
+        setEditConfig(ecData.data);
+      }
 
       if (!teamsRes.ok || !eventsRes.ok) {
         const errorMessage =
@@ -162,6 +172,53 @@ export default function TeamsPage() {
             Manage Teams
           </h1>
         </div>
+
+        {/* Editing deadline notice */}
+        {editConfig && editConfig.deadline && (
+          <div className={`mb-6 flex items-start gap-3 p-4 rounded-xl border ${
+            editConfig.allowed
+              ? "border-blue-200 bg-blue-50"
+              : "border-amber-200 bg-amber-50"
+          }`}>
+            {editConfig.allowed
+              ? <CalendarClock className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              : <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            }
+            <div>
+              {editConfig.allowed ? (
+                <>
+                  <p className="text-sm font-bold text-blue-800">Team member editing is open</p>
+                  <p className="text-xs text-blue-700 mt-0.5">
+                    Last date to add or remove team members after payment:{" "}
+                    <strong>
+                      {new Date(editConfig.deadline).toLocaleString("en-IN", {
+                        dateStyle: "long",
+                        timeStyle: "short",
+                        timeZone: "Asia/Kolkata",
+                      })} IST
+                    </strong>
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-bold text-amber-800">Team member editing is closed</p>
+                  <p className="text-xs text-amber-700 mt-0.5">
+                    {editConfig.reason ?? "The deadline to edit team members has passed."}
+                    {" "}
+                    The deadline was{" "}
+                    <strong>
+                      {new Date(editConfig.deadline).toLocaleString("en-IN", {
+                        dateStyle: "long",
+                        timeStyle: "short",
+                        timeZone: "Asia/Kolkata",
+                      })} IST
+                    </strong>.
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="bg-white border border-gat-blue/10 rounded-xl p-5 shadow-sm mb-8">
           <h2 className="text-lg font-heading font-bold text-gat-midnight mb-4">
