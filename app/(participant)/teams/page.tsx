@@ -147,11 +147,16 @@ export default function TeamsPage() {
         return;
       }
 
-      toast.success("Team created successfully.");
+      toast.success("Team created! Add your members below.");
       setTeamName("");
       setEventId("");
       setSuggestions([]);
-      loadData();
+      const newTeamId = data.data?.team?.id;
+      if (newTeamId) {
+        router.push(`/teams/${newTeamId}/manage`);
+      } else {
+        loadData();
+      }
     } catch (error) {
       console.error(error);
       toast.error("Unable to create team.");
