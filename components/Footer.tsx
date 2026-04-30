@@ -187,7 +187,7 @@ const Footer = () => {
                   href="callto:+91 95380 06513"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
-                  Sohan S K - +91 95380 06513
+                  Sohan Soorya K - +91 95380 06513
                 </a>
               </li>
               <li className="text-gat-gold">
