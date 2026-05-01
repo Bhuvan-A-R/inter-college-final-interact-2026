@@ -59,7 +59,7 @@ export const interactTeamSections: TeamSection[] = [
         "photo": "/convenors/ShivaGanesh G R.png"
       },
       {
-        "name": "Sohan S K",
+        "name": "Sohan Soorya K",
         "role": "Culturals / Program",
         "photo": "/convenors/Sohan S K.png"
       },
