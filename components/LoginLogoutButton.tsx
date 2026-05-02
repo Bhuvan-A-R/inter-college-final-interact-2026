@@ -107,7 +107,7 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
                     href="/adminDashboard"
                     className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
                   >
-                    Registrations
+                    Admin Dashboard
                   </Link>
                 )}
                 <Link

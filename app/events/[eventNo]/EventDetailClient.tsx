@@ -281,6 +281,21 @@ export default function EventDetailClient({ category, details }: Props) {
             Part of the {category.category.replace(/_/g, " ")} lineup
           </p>
 
+          {/* ── Theme Banner ── */}
+          {mainDetail?.theme && (
+            <div className="mt-5 relative overflow-hidden rounded-xl border border-gat-blue/20 bg-gradient-to-br from-gat-blue/5 via-white to-gat-cobalt/5 px-5 py-4 shadow-sm">
+              {/* decorative accent */}
+              <div className="absolute left-0 inset-y-0 w-1 bg-gradient-to-b from-gat-blue to-gat-cobalt rounded-l-xl" />
+              <p className="pl-4 text-[10px] font-heading font-bold uppercase tracking-[0.18em] text-gat-blue mb-1">
+                🎬 Film Theme
+              </p>
+              <p className="pl-4 text-lg md:text-xl font-heading font-black italic text-gat-midnight leading-snug">
+                &ldquo;{mainDetail.theme}&rdquo;
+              </p>
+            </div>
+          )}
+
+
           {registrationInfo && (
             <div className="mt-4 inline-flex flex-col gap-1 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-xs text-green-700">
               <span className="inline-flex items-center gap-2 font-bold uppercase tracking-widest">

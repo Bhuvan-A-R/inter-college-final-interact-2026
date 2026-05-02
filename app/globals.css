@@ -81,12 +81,14 @@
   color: #2362ec; /* gat-blue */
 }
 
-/* Scrollbar Styling */
-::-webkit-scrollbar       { width: 6px; }
-::-webkit-scrollbar-track { background: #f8f9fc; }
-::-webkit-scrollbar-thumb {
-  background: #8b97b6; /* gat-steel */
-  border-radius: 3px;
+/* Global Scrollbar Hiding (Maintains Scrolling) */
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari and Opera */
 }
 
 /* For intersection observer animations */
@@ -260,4 +262,10 @@
   text-transform: uppercase;
   color: hsl(var(--secondary));
   margin-bottom: 12px;
+}
+
+/* Navbar Marquee Animation */
+@keyframes navbar-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.33%); }
 }
