@@ -7,6 +7,8 @@ export interface EventList {
     category: string;
     image: StaticImageData;
     name: string;
+    /** Optional topic/theme for the event (e.g. Short Film) */
+    theme?: string;
     rules: string[];
     minParticipants?: number;
     coordinator?: {
@@ -267,6 +269,7 @@ export const eventsList: EventList[] = [
         category: "General Events",
         image: eventImage,
         name: "Short Film",
+        theme: "Unseen Battles, Unheard Voices",
         minParticipants: 1,
         rules: [
             "Participation: Teams can consist of up to 5 members.",

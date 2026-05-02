@@ -39,9 +39,32 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [logoOnly, setLogoOnly] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<Record<string, boolean>>({});
+  const [showMarquee, setShowMarquee] = useState(false);
+  const [marqueeData, setMarqueeData] = useState({ text: "", isActive: false });
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    fetch("/api/marquee")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setMarqueeData(data.data.config);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch marquee", err));
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollPos = window.scrollY;
+      const totalHeight = document.documentElement.scrollHeight;
+      const windowHeight = window.innerHeight;
+
+      setScrolled(scrollPos > 20);
+
+      // Show marquee after 200px scroll, but hide it if we are within 300px of the bottom (footer)
+      const isNearBottom = (totalHeight - (scrollPos + windowHeight)) < 250;
+      setShowMarquee(scrollPos > 200 && !isNearBottom);
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -66,15 +89,14 @@ const Navbar = () => {
   return (
     <>
       <header
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b ${
-          scrolled
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b ${scrolled
             ? logoOnly
               ? "bg-transparent text-white border-transparent"
               : "bg-gat-midnight text-white border-gat-cobalt/30 shadow-navy"
             : logoOnly
               ? "bg-transparent text-white border-transparent"
               : "bg-white/95 backdrop-blur-sm text-gat-charcoal border-gat-blue/10"
-        }`}
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
@@ -118,9 +140,8 @@ const Navbar = () => {
                       <div key={link.label} className="relative group">
                         <button
                           type="button"
-                          className={`font-body font-semibold transition-colors hover:text-gat-blue ${
-                            scrolled ? "text-white/80" : "text-gat-charcoal"
-                          }`}
+                          className={`font-body font-semibold transition-colors hover:text-gat-blue ${scrolled ? "text-white/80" : "text-gat-charcoal"
+                            }`}
                         >
                           {link.label}
                         </button>
@@ -145,9 +166,8 @@ const Navbar = () => {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`font-body font-semibold transition-colors hover:text-gat-blue ${
-                        scrolled ? "text-white/80" : "text-gat-charcoal"
-                      }`}
+                      className={`font-body font-semibold transition-colors hover:text-gat-blue ${scrolled ? "text-white/80" : "text-gat-charcoal"
+                        }`}
                     >
                       {link.label}
                     </Link>
@@ -216,9 +236,8 @@ const Navbar = () => {
                         >
                           <span>{link.label}</span>
                           <ChevronDown
-                            className={`h-4 w-4 transition-transform ${
-                              isExpanded ? "rotate-180" : "rotate-0"
-                            }`}
+                            className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : "rotate-0"
+                              }`}
                           />
                         </button>
                         {isExpanded && (
@@ -260,7 +279,50 @@ const Navbar = () => {
         </AnimatePresence>
       </header>
 
-      {/* Mobile Bottom Nav Bar */}
+      {/* ── Scroll-triggered Marquee Ribbon ── */}
+      {!logoOnly && marqueeData.isActive && (
+        <div
+          className={`fixed z-40 inset-x-0 overflow-hidden transition-all duration-500 ease-in-out top-16 sm:top-20 border-b border-white/10 ${showMarquee ? "opacity-100 max-h-12" : "opacity-0 max-h-0 pointer-events-none"
+            }`}
+          aria-hidden="true"
+        >
+          <div className="bg-white/70 backdrop-blur-lg text-gat-gold text-[12px] font-heading font-bold uppercase tracking-[0.2em] py-2.5 overflow-hidden whitespace-nowrap shadow-xl border-y border-gat-gold/20">
+            <div
+              className="flex whitespace-nowrap"
+              style={{
+                width: "fit-content",
+                animation: "navbar-marquee 25s linear infinite",
+              }}
+            >
+              {/* Group 1 */}
+              <div className="flex items-center">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <span key={`g1-${i}`} className="inline-flex items-center gap-5 px-10">
+                    <span className="text-gat-gold text-lg">🎬</span>
+                    <span className="text-gat-gold">{marqueeData.text}</span>
+                    <span className="opacity-40 text-gat-gold">✦</span>
+                    <span className="text-gat-gold/90">Interact 2k26</span>
+                    <span className="opacity-40 text-gat-gold">✦</span>
+                  </span>
+                ))}
+              </div>
+              {/* Group 2 (Identical for seamless loop) */}
+              <div className="flex items-center">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <span key={`g2-${i}`} className="inline-flex items-center gap-5 px-10">
+                    <span className="text-gat-gold text-lg">🎬</span>
+                    <span className="text-gat-gold">{marqueeData.text}</span>
+                    <span className="opacity-40 text-gat-gold">✦</span>
+                    <span className="text-gat-gold/90">Interact 2k26</span>
+                    <span className="opacity-40 text-gat-gold">✦</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {!logoOnly && (
         <nav className="min-[1200px]:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gat-blue/10 flex items-center justify-around h-16 px-2 safe-area-pb shadow-[0_-4px_24px_rgba(35,98,236,0.05)]">
           <Link

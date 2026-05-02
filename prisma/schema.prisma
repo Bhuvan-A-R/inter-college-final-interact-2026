@@ -304,3 +304,10 @@ model TeamEditConfig {
   isOpen    Boolean   @default(true)
   updatedAt DateTime  @updatedAt
 }
+
+model MarqueeConfig {
+  id        String   @id @default("singleton")
+  text      String   @default("Welcome to GAT Interact 2026!")
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}

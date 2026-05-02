@@ -4,7 +4,7 @@ import { verifySession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Users, CalendarDays, ShieldCheck, CalendarClock } from "lucide-react";
+import { Users, CalendarDays, ShieldCheck, CalendarClock, Megaphone } from "lucide-react";
 
 export default async function AdminDashboardPage() {
   const newSession = await getAuthSession();
@@ -66,6 +66,14 @@ export default async function AdminDashboardPage() {
       description: "Set the last date for team member editing after payment",
       show: isSuperOrReg,
       color: "bg-amber-50 text-amber-600 border-amber-100",
+    },
+    {
+      href: "/adminDashboard/marquee",
+      icon: Megaphone,
+      label: "Marquee Settings",
+      description: "Manage the dynamic announcement ribbon on the site",
+      show: isSuperOrReg,
+      color: "bg-rose-50 text-rose-600 border-rose-100",
     },
   ].filter((item) => item.show);
 
@@ -129,6 +137,9 @@ export default async function AdminDashboardPage() {
             </Link>
             <Link href="/adminDashboard/settings">
               <Button variant="outline" size="sm">Manage Team Deadline</Button>
+            </Link>
+            <Link href="/adminDashboard/marquee">
+              <Button variant="outline" size="sm">Marquee Settings</Button>
             </Link>
           </div>
         )}
