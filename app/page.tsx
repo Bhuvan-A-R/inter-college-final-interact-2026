@@ -605,7 +605,7 @@ export default function Home() {
       ) : (
         <>
           <InteractLogoLaunchVideo />
-          <RunForHungerModal />
+          {/* <RunForHungerModal /> */}
           <div
             className="min-h-screen"
             style={{

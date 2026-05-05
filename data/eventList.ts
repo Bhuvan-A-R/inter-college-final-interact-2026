@@ -274,8 +274,10 @@ export const eventsList: EventList[] = [
         rules: [
             "Participation: Teams can consist of up to 5 members.",
             "Duration: The film must be between 3 to 7 minutes in length (including credits).",
+            "Language: Kannada & English.",
             "All entries must be original. Plagiarism of scripts or concepts is strictly prohibited.",
             "Use of copyrighted music without proper credit or creative transformation is not allowed.",
+            "The participating team shall bear full responsibility for any legal issues related to disclaimers or copyright infringement. Global Academy of Technology shall not be held liable for the same.",
             "Entries must be submitted in MP4 format via the provided submission link or a USB drive by the specified deadline.",
             "Content must be appropriate for a general audience and must not be derogatory toward any religion, caste, gender, or department.",
             "Films will be evaluated on storytelling, cinematography, editing, and adherence to the theme.",
