@@ -4,7 +4,8 @@ import { verifySession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Users, CalendarDays, ShieldCheck, CalendarClock, Megaphone } from "lucide-react";
+import { Users, CalendarDays, ShieldCheck, CalendarClock, Megaphone, Mail } from "lucide-react";
+
 
 export default async function AdminDashboardPage() {
   const newSession = await getAuthSession();
@@ -75,6 +76,16 @@ export default async function AdminDashboardPage() {
       show: isSuperOrReg,
       color: "bg-rose-50 text-rose-600 border-rose-100",
     },
+    {
+      href: "/adminDashboard/emails",
+      icon: Mail,
+      label: "Email Communicator",
+      description: "Bulk email system for participant announcements",
+      show: isSuperOrReg,
+      color: "bg-indigo-50 text-indigo-600 border-indigo-100",
+    },
+
+
   ].filter((item) => item.show);
 
   return (
@@ -141,6 +152,10 @@ export default async function AdminDashboardPage() {
             <Link href="/adminDashboard/marquee">
               <Button variant="outline" size="sm">Marquee Settings</Button>
             </Link>
+            <Link href="/adminDashboard/emails">
+              <Button variant="outline" size="sm">Email Communicator</Button>
+            </Link>
+
           </div>
         )}
       </div>
