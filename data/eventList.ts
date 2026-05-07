@@ -31,7 +31,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Classical Solo Dance",
         rules: [
-            "Only 1 participant per institute.",
             "The performance duration must be between 3 to 5 minutes.",
             "The performance must strictly adhere to recognized Indian classical dance forms.",
             "Participants are expected to maintain authenticity in movements, expressions, and costume.",
@@ -49,7 +48,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Dance Battle",
         rules: [
-            "Only 1 participant per institute.",
             "The competition will be conducted in elimination rounds.",
             "Each participant will get 1–2 minutes per round to perform.",
             "Music will be provided by the organizers; participants must be ready to perform on random tracks.",
@@ -106,7 +104,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Western Solo Dance",
         rules: [
-            "Only 1 participant per institute.",
             "The performance duration must be between 3 to 5 minutes.",
             "Participants may perform in any Western dance style (Hip-hop, Contemporary, Jazz, etc.).",
             "Pre-recorded music must be submitted to the co-ordinators in MP3 format prior to the event.",
@@ -147,7 +144,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Cartooning",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 2 hours.",
             "The artwork will be made on the spot on the given topic/idea.",
             "Only one standard A2 size paper will be provided by the host institute.",
@@ -160,7 +156,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Clay Modelling",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 2 hours.",
             "The artwork will be made on the spot on the given topic.",
             "The topics and other specific rules shall be announced on the spot.",
@@ -192,7 +187,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "On Spot Painting",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 2 hours.",
             "The artwork shall be made on the spot on the given topic.",
             "Only one standard A2 size paper will be provided by the host institute.",
@@ -206,7 +200,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "On Spot Photography",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 4 hours.",
             "The participant shall bring their own digital camera and memory card. The memory card shall be formatted by the judges before the commencement of the contest.",
             "Mobile phones, drones and other forms of image capturing technologies are not allowed.",
@@ -225,7 +218,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Rangoli",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 2 hours.",
             "Participants shall bring their own material.",
             "The participants shall prepare a Rangoli within the space provided by the organizers, by free hand only.",
@@ -275,6 +267,7 @@ export const eventsList: EventList[] = [
             "Participation: Teams can consist of up to 5 members.",
             "Duration: The film must be between 3 to 7 minutes in length (including credits).",
             "Language: Kannada & English.",
+            "Submissions must happen before 11pm of 12th May to the Google Drive link which will be provided to the Registered Teams on 12th of May.",
             "All entries must be original. Plagiarism of scripts or concepts is strictly prohibited.",
             "Use of copyrighted music without proper credit or creative transformation is not allowed.",
             "The participating team shall bear full responsibility for any legal issues related to disclaimers or copyright infringement. Global Academy of Technology shall not be held liable for the same.",
@@ -292,7 +285,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Creative Writing",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 1 Hour.",
             "Word Limit: 700 to 1000 Words.",
             "The medium of expression shall be English or Kannada.",
@@ -308,7 +300,7 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Debate",
         rules: [
-            "Only 1 team of 2 participants per institute.",
+            "Team of 2 participants",
             "Duration: 10 minutes.",
             "The medium of expression shall be English or Kannada.",
             "Topic will be given on spot, along with stance, with appropriate time to prepare.",
@@ -325,7 +317,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Elocution",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: Up to 5 minutes.",
             "The medium of expression shall be English or Kannada.",
             "The participant may present prose, poetry or a mixture of both.",
@@ -342,7 +333,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Poetry",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 1 Hour.",
             "The medium of expression shall be English or Kannada.",
             "Plagiarism and use of AI is strictly prohibited.",
@@ -389,7 +379,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Classical Vocal Solo",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 5 to 15 minutes (including set-up and clearance time).",
             "The performance must strictly adhere to either Hindustani or Carnatic classical traditions.",
             "Electronic Tanpura/Sruti box is allowed. Maximum of two live accompanists (Tabla/Mridangam/Harmonium/Violin) are permitted. Karaoke and film-based semi-classical songs are strictly prohibited.",
@@ -402,7 +391,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Instrumental Solo",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 4 to 8 minutes (including set-up and clearance time).",
             "2 Instruments: Participants must bring their own instruments and necessary cables/processors. A standard drum kit or keyboard may be provided based on venue availability",
             "Karaoke/Backing tracks are allowed only for rhythm/percussion accompaniment and must not contain the lead melody. Must be submitted prior to the performance.",
@@ -416,7 +404,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Voice of Interact",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 4 to 8 minutes (including set-up and clearance time).",
             "No language bar; however, lyrics must be appropriate and free from offensive content.",
             "This category focuses on audience engagement and stage presence alongside vocal prowess.",
@@ -431,7 +418,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Western Singing Solo",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 4 to 6 minutes (including set-up and clearance time).",
             "Songs must be performed in English only.",
             "Karaoke is allowed, provided it contains no lead or prominent backing vocals. Tracks must be provided in MP3 format and submitted prior to the performance.",
@@ -758,6 +744,7 @@ export const eventsList: EventList[] = [
         minParticipants: 2,
         rules: [
             "Only up to 6 participants per team.",
+            "A maximum of 1 accompanists are allowed.",
             "Duration: 5+1 minutes.",
             "Background music is to be submitted at the reporting time to the event in-charge.",
         ],
@@ -768,7 +755,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Mimicry",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 3 to 5 minutes.",
             "Participants may mimic voices and speech of well-known personalities, as well as other common sounds.",
             "Profanity, suggestive speech, euphemisms and vulgarity in action or speech is strictly prohibited. Satire and humor that is devoid of the above is accepted.",
@@ -780,7 +766,6 @@ export const eventsList: EventList[] = [
         image: eventImage,
         name: "Mono Acting",
         rules: [
-            "Only 1 participant per institute.",
             "Duration: 3 to 5 minutes.",
             "The participant can play numerous roles in the same scene.",
             "Profanity, suggestive speech, euphemisms and vulgarity in action or speech is strictly prohibited. Satire and humour that is devoid of the above is accepted.",
