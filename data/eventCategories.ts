@@ -653,7 +653,7 @@ export const interCollegeEvents: EventCategory[] = [
     {
         eventNo: 47,
         eventName: "General Quiz",
-        category: "Cu",
+        category: "QUIZ",
         maxParticipant: 2,
         minParticipant: 1,
         id: "",
