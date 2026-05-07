@@ -40,6 +40,17 @@ export async function POST(req: NextRequest) {
             },
           },
         },
+        teams: {
+          select: {
+            id: true,
+            name: true,
+            members: {
+              select: {
+                userId: true,
+              },
+            },
+          },
+        },
       },
       orderBy: { name: "asc" },
     });
@@ -65,10 +76,14 @@ export async function POST(req: NextRequest) {
     const requests: any[] = [];
     const sanitizedEventNames = new Map<string, string>();
 
-    // Ensure "Master List" exists
+    // Ensure "Dashboard" and "Master List" exist
+    const INDEX_SHEET_NAME = "Dashboard";
     const MASTER_SHEET_NAME = "Master List";
+    if (!existingSheetTitles.includes(INDEX_SHEET_NAME)) {
+      requests.push({ addSheet: { properties: { title: INDEX_SHEET_NAME, index: 0 } } });
+    }
     if (!existingSheetTitles.includes(MASTER_SHEET_NAME)) {
-      requests.push({ addSheet: { properties: { title: MASTER_SHEET_NAME, index: 0 } } });
+      requests.push({ addSheet: { properties: { title: MASTER_SHEET_NAME, index: 1 } } });
     }
 
     events.forEach((event) => {
@@ -96,44 +111,92 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 5. Prepare data for "Master List"
+    // Refetch the spreadsheet to get all sheet IDs including newly created ones
+    const updatedSpreadsheet = await sheets.spreadsheets.get({
+      spreadsheetId: SHEET_ID,
+    });
+    const allSheets = updatedSpreadsheet.data.sheets || [];
+    
+    // Create a map from sheet Title to sheetId
+    const titleToIdMap = new Map<string, number>();
+    allSheets.forEach(s => {
+      if (s.properties?.title && s.properties?.sheetId !== undefined) {
+        titleToIdMap.set(s.properties.title, s.properties.sheetId);
+      }
+    });
+
+    // 5. Prepare data for "Dashboard" (Index)
     const valueData: any[] = [];
     
-    // Aggregate unique users and their events
-    const masterMap = new Map<string, { user: any; events: string[] }>();
-    events.forEach((event) => {
-      event.registrations.forEach((reg) => {
-        if (!masterMap.has(reg.user.id)) {
-          masterMap.set(reg.user.id, { user: reg.user, events: [] });
-        }
-        masterMap.get(reg.user.id)!.events.push(event.name);
+    const indexHeaders = ["SL No", "Event Name", "Event Type", "Total Registrations", "Total Teams", "Link to Sheet"];
+    const indexRows = events.map((event, index) => {
+      const sanitizedName = sanitizedEventNames.get(event.id)!;
+      const sheetId = titleToIdMap.get(sanitizedName);
+      const linkFormula = sheetId !== undefined 
+        ? `=HYPERLINK("#gid=${sheetId}", "View Event")` 
+        : "View Event";
+      
+      return [
+        index + 1,
+        event.name,
+        event.type,
+        event.registrations.length,
+        event.type === "TEAM" ? event.teams.length : "N/A",
+        linkFormula
+      ];
+    });
+
+    valueData.push({
+      range: `'${INDEX_SHEET_NAME}'!A1`,
+      values: [
+        ["Interact 2026 Inter College Event Dashboard Data"],
+        [`Last Synced: ${new Date().toLocaleString("en-IN")}`],
+        [],
+        [],
+        indexHeaders,
+        ...indexRows
+      ],
+    });
+
+    // 6. Prepare data for "Master List"
+    const masterHeaders = [
+      "SL No", "Event Name", "Event Type", "Team Name", "Participant Name", "USN", "College ID", "Aadhaar ID", "Phone", "Email", "College Name", "Registered At"
+    ];
+    
+    const masterRows: any[] = [];
+    let masterSlNo = 1;
+    
+    events.forEach(event => {
+      event.registrations.forEach(reg => {
+        const team = event.teams.find(t => t.members.some(m => m.userId === reg.user.id));
+        const teamName = team ? team.name : (event.type === "TEAM" ? "Pending/No Team" : "N/A");
+        
+        masterRows.push([
+          masterSlNo++,
+          event.name,
+          event.type,
+          teamName,
+          reg.user.name,
+          reg.user.usn || "N/A",
+          reg.user.collegeIdNumber || "N/A",
+          reg.user.aadharNumber || "N/A",
+          reg.user.phone,
+          reg.user.email,
+          reg.user.collegeName,
+          new Date(reg.user.createdAt).toLocaleString("en-IN"),
+        ]);
       });
     });
 
-    const masterHeaders = [
-      "SL No", "Name", "USN", "College ID", "Aadhaar ID", "Phone", "Email", "College Name", "Registered Events", "Registered At"
-    ];
-    const masterRows = Array.from(masterMap.values()).map((data, index) => [
-      index + 1,
-      data.user.name,
-      data.user.usn || "N/A",
-      data.user.collegeIdNumber || "N/A",
-      data.user.aadharNumber || "N/A",
-      data.user.phone,
-      data.user.email,
-      data.user.collegeName,
-      data.events.join(", "),
-      new Date(data.user.createdAt).toLocaleString("en-IN"),
-    ]);
-
     valueData.push({
-      range: `${MASTER_SHEET_NAME}!A1`,
+      range: `'${MASTER_SHEET_NAME}'!A1`,
       values: [masterHeaders, ...masterRows],
     });
 
-    // 6. Prepare data for each event sheet
+    // 7. Prepare data for each event sheet
     const eventHeaders = [
       "SL No", 
+      "Team Name",
       "Student Name", 
       "USN", 
       "College ID Number", 
@@ -146,27 +209,33 @@ export async function POST(req: NextRequest) {
 
     events.forEach((event) => {
       const sanitizedName = sanitizedEventNames.get(event.id)!;
-      const rows = event.registrations.map((reg, index) => [
-        index + 1,
-        reg.user.name,
-        reg.user.usn || "N/A",
-        reg.user.collegeIdNumber || "N/A",
-        reg.user.aadharNumber || "N/A",
-        reg.user.phone,
-        reg.user.email,
-        reg.user.collegeName,
-        new Date(reg.user.createdAt).toLocaleString("en-IN"),
-      ]);
+      const rows = event.registrations.map((reg, index) => {
+        const team = event.teams.find(t => t.members.some(m => m.userId === reg.user.id));
+        const teamName = team ? team.name : (event.type === "TEAM" ? "Pending/No Team" : "N/A");
+        
+        return [
+          index + 1,
+          teamName,
+          reg.user.name,
+          reg.user.usn || "N/A",
+          reg.user.collegeIdNumber || "N/A",
+          reg.user.aadharNumber || "N/A",
+          reg.user.phone,
+          reg.user.email,
+          reg.user.collegeName,
+          new Date(reg.user.createdAt).toLocaleString("en-IN"),
+        ];
+      });
 
       valueData.push({
-        range: `${sanitizedName}!A1`,
+        range: `'${sanitizedName}'!A1`,
         values: [eventHeaders, ...rows],
       });
     });
 
-    // 7. Execute batch update for values
+    // 8. Execute batch update for values
     // First, clear existing content in all relevant sheets to avoid old data trailing
-    const clearRanges = [MASTER_SHEET_NAME, ...Array.from(sanitizedEventNames.values())].map(name => `${name}!A1:Z5000`);
+    const clearRanges = [INDEX_SHEET_NAME, MASTER_SHEET_NAME, ...Array.from(sanitizedEventNames.values())].map(name => `'${name}'!A1:Z5000`);
     await sheets.spreadsheets.values.batchClear({
       spreadsheetId: SHEET_ID,
       requestBody: { ranges: clearRanges },
@@ -176,10 +245,59 @@ export async function POST(req: NextRequest) {
     await sheets.spreadsheets.values.batchUpdate({
       spreadsheetId: SHEET_ID,
       requestBody: {
-        valueInputOption: "RAW",
+        valueInputOption: "USER_ENTERED",
         data: valueData,
       },
     });
+
+    // 9. Auto-resize columns and merge Dashboard title
+    const autoResizeRequests: any[] = allSheets.map(sheet => {
+      return {
+        autoResizeDimensions: {
+          dimensions: {
+            sheetId: sheet.properties?.sheetId,
+            dimension: "COLUMNS",
+            startIndex: 0,
+            endIndex: 15 // Resize first 15 columns
+          }
+        }
+      };
+    });
+
+    const dashboardSheetId = titleToIdMap.get(INDEX_SHEET_NAME);
+    if (dashboardSheetId !== undefined) {
+      autoResizeRequests.push({
+        mergeCells: {
+          range: {
+            sheetId: dashboardSheetId,
+            startRowIndex: 0,
+            endRowIndex: 1,
+            startColumnIndex: 0,
+            endColumnIndex: 6,
+          },
+          mergeType: "MERGE_ALL",
+        }
+      });
+      autoResizeRequests.push({
+        mergeCells: {
+          range: {
+            sheetId: dashboardSheetId,
+            startRowIndex: 1,
+            endRowIndex: 2,
+            startColumnIndex: 0,
+            endColumnIndex: 6,
+          },
+          mergeType: "MERGE_ALL",
+        }
+      });
+    }
+
+    if (autoResizeRequests.length > 0) {
+      await sheets.spreadsheets.batchUpdate({
+        spreadsheetId: SHEET_ID,
+        requestBody: { requests: autoResizeRequests },
+      });
+    }
 
     return successResponse({ message: `Successfully synced ${events.length} events and Master List to Google Sheets` });
   } catch (error: any) {
