@@ -86,6 +86,14 @@ const Footer = () => {
               </li>
               <li>
                 <Link
+                  href="/accommodation"
+                  className="text-gat-steel hover:text-gat-gold transition-colors"
+                >
+                  Accommodation Details
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="https://www.gatinteract.com/about/gat"
                   className="text-gat-steel hover:text-gat-gold transition-colors"
                 >
