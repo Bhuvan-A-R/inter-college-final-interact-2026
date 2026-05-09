@@ -17,11 +17,16 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
       include: {
         members: true,
         OrderItem: true,
+        event: { select: { deadline: true } },
       },
     });
 
     if (!team) {
       return errorResponse("Team not found.", 404);
+    }
+
+    if (team.event.deadline && new Date() > new Date(team.event.deadline) && auth.session.role !== "SUPER_ADMIN") {
+      return errorResponse("The registration deadline for this event has passed. Members can no longer be removed.", 403);
     }
 
     if (team.leaderId !== auth.session.id && auth.session.role !== "SUPER_ADMIN") {

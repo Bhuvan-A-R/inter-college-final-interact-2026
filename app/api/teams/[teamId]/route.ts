@@ -99,7 +99,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     // Verify team exists and user is leader
     const team = await prisma.team.findUnique({
       where: { id: teamId },
-      select: { id: true, leaderId: true, name: true },
+      select: { id: true, leaderId: true, name: true, event: { select: { deadline: true } } },
     });
 
     if (!team) {
@@ -108,6 +108,10 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 
     if (team.leaderId !== auth.session.id) {
       return errorResponse("Only the team leader can rename the team.", 403);
+    }
+
+    if (team.event.deadline && new Date() > new Date(team.event.deadline)) {
+      return errorResponse("The registration deadline for this event has passed.", 403);
     }
 
     // If name is the same, just return success
@@ -159,6 +163,9 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
             },
           },
         },
+        event: {
+          select: { deadline: true },
+        },
       },
     });
 
@@ -168,6 +175,10 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
 
     if (team.leaderId !== auth.session.id && auth.session.role !== "SUPER_ADMIN") {
       return errorResponse("Only the team leader can delete the team.", 403);
+    }
+
+    if (team.event.deadline && new Date() > new Date(team.event.deadline) && auth.session.role !== "SUPER_ADMIN") {
+      return errorResponse("The registration deadline for this event has passed. Teams can no longer be deleted.", 403);
     }
 
     // Block deletion if payment has been submitted or verified for this team

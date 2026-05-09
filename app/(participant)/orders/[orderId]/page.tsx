@@ -103,7 +103,7 @@ export default function OrderPaymentPage() {
     if (!order) return "";
     const amount = Number(order.totalAmount || 0).toFixed(2);
     const params = new URLSearchParams({
-      pa: "71159801@ubin",
+      pa: "open9035761024943@yesbank",
       pn: "Global Academy Of Technology",
       am: amount,
       cu: "INR",
@@ -388,9 +388,7 @@ export default function OrderPaymentPage() {
                   {[
                     ["Bank Name", "Union Bank"],
                     ["Account Holder", "Global Academy Of Technology"],
-                    ["UPI ID", "71159801@ubin"],
-                    ["Account Number", "143510100026360"],
-                    ["IFSC Code", "UBIN0814351"],
+                    ["UPI ID", "open9035761024943@yesbank"],
                   ].map(([label, value]) => (
                     <p key={label}>
                       <span className="font-medium text-gat-charcoal">

@@ -101,9 +101,19 @@ const SlideToPayButton = ({
           }}
           whileDrag={{ scale: 1.05 }}
           dragSnapToOrigin={true}
-          className="absolute left-[4px] top-[4px] bottom-[4px] w-[52px] bg-white rounded-lg cursor-grab active:cursor-grabbing flex items-center justify-center shadow-sm"
+          className="absolute left-[4px] top-[4px] bottom-[4px] w-[52px] bg-white rounded-lg cursor-grab active:cursor-grabbing flex items-center justify-center shadow-sm overflow-hidden"
         >
-          <ChevronRight className="w-6 h-6 text-gat-blue" />
+          <div className="flex items-center justify-center -space-x-1.5 pr-1">
+            <motion.div animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0 }}>
+              <ChevronRight className="w-5 h-5 text-gat-blue" />
+            </motion.div>
+            <motion.div animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }}>
+              <ChevronRight className="w-5 h-5 text-gat-blue" />
+            </motion.div>
+            <motion.div animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.4 }}>
+              <ChevronRight className="w-5 h-5 text-gat-blue" />
+            </motion.div>
+          </div>
         </motion.div>
       )}
     </div>
@@ -451,7 +461,7 @@ export default function CartPage() {
                 disabled={teamValidations.some(
                   (v) => v.minMembers && v.currentMembers < v.minMembers,
                 )}
-                text={`Charge ₹${subtotal.toFixed(2)} for ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""} →`}
+                text={`Pay ₹${subtotal.toFixed(2)} for ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""}`}
               />
 
               <p className="text-xs text-gat-steel text-center mt-3">

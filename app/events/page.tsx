@@ -57,6 +57,7 @@ const EventPageInner = () => {
   const [dbEventTypeMap, setDbEventTypeMap] = useState<Map<string, string>>(
     new Map(),
   );
+  const [dbEventDeadlineMap, setDbEventDeadlineMap] = useState<Map<string, string | null>>(new Map());
   const [cartedIds, setCartedIds] = useState<Set<string>>(new Set());
   const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
   const [addingId, setAddingId] = useState<string | null>(null);
@@ -79,12 +80,15 @@ const EventPageInner = () => {
         if (data.success) {
           const map = new Map<string, string>();
           const typeMap = new Map<string, string>();
+          const deadlineMap = new Map<string, string | null>();
           for (const e of data.data.items) {
             map.set(e.name as string, e.id as string);
             typeMap.set(e.name as string, e.type as string);
+            deadlineMap.set(e.name as string, e.deadline as string | null);
           }
           setDbEventMap(map);
           setDbEventTypeMap(typeMap);
+          setDbEventDeadlineMap(deadlineMap);
         }
       })
       .catch(() => {});
@@ -358,57 +362,106 @@ const EventPageInner = () => {
                       </div>
                     </Link>
 
-                    {/* Cart CTA — outside Link to avoid nested anchors */}
-                    {isLoggedIn &&
-                      (() => {
+                    {/* Cart CTA & Deadline Banner — outside Link to avoid nested anchors */}
+                    {(() => {
                         const dbId = dbEventMap.get(event.eventName);
+                        const deadlineStr = dbEventDeadlineMap.get(event.eventName);
+                        
+                        let isDeadlineOver = false;
+                        let isDeadlineToday = false;
+                        let formattedDeadline = "";
+                        
+                        if (deadlineStr) {
+                          const deadline = new Date(deadlineStr);
+                          const now = new Date();
+                          
+                          if (now > deadline) {
+                            isDeadlineOver = true;
+                          } else {
+                            const isToday = deadline.getDate() === now.getDate() && 
+                                            deadline.getMonth() === now.getMonth() && 
+                                            deadline.getFullYear() === now.getFullYear();
+                            if (isToday) {
+                              isDeadlineToday = true;
+                              formattedDeadline = deadline.toLocaleString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric',
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              });
+                            }
+                          }
+                        }
+
+                        if (isDeadlineOver) {
+                          return (
+                            <div className="w-full py-2.5 text-sm font-bold rounded-b-xl flex items-center justify-center gap-2 border border-t-0 border-red-500/20 bg-red-50 text-red-600">
+                              Deadline is over
+                            </div>
+                          );
+                        }
+
+                        const deadlineBanner = isDeadlineToday ? (
+                          <div className={`w-full py-1.5 px-2 text-[10px] font-bold text-center bg-yellow-100/80 text-yellow-800 uppercase tracking-widest border-x border-gat-blue/10 ${!isLoggedIn ? 'rounded-b-xl border-b' : ''}`}>
+                            Closing soon: {formattedDeadline}
+                          </div>
+                        ) : null;
+
+                        if (!isLoggedIn) {
+                          return deadlineBanner;
+                        }
+
                         const isRegistered = !!dbId && registeredIds.has(dbId);
                         const inCart = !!dbId && cartedIds.has(dbId);
                         const isAdding = !!dbId && dbId === addingId;
                         const notAvailable = !dbId;
+
                         return (
-                          <button
-                            onClick={() => handleAddToCart(event.eventName)}
-                            disabled={
-                              isRegistered || inCart || isAdding || notAvailable
-                            }
-                            className={`w-full py-2.5 text-sm font-bold rounded-b-xl flex items-center justify-center gap-2 border border-t-0 border-gat-blue/10 transition-all ${
-                              isRegistered
-                                ? "bg-gat-off-white text-gat-steel/60 cursor-not-allowed"
-                                : inCart
-                                  ? "bg-green-50 text-green-700 cursor-default"
-                                  : isAdding
-                                    ? "bg-gat-off-white text-gat-steel cursor-wait"
-                                    : notAvailable
-                                      ? "bg-gat-off-white text-gat-steel/40 cursor-not-allowed"
-                                      : "bg-white text-gat-blue hover:bg-gat-blue hover:text-white hover:border-gat-blue"
-                            }`}
-                          >
-                            {isRegistered ? (
-                              <>
-                                <CheckCircle className="w-4 h-4" /> Already
-                                Registered
-                              </>
-                            ) : inCart ? (
-                              <>
-                                <CheckCircle className="w-4 h-4" /> In Cart
-                              </>
-                            ) : isAdding ? (
-                              <>
-                                <span className="w-4 h-4 border-2 border-gat-steel/30 border-t-gat-blue rounded-full animate-spin inline-block" />{" "}
-                                Adding...
-                              </>
-                            ) : notAvailable ? (
-                              <>
-                                <ShoppingCart className="w-4 h-4" /> Not
-                                Available
-                              </>
-                            ) : (
-                              <>
-                                <ShoppingCart className="w-4 h-4" /> Add to Cart
-                              </>
-                            )}
-                          </button>
+                          <div className="flex flex-col">
+                            {deadlineBanner}
+                            <button
+                              onClick={() => handleAddToCart(event.eventName)}
+                              disabled={
+                                isRegistered || inCart || isAdding || notAvailable
+                              }
+                              className={`w-full py-2.5 text-sm font-bold rounded-b-xl flex items-center justify-center gap-2 border border-t-0 border-gat-blue/10 transition-all ${
+                                isRegistered
+                                  ? "bg-gat-off-white text-gat-steel/60 cursor-not-allowed"
+                                  : inCart
+                                    ? "bg-green-50 text-green-700 cursor-default"
+                                    : isAdding
+                                      ? "bg-gat-off-white text-gat-steel cursor-wait"
+                                      : notAvailable
+                                        ? "bg-gat-off-white text-gat-steel/40 cursor-not-allowed"
+                                        : "bg-white text-gat-blue hover:bg-gat-blue hover:text-white hover:border-gat-blue"
+                              }`}
+                            >
+                              {isRegistered ? (
+                                <>
+                                  <CheckCircle className="w-4 h-4" /> Already
+                                  Registered
+                                </>
+                              ) : inCart ? (
+                                <>
+                                  <CheckCircle className="w-4 h-4" /> In Cart
+                                </>
+                              ) : isAdding ? (
+                                <>
+                                  <span className="w-4 h-4 border-2 border-gat-steel/30 border-t-gat-blue rounded-full animate-spin inline-block" />{" "}
+                                  Adding...
+                                </>
+                              ) : notAvailable ? (
+                                <>
+                                  <ShoppingCart className="w-4 h-4" /> Not
+                                  Available
+                                </>
+                              ) : (
+                                <>
+                                  <ShoppingCart className="w-4 h-4" /> Add to Cart
+                                </>
+                              )}
+                            </button>
+                          </div>
                         );
                       })()}
                   </motion.div>

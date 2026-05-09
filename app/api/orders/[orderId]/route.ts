@@ -15,6 +15,9 @@ export async function GET(req: NextRequest, context: RouteContext) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
+        user: {
+          select: { email: true, phone: true, name: true },
+        },
         orderItems: {
           include: {
             event: {

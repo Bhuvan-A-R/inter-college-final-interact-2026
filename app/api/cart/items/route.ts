@@ -21,11 +21,15 @@ export async function POST(req: NextRequest) {
 
     const event = await prisma.event.findUnique({
       where: { id: eventId },
-      select: { id: true, isActive: true, type: true },
+      select: { id: true, isActive: true, type: true, deadline: true },
     });
 
     if (!event || !event.isActive) {
       return errorResponse("Event not found or not available.", 404);
+    }
+
+    if (event.deadline && new Date() > new Date(event.deadline)) {
+      return errorResponse("The registration deadline for this event has passed.", 403);
     }
 
     // Check if user has already registered (active order or confirmed registration)

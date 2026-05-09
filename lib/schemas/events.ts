@@ -7,6 +7,7 @@ export const createEventSchema = z.object({
   category: z.string().min(1, "Category is required"),
   price: z.number().min(0, "Price must be non-negative"),
   date: z.string().datetime().optional(),
+  deadline: z.string().datetime().nullable().optional(),
   time: z.string().optional(),
   venue: z.string().optional(),
   imageUrl: z.string().url().optional(),
