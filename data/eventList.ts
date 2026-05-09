@@ -843,6 +843,16 @@ export const eventsList: EventList[] = [
             "Any rule violation results in immediate disqualification; organizer decisions are final and binding.",
         ],
     },
+    {
+        eventNo: 47,
+        category: "QUIZ",
+        image: eventImage,
+        name: "General Quiz",
+        minParticipants: 2,
+        rules: [
+            "Teams must consist of 2 members",
+        ],
+    },
 ];
 
 export const eventCategories = eventsList;
