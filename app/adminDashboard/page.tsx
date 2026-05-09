@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Users, CalendarDays, ShieldCheck, CalendarClock, Megaphone, Mail } from "lucide-react";
-
+import { SyncButtons } from "./SyncButtons";
 
 export default async function AdminDashboardPage() {
   const newSession = await getAuthSession();
@@ -155,7 +155,7 @@ export default async function AdminDashboardPage() {
             <Link href="/adminDashboard/emails">
               <Button variant="outline" size="sm">Email Communicator</Button>
             </Link>
-
+            <SyncButtons />
           </div>
         )}
       </div>

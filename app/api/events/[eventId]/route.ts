@@ -30,6 +30,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
         category: true,
         price: true,
         date: true,
+        deadline: true,
         time: true,
         venue: true,
         imageUrl: true,
@@ -77,6 +78,9 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     const updateData: Record<string, unknown> = { ...parsed.data };
     if (updateData.date) {
       updateData.date = new Date(updateData.date as string);
+    }
+    if (updateData.deadline !== undefined) {
+      updateData.deadline = updateData.deadline ? new Date(updateData.deadline as string) : null;
     }
 
     const event = await prisma.event.update({

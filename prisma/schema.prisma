@@ -31,6 +31,7 @@ model Event {
   price         Decimal        @db.Decimal(10, 2)
   date          DateTime?
   time          String?
+  deadline      DateTime?
   venue         String?
   imageUrl      String?
   rules         String?

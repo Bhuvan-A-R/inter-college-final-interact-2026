@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
                 pathname: "/f/*",
             },
         ],
+        minimumCacheTTL: 3600, // Cache optimized images for 1 hour to avoid re-fetching
+        formats: ["image/webp"],
     },
 
     async headers() {

@@ -28,7 +28,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
       include: {
         Team: {
           include: {
-            event: { select: { id: true, maxTeamSize: true } },
+            event: { select: { id: true, maxTeamSize: true, deadline: true } },
             members: { select: { id: true } },
           },
         },
@@ -57,6 +57,10 @@ export async function POST(req: NextRequest, context: RouteContext) {
     }
 
     // action === "ACCEPT"
+
+    if (invite.Team.event.deadline && new Date() > new Date(invite.Team.event.deadline)) {
+      return errorResponse("The registration deadline for this event has passed. Invites can no longer be accepted.", 403);
+    }
 
     // Re-check one-team-per-event at acceptance time
     const existingMembership = await prisma.teamMember.findFirst({

@@ -3,6 +3,9 @@ import prisma from "@/lib/db";
 import { requireAdmin, successResponse, errorResponse } from "@/lib/apiHelpers";
 import { google } from "googleapis";
 
+// Allow up to 60s for this heavy Google Sheets sync (default is 10s on Vercel)
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const auth = await requireAdmin();
@@ -128,7 +131,7 @@ export async function POST(req: NextRequest) {
     // 5. Prepare data for "Dashboard" (Index)
     const valueData: any[] = [];
     
-    const indexHeaders = ["SL No", "Event Name", "Event Type", "Total Registrations", "Total Teams", "Link to Sheet"];
+    const indexHeaders = ["SL No", "Event Name", "Event Type", "Total Registrations (Teams)", "Total Participants", "Link to Sheet"];
     const indexRows = events.map((event, index) => {
       const sanitizedName = sanitizedEventNames.get(event.id)!;
       const sheetId = titleToIdMap.get(sanitizedName);
@@ -136,12 +139,16 @@ export async function POST(req: NextRequest) {
         ? `=HYPERLINK("#gid=${sheetId}", "View Event")` 
         : "View Event";
       
+      // For TEAM events: show team count as the primary registration count
+      // For SOLO events: show individual participant count
+      const registrationCount = event.type === "TEAM" ? event.teams.length : event.registrations.length;
+
       return [
         index + 1,
         event.name,
         event.type,
+        registrationCount,
         event.registrations.length,
-        event.type === "TEAM" ? event.teams.length : "N/A",
         linkFormula
       ];
     });
@@ -150,7 +157,7 @@ export async function POST(req: NextRequest) {
       range: `'${INDEX_SHEET_NAME}'!A1`,
       values: [
         ["Interact 2026 Inter College Event Dashboard Data"],
-        [`Last Synced: ${new Date().toLocaleString("en-IN")}`],
+        [`Last Synced: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: true, dateStyle: "medium", timeStyle: "short" })} IST`],
         [],
         [],
         indexHeaders,
@@ -183,7 +190,7 @@ export async function POST(req: NextRequest) {
           reg.user.phone,
           reg.user.email,
           reg.user.collegeName,
-          new Date(reg.user.createdAt).toLocaleString("en-IN"),
+          new Date(reg.user.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: true, dateStyle: "medium", timeStyle: "short" }) + " IST",
         ]);
       });
     });
@@ -223,7 +230,7 @@ export async function POST(req: NextRequest) {
           reg.user.phone,
           reg.user.email,
           reg.user.collegeName,
-          new Date(reg.user.createdAt).toLocaleString("en-IN"),
+          new Date(reg.user.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: true, dateStyle: "medium", timeStyle: "short" }) + " IST",
         ];
       });
 

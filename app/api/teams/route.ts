@@ -85,11 +85,15 @@ export async function POST(req: NextRequest) {
     // Verify event exists, is active, and is a TEAM event
     const event = await prisma.event.findUnique({
       where: { id: eventId },
-      select: { id: true, isActive: true, type: true, name: true },
+      select: { id: true, isActive: true, type: true, name: true, deadline: true },
     });
 
     if (!event || !event.isActive) {
       return errorResponse("Event not found or not available.", 404);
+    }
+
+    if (event.deadline && new Date() > new Date(event.deadline)) {
+      return errorResponse("The registration deadline for this event has passed.", 403);
     }
 
     if (event.type !== "TEAM") {

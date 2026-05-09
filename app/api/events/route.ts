@@ -40,6 +40,7 @@ export async function GET(req: NextRequest) {
         price: true,
         date: true,
         time: true,
+        deadline: true,
         venue: true,
         imageUrl: true,
         rules: true,

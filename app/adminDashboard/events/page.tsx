@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, UserCheck, Download } from "lucide-react";
+import { EditDeadlineModal } from "./EditDeadlineModal";
 
 export default async function EventsDataPage() {
   const newSession = await getAuthSession();
@@ -68,6 +69,7 @@ export default async function EventsDataPage() {
                   <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Teams</th>
                   <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Participants</th>
                   <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Date</th>
+                  <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Deadline</th>
                   <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Actions</th>
                 </tr>
               </thead>
@@ -112,6 +114,19 @@ export default async function EventsDataPage() {
                           })
                         : "TBD"}
                     </td>
+                    <td className="px-4 py-3 text-muted-foreground text-xs">
+                      {event.deadline ? (
+                        <span className={new Date(event.deadline) < new Date() ? "text-red-500 font-medium" : "text-amber-600 font-medium"}>
+                          {new Date(event.deadline).toLocaleString("en-IN", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                            timeZone: "Asia/Kolkata",
+                          })}
+                        </span>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2 flex-wrap">
                         <Link href={`/adminDashboard/participants?event=${event.id}`}>
@@ -119,6 +134,7 @@ export default async function EventsDataPage() {
                             View Participants
                           </Button>
                         </Link>
+                        <EditDeadlineModal eventId={event.id} eventName={event.name} currentDeadline={event.deadline} />
                         <a href={`/api/admin/events/${event.id}/download`} download>
                           <Button variant="secondary" size="sm" className="h-7 text-xs gap-1">
                             <Download className="h-3 w-3" />

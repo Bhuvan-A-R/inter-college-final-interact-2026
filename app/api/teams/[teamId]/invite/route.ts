@@ -30,7 +30,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
       where: { id: teamId },
       include: {
         event: {
-          select: { id: true, maxTeamSize: true },
+          select: { id: true, maxTeamSize: true, deadline: true },
         },
         members: { select: { id: true } },
       },
@@ -43,6 +43,10 @@ export async function POST(req: NextRequest, context: RouteContext) {
     // Only leader can invite
     if (team.leaderId !== auth.session.id) {
       return errorResponse("Only the team leader can send invites.", 403);
+    }
+
+    if (team.event.deadline && new Date() > new Date(team.event.deadline)) {
+      return errorResponse("The registration deadline for this event has passed. Invites can no longer be sent.", 403);
     }
 
     // Check team size limit
