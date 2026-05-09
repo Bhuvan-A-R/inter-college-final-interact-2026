@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
       ? (rawStatus as ValidStatus)
       : "PAYMENT_SUBMITTED";
 
-    const [orders, total] = await Promise.all([
+    const [orders, total, statusCounts] = await Promise.all([
       prisma.order.findMany({
         where: { status },
         include: {
@@ -50,7 +50,17 @@ export async function GET(req: NextRequest) {
         take: limit,
       }),
       prisma.order.count({ where: { status } }),
+      prisma.order.groupBy({
+        by: ['status'],
+        _count: true,
+      })
     ]);
+
+    const counts = {
+      pending: statusCounts.find(s => s.status === 'PAYMENT_SUBMITTED')?._count || 0,
+      approved: statusCounts.find(s => s.status === 'VERIFIED')?._count || 0,
+      rejected: statusCounts.find(s => s.status === 'REJECTED')?._count || 0,
+    };
 
     const responseOrders = orders.map((order) => ({
       ...order,
@@ -62,6 +72,7 @@ export async function GET(req: NextRequest) {
       total,
       page,
       totalPages: Math.ceil(total / limit),
+      counts,
     });
   } catch (error) {
     console.error("[GET /api/admin/payments]", error);
