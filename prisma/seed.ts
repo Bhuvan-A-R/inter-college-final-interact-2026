@@ -426,6 +426,15 @@ const eventsData: Prisma.EventCreateManyInput[] = [
         maxTeamSize: 2,
         isActive: true,
     },
+    {
+        name: "General Quiz",
+        category: "QUIZ",
+        type: "TEAM",
+        price: 200,
+        minTeamSize: 2,
+        maxTeamSize: 2,
+        isActive: true,
+    },
 ];
 
 async function main() {
