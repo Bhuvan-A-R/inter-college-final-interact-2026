@@ -31,7 +31,7 @@ const navLinks = [
     ],
   },
   // { href: "/spoc-details", label: "SPOC's Details" },
-  // { href: "/schedule", label: "Schedule" },
+  { href: "/schedule", label: "Schedule" },
 ];
 
 const Navbar = () => {
@@ -337,9 +337,9 @@ const Navbar = () => {
           >
             <span className="text-xs mt-1">Events</span>
           </Link>
-          {/* <Link href="/spoc-details" className="flex flex-col items-center justify-center w-full text-gat-steel hover:text-gat-blue p-2 transition-colors">
-            <span className="text-xs mt-1">SPOCs Details</span>
-          </Link> */}
+          <Link href="/schedule" className="flex flex-col items-center justify-center w-full text-gat-steel hover:text-gat-blue p-2 transition-colors">
+            <span className="text-xs mt-1">Schedule</span>
+          </Link>
         </nav>
       )}
     </>
