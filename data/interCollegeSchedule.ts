@@ -65,7 +65,6 @@ export const events: Event[] = [
 
   { eventId: 47, domain: "Quiz", eventName: "General Quiz", venue: "Auditorium", date: "14th May", timings: "11:00 AM TO 1:00 PM" },
 
-  { eventId: 48, domain: "General Events", eventName: "Kannada Quiz Finals - Inter Department", venue: "Main Stage", date: "14th May", timings: "8:30 AM TO 11:00 AM" },
 ];
 
 export const domains = [...new Set(events.map(e => e.domain))];
