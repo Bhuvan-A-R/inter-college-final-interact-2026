@@ -20,13 +20,20 @@ export async function GET(req: NextRequest) {
           email: true,
           phone: true,
           collegeName: true,
+          photoUrl: true,
+          collegeIdCardUrl: true,
+          collegeIdNumber: true,
+          emailVerified: true,
           role: true,
           createdAt: true,
+          aadharCardUrl: true,
+          aadharNumber: true,
+          usn: true,
           orders: {
             include: {
               orderItems: {
                 include: {
-                  event: { select: { id: true, name: true, category: true } },
+                  event: { select: { id: true, name: true, category: true, type: true } },
                   Team: { select: { id: true, name: true } },
                 },
               },
@@ -34,7 +41,7 @@ export async function GET(req: NextRequest) {
           },
           cartItems: {
             include: {
-              event: { select: { id: true, name: true, category: true } },
+              event: { select: { id: true, name: true, category: true, type: true } },
               team: { select: { id: true, name: true } },
             },
           },

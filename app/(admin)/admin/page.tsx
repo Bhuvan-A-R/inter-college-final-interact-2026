@@ -36,21 +36,23 @@ type PaymentsResponse = {
   error?: { message?: string };
 };
 
-type Tab = "PAYMENT_SUBMITTED" | "VERIFIED" | "REJECTED";
+type Tab = "PAYMENT_SUBMITTED" | "VERIFIED" | "REJECTED" | "STUDENTS";
 
 const TAB_LABELS: Record<Tab, string> = {
   PAYMENT_SUBMITTED: "Pending",
   VERIFIED: "Approved",
   REJECTED: "Rejected",
+  STUDENTS: "Students",
 };
 
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>("PAYMENT_SUBMITTED");
-  const [ordersByTab, setOrdersByTab] = useState<Record<Tab, Order[]>>({
+  const [ordersByTab, setOrdersByTab] = useState<Record<Tab, any[]>>({
     PAYMENT_SUBMITTED: [],
     VERIFIED: [],
     REJECTED: [],
+    STUDENTS: [],
   });
   const [loadedTabs, setLoadedTabs] = useState<Set<Tab>>(new Set());
   const [loading, setLoading] = useState(false);
@@ -73,8 +75,12 @@ export default function AdminDashboardPage() {
   const loadTab = async (tab: Tab) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/payments?status=${tab}&limit=100`);
-      const data: PaymentsResponse = await res.json();
+      let url = `/api/admin/payments?status=${tab}&limit=100`;
+      if (tab === "STUDENTS") {
+        url = `/api/admin/users?limit=100`;
+      }
+      const res = await fetch(url);
+      const data = await res.json();
 
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) {
@@ -82,15 +88,16 @@ export default function AdminDashboardPage() {
           router.push("/auth/signin");
           return;
         }
-        toast.error(data.error?.message || "Failed to load payments.");
+        toast.error(data.error?.message || "Failed to load data.");
         return;
       }
 
-      setOrdersByTab((prev) => ({ ...prev, [tab]: data.data?.orders ?? [] }));
+      const items = tab === "STUDENTS" ? data.data?.users : data.data?.orders;
+      setOrdersByTab((prev) => ({ ...prev, [tab]: items ?? [] }));
       setLoadedTabs((prev) => new Set(prev).add(tab));
     } catch (error) {
       console.error(error);
-      toast.error("Unable to load payments.");
+      toast.error("Unable to load data.");
     } finally {
       setLoading(false);
     }
@@ -239,6 +246,17 @@ export default function AdminDashboardPage() {
           </Button>
         </div>
 
+        {/* Navigation Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div 
+            className="bg-white p-6 rounded-xl border border-gat-blue/10 shadow-sm hover:border-gat-blue/30 transition-all cursor-pointer"
+            onClick={() => router.push("/admin/users")}
+          >
+            <h2 className="text-lg font-bold text-gat-midnight mb-1">VIEW ALL USERS DATA</h2>
+            <p className="text-sm text-gat-steel">View and manage all registered participants</p>
+          </div>
+        </div>
+
         {/* Tabs */}
         <div className="flex gap-1 mb-6 bg-white rounded-xl border border-gat-blue/10 shadow-sm p-1 w-fit">
           {(Object.keys(TAB_LABELS) as Tab[]).map((tab) => (
@@ -298,45 +316,57 @@ export default function AdminDashboardPage() {
               <table className="w-full text-sm">
                 <thead className="bg-gat-midnight text-white">
                   <tr>
-                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-                      Participant
-                    </th>
-                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-                      Event(s)
-                    </th>
-                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-                      Amount
-                    </th>
-                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-                      UPI Transaction ID
-                    </th>
-                    <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-                      Screenshot
-                    </th>
-                    {activeTab === "PAYMENT_SUBMITTED" && (
-                      <th className="text-center px-4 py-3 font-semibold whitespace-nowrap">
-                        Actions
-                      </th>
-                    )}
-                    {activeTab === "VERIFIED" && (
-                      <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-                        Approved At
-                      </th>
-                    )}
-                    {activeTab === "REJECTED" && (
+                    {activeTab === "STUDENTS" ? (
                       <>
-                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-                          Rejected At
-                        </th>
-                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-                          Reason
-                        </th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Name</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Email</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Phone</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">College</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Registrations</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Orders</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Joined</th>
+                      </>
+                    ) : (
+                      <>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Participant</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Event(s)</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Amount</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">UPI Txn ID</th>
+                        <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Screenshot</th>
+                        {activeTab === "PAYMENT_SUBMITTED" && (
+                          <th className="text-center px-4 py-3 font-semibold whitespace-nowrap">Actions</th>
+                        )}
+                        {activeTab === "VERIFIED" && (
+                          <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Approved At</th>
+                        )}
+                        {activeTab === "REJECTED" && (
+                          <>
+                            <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Rejected At</th>
+                            <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Reason</th>
+                          </>
+                        )}
                       </>
                     )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gat-blue/10">
-                  {orders.map((order) => {
+                  {orders.map((item) => {
+                    if (activeTab === "STUDENTS") {
+                      const user = item as any;
+                      return (
+                        <tr key={user.id} className="bg-white hover:bg-gat-blue/5 transition-colors align-top">
+                          <td className="px-4 py-3 font-medium text-gat-midnight">{user.name}</td>
+                          <td className="px-4 py-3 text-xs text-gat-steel">{user.email}</td>
+                          <td className="px-4 py-3 text-xs text-gat-steel font-mono">{user.phone}</td>
+                          <td className="px-4 py-3 text-xs text-gat-steel">{user.collegeName}</td>
+                          <td className="px-4 py-3 text-xs text-gat-steel">{user._count?.registrations ?? 0}</td>
+                          <td className="px-4 py-3 text-xs text-gat-steel">{user._count?.orders ?? 0}</td>
+                          <td className="px-4 py-3 text-xs text-gat-steel">{formatDate(user.createdAt)}</td>
+                        </tr>
+                      );
+                    }
+
+                    const order = item as Order;
                     const isProcessing = processing === order.id;
                     const eventNames = order.orderItems
                       .map(
@@ -458,7 +488,7 @@ export default function AdminDashboardPage() {
               </table>
             </div>
             <div className="bg-white border-t border-gat-blue/10 px-4 py-3 text-xs text-gat-steel">
-              {orders.length} {TAB_LABELS[activeTab].toLowerCase()} payment
+              {orders.length} {activeTab === "STUDENTS" ? "student" : `${TAB_LABELS[activeTab].toLowerCase()} payment`}
               {orders.length !== 1 ? "s" : ""}
             </div>
           </div>
