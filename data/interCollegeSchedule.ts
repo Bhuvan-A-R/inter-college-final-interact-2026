@@ -43,30 +43,29 @@ export const events: Event[] = [
   { eventId: 27, domain: "Sports", eventName: "Best Physique (M)", venue: "Quadrangle", date: "13th May", timings: "3:00 PM TO 5:00 PM" },
   { eventId: 28, domain: "Sports", eventName: "Crossfit (M & W)", venue: "Basketball Court", date: "10th May", timings: "9:00 AM TO 12:00 PM" },
   { eventId: 29, domain: "Sports", eventName: "Deadlift (M & W)", venue: "PED", date: "14th May", timings: "8:00 AM TO 5:00 PM" },
-  { eventId: 30, domain: "Sports", eventName: "Pickleball", venue: "Pickleball Court", date: "15th May", timings: "8:00 AM TO 5:00 PM" },
   { eventId: 31, domain: "Sports", eventName: "Short Pitch Cricket (M)", venue: "Ground 1 & 2", date: "13th, 14th & 15th May", timings: "8:00 AM TO 5:00 PM" },
   { eventId: 32, domain: "Sports", eventName: "Throwball (W)", venue: "Volleyball Court", date: "14th May", timings: "8:00 AM TO 6:00 PM" },
   { eventId: 33, domain: "Sports", eventName: "Volleyball (M & W)", venue: "Volleyball Court", date: "13th & 14th May", timings: "8:00 AM TO 6:00 PM" },
 
   { eventId: 34, domain: "Technical", eventName: "AI Reel Contest", venue: "Main Building 306", date: "14th May", timings: "2:00 PM TO 4:00 PM" },
-  { eventId: 35, domain: "Technical", eventName: "Bits & Bytes", venue: "Main Building 202 & 203", date: "14th May", timings: "8:30 AM TO 10:30 AM" },
-  { eventId: 36, domain: "Technical", eventName: "E-Sports", venue: "Main Building 202 & 203", date: "13th May", timings: "2:00 PM TO 4:00 PM" },
+  { eventId: 35, domain: "Technical", eventName: "Bits & Bytes", venue: "Main Building 202 & 203", date: "14th May", timings: "8:30 AM TO 12PM" },
+  { eventId: 36, domain: "Technical", eventName: "E-Sports", venue: "AIB 301, 302 & 303", date: "13th May", timings: "10:00 AM TO 2:00 PM" },
   { eventId: 37, domain: "Technical", eventName: "Frontend Frenzy", venue: "Main Building 208", date: "13th May", timings: "11:00 AM TO 1:00 PM" },
   { eventId: 38, domain: "Technical", eventName: "Glow Up: ID Edition", venue: "Main Building 307", date: "13th May", timings: "2:00 PM TO 4:00 PM" },
   { eventId: 39, domain: "Technical", eventName: "Re-brand it & Slay it", venue: "Main Building 208", date: "14th May", timings: "2:00 PM TO 4:00 PM" },
-  { eventId: 40, domain: "Technical", eventName: "ReWeb: Reverse the Website", venue: "Main Building 207", date: "14th May", timings: "11:00 AM TO 1:00 PM" },
-  { eventId: 41, domain: "Technical", eventName: "Shark Tank Pitch", venue: "Auditorium", date: "13th May", timings: "8:30 AM TO 10:30 AM" },
+  { eventId: 40, domain: "Technical", eventName: "ReWeb: Reverse the Website", venue: "Main Building 207 & 208 ", date: "14th May", timings: "11:00 AM TO 1:00 PM" },
+  { eventId: 41, domain: "Technical", eventName: "Shark Tank Pitch", venue: "AIB 201 & 202", date: "13th May", timings: "8:30 AM TO 12:00 PM" },
 
   { eventId: 42, domain: "Theatre", eventName: "Mime", venue: "Auditorium", date: "14th May", timings: "12:00 PM TO 2:00 PM" },
   { eventId: 43, domain: "Theatre", eventName: "Mimicry", venue: "Main Building 316", date: "14th May", timings: "9:00 AM TO 11:00 AM" },
   { eventId: 44, domain: "Theatre", eventName: "Mono Acting", venue: "Main Building 309", date: "14th May", timings: "9:00 AM TO 11:00 AM" },
   { eventId: 45, domain: "Theatre", eventName: "Skit", venue: "Auditorium", date: "14th May", timings: "2:00 PM TO 4:00 PM" },
 
-  { eventId: 46, domain: "Technical", eventName: "Capture The Flag (CTF)", venue: "Auditorium", date: "13th May", timings: "2:00 PM TO 4:00 PM" },
+  { eventId: 46, domain: "Technical", eventName: "Capture The Flag (CTF)", venue: "Main Building Lab 1 & 2", date: "13th May", timings: "8:00 AM TO 5:00 PM" },
 
-  { eventId: 47, domain: "Quiz", eventName: "General Quiz", venue: "Auditorium", date: "13th May", timings: "2:00 PM TO 4:00 PM" },
+  { eventId: 47, domain: "Quiz", eventName: "General Quiz", venue: "Auditorium", date: "14th May", timings: "2:00 PM TO 4:00 PM" },
 
-  { eventId: 48, domain: "General Events", eventName: "Kannada Quiz Finals - Inter Department", venue: "Main Stage", date: "14th May", timings: "8:30 AM TO 11:00 AM" },
+  { eventId: 48, domain: "General Events", eventName: "Kannada Quiz Finals - Inter Department", venue: "Main Stage", date: "13th May", timings: "8:30 AM TO 11:00 AM" },
 ];
 
 export const domains = [...new Set(events.map(e => e.domain))];
