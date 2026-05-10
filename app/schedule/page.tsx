@@ -179,104 +179,179 @@ export default function SchedulePage() {
         {/* ── Table ────────────────────────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.45 }}
-          className="rounded-2xl border overflow-hidden bg-white shadow-sm"
+          className="hidden md:block rounded-2xl border overflow-hidden bg-white shadow-sm"
           style={{ borderColor: "rgba(0,0,0,0.05)" }}
         >
-          {/* Table header */}
-          <div
-            className="grid text-[10px] font-bold tracking-widest uppercase text-slate-500 border-b"
-            style={{
-              gridTemplateColumns: "3rem 1fr 8rem 9rem 9rem 11rem",
-              borderColor: "rgba(0,0,0,0.05)",
-              background: "rgba(0,0,0,0.02)",
-              padding: "0.75rem 1.25rem",
-            }}
-          >
-            <span>#</span>
-            <span>Event</span>
-            <span>Domain</span>
-            <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />Date</span>
-            <span className="flex items-center gap-1"><Clock className="w-3 h-3" />Time</span>
-            <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />Venue</span>
-          </div>
+          <div className="overflow-x-auto">
+            {/* Table header */}
+            <div
+              className="grid text-[10px] font-bold tracking-widest uppercase text-slate-500 border-b"
+              style={{
+                gridTemplateColumns: "3rem 1fr 8rem 9rem 9rem 11rem",
+                borderColor: "rgba(0,0,0,0.05)",
+                background: "rgba(0,0,0,0.02)",
+                padding: "0.75rem 1.25rem",
+              }}
+            >
+              <span>#</span>
+              <span>Event</span>
+              <span>Domain</span>
+              <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />Date</span>
+              <span className="flex items-center gap-1"><Clock className="w-3 h-3" />Time</span>
+              <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />Venue</span>
+            </div>
 
-          {/* Table body */}
+            {/* Table body */}
+            {filtered.length === 0 ? (
+              <div className="py-16 text-center text-slate-400 text-sm">
+                No events match the selected filters.
+              </div>
+            ) : (
+              filtered.map((ev, idx) => {
+                const domainColor = DOMAIN_COLORS[ev.domain] ?? "#000000";
+                const isEven = idx % 2 === 0;
+
+                return (
+                  <motion.div
+                    key={`${ev.eventId}-${idx}`} // Use index in key to handle any duplicates safely
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: Math.min(idx * 0.018, 0.4) }}
+                    className="grid items-center border-b last:border-b-0 transition-colors duration-150 hover:bg-slate-50"
+                    style={{
+                      gridTemplateColumns: "3rem 1fr 8rem 9rem 9rem 11rem",
+                      borderColor: "rgba(0,0,0,0.05)",
+                      background: isEven ? "transparent" : "rgba(0,0,0,0.005)",
+                      padding: "0.85rem 1.25rem",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    {/* # */}
+                    <span className="text-[11px] font-bold text-slate-400">
+                      {String(ev.eventId).padStart(2, "0")}
+                    </span>
+
+                    {/* Event name */}
+                    <span className="text-sm font-semibold text-slate-800 leading-snug pr-4">
+                      {ev.eventName}
+                    </span>
+
+                    {/* Domain */}
+                    <span
+                      className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-wider uppercase"
+                      style={{ color: domainColor }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: domainColor }} />
+                      {ev.domain}
+                    </span>
+
+                    {/* Date — track pill(s) */}
+                    <div className="flex flex-wrap gap-1">
+                      {TRACKS.map(t => {
+                        if (eventMatchesTrack(ev.date, t.dateKey)) {
+                          return (
+                            <span
+                              key={t.trackNo}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border w-fit"
+                              style={{ background: t.bg, borderColor: t.border, color: t.color }}
+                            >
+                              <span className="w-1 h-1 rounded-full" style={{ background: t.color }} />
+                              {t.label}
+                            </span>
+                          );
+                        }
+                        return null;
+                      })}
+                      {/* If it doesn't match any track (like 10th May), show the text */}
+                      {!TRACKS.some(t => eventMatchesTrack(ev.date, t.dateKey)) && (
+                        <span className="text-xs text-slate-500">{ev.date}</span>
+                      )}
+                    </div>
+
+                    {/* Time */}
+                    <span className="text-xs text-slate-600">{ev.timings}</span>
+
+                    {/* Venue */}
+                    <span className="text-xs text-slate-500 leading-snug">{ev.venue}</span>
+                  </motion.div>
+                );
+              })
+            )}
+          </div>
+        </motion.div>
+
+        {/* Mobile View */}
+        <div className="md:hidden grid grid-cols-1 gap-4">
           {filtered.length === 0 ? (
-            <div className="py-16 text-center text-slate-400 text-sm">
+            <div className="py-16 text-center text-slate-400 text-sm bg-white rounded-2xl border">
               No events match the selected filters.
             </div>
           ) : (
             filtered.map((ev, idx) => {
               const domainColor = DOMAIN_COLORS[ev.domain] ?? "#000000";
-              const isEven = idx % 2 === 0;
-
+              
               return (
                 <motion.div
-                  key={`${ev.eventId}-${idx}`} // Use index in key to handle any duplicates safely
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: Math.min(idx * 0.018, 0.4) }}
-                  className="grid items-center border-b last:border-b-0 transition-colors duration-150 hover:bg-slate-50"
-                  style={{
-                    gridTemplateColumns: "3rem 1fr 8rem 9rem 9rem 11rem",
-                    borderColor: "rgba(0,0,0,0.05)",
-                    background: isEven ? "transparent" : "rgba(0,0,0,0.005)",
-                    padding: "0.85rem 1.25rem",
-                    gap: "0.5rem",
-                  }}
+                  key={`${ev.eventId}-${idx}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(idx * 0.05, 0.4) }}
+                  className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm"
                 >
-                  {/* # */}
-                  <span className="text-[11px] font-bold text-slate-400">
-                    {String(ev.eventId).padStart(2, "0")}
-                  </span>
-
-                  {/* Event name */}
-                  <span className="text-sm font-semibold text-slate-800 leading-snug pr-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-bold uppercase" style={{ color: domainColor }}>
+                      {ev.domain}
+                    </span>
+                    <span className="text-xs font-bold text-slate-400">
+                      #{String(ev.eventId).padStart(2, "0")}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-lg font-bold text-slate-800 mb-4">
                     {ev.eventName}
-                  </span>
-
-                  {/* Domain */}
-                  <span
-                    className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-wider uppercase"
-                    style={{ color: domainColor }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: domainColor }} />
-                    {ev.domain}
-                  </span>
-
-                  {/* Date — track pill(s) */}
-                  <div className="flex flex-wrap gap-1">
+                  </h3>
+                  
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                    {/* Date Pill */}
                     {TRACKS.map(t => {
                       if (eventMatchesTrack(ev.date, t.dateKey)) {
                         return (
                           <span
                             key={t.trackNo}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border w-fit"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border"
                             style={{ background: t.bg, borderColor: t.border, color: t.color }}
                           >
-                            <span className="w-1 h-1 rounded-full" style={{ background: t.color }} />
+                            <Calendar className="w-3 h-3" />
                             {t.label}
                           </span>
                         );
                       }
                       return null;
                     })}
-                    {/* If it doesn't match any track (like 10th May), show the text */}
                     {!TRACKS.some(t => eventMatchesTrack(ev.date, t.dateKey)) && (
-                      <span className="text-xs text-slate-500">{ev.date}</span>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border bg-slate-100 border-slate-200 text-slate-600">
+                        <Calendar className="w-3 h-3" />
+                        {ev.date}
+                      </span>
                     )}
+                    
+                    {/* Time */}
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{ev.timings}</span>
+                    </div>
+                    
+                    {/* Venue */}
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{ev.venue}</span>
+                    </div>
                   </div>
-
-                  {/* Time */}
-                  <span className="text-xs text-slate-600">{ev.timings}</span>
-
-                  {/* Venue */}
-                  <span className="text-xs text-slate-500 leading-snug">{ev.venue}</span>
                 </motion.div>
               );
             })
           )}
-        </motion.div>
+        </div>
 
         {/* Result count */}
         <p className="mt-4 text-xs text-slate-400 text-right">
