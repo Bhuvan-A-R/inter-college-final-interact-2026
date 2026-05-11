@@ -9,7 +9,7 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Eye, EyeOff, CheckCircle2, Upload } from "lucide-react";
+import { Eye, EyeOff, CheckCircle2, Upload, Check, ChevronsUpDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,11 +28,25 @@ import {
   InputOTPSlot,
   InputOTPSeparator,
 } from "@/components/ui/input-otp";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { UploadButton } from "@/utils/uploadthing";
 import { useAuthContext } from "@/contexts/auth-context";
 
 import gatLogo from "@/public/images/gat-logo.png";
 import interactLogo from "@/public/gat-logos/INTERACT2K26.png";
+import { colleges } from "@/data/colleges";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -55,6 +69,12 @@ const registrationSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+const allColleges = Array.from(
+  new Map(
+    colleges.flatMap(region => region.colleges).map(college => [college.name, college])
+  ).values()
+);
+
 type Step = "email" | "otp" | "form";
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -68,6 +88,9 @@ export default function SignUp() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const [isOthers, setIsOthers] = useState(false);
+  const [customCollege, setCustomCollege] = useState("");
+  const [open, setOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -400,7 +423,7 @@ export default function SignUp() {
                           <FormControl>
                             <Input
                               type="email"
-                              placeholder="you@college.edu"
+                              placeholder="you@example.com"
                               className="h-11"
                               style={inputStyle}
                               {...field}
@@ -610,25 +633,108 @@ export default function SignUp() {
                       control={registrationForm.control}
                       name="collegeName"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col">
                           <FormLabel
                             className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
                             style={labelStyle}
                           >
                             College Name
                           </FormLabel>
-                          <FormControl>
-                            <Input
-                              className="h-11"
-                              style={inputStyle}
-                              placeholder="Full college name"
-                              {...field}
-                            />
-                          </FormControl>
+                          <Popover open={open} onOpenChange={setOpen}>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  aria-expanded={open}
+                                  className="w-full justify-between h-11"
+                                  style={inputStyle}
+                                >
+                                  {field.value
+                                    ? field.value === "Others"
+                                      ? "Others"
+                                      : allColleges.find(
+                                          (college) => college.name === field.value
+                                        )?.name || field.value
+                                    : "Select college..."}
+                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0" style={{ background: "hsl(var(--background))", borderColor: "hsl(var(--border))" }}>
+                              <Command>
+                                <CommandInput placeholder="Search college..." />
+                                <CommandList>
+                                  <CommandEmpty>No college found.</CommandEmpty>
+                                  <CommandGroup>
+                                    {allColleges.map((college) => (
+                                      <CommandItem
+                                        key={college.name}
+                                        value={college.name}
+                                        onSelect={(currentValue) => {
+                                          field.onChange(currentValue);
+                                          setIsOthers(false);
+                                          setOpen(false);
+                                        }}
+                                      >
+                                        <Check
+                                          className={`mr-2 h-4 w-4 ${
+                                            field.value === college.name
+                                              ? "opacity-100"
+                                              : "opacity-0"
+                                          }`}
+                                        />
+                                        {college.name}
+                                      </CommandItem>
+                                    ))}
+                                    <CommandItem
+                                      value="Others"
+                                      onSelect={() => {
+                                        field.onChange("Others");
+                                        setIsOthers(true);
+                                        setOpen(false);
+                                      }}
+                                    >
+                                      <Check
+                                        className={`mr-2 h-4 w-4 ${
+                                          field.value === "Others"
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        }`}
+                                      />
+                                      Others (Not in list)
+                                    </CommandItem>
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
                           <FormMessage className="text-red-400 text-xs" />
                         </FormItem>
                       )}
                     />
+
+                    {/* Custom College Name (Visible if Others is selected) */}
+                    {isOthers && (
+                      <div className="space-y-2">
+                        <label
+                          className="font-mono-jb text-xs font-semibold tracking-widest uppercase"
+                          style={labelStyle}
+                        >
+                          Specify College Name
+                        </label>
+                        <Input
+                          className="h-11"
+                          style={inputStyle}
+                          placeholder="Type your college name"
+                          value={customCollege}
+                          onChange={(e) => {
+                            setCustomCollege(e.target.value);
+                            registrationForm.setValue("collegeName", e.target.value);
+                          }}
+                        />
+                      </div>
+                    )}
 
                     {/* College ID Number */}
                     <FormField
