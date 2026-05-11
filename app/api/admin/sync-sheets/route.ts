@@ -10,6 +10,7 @@ export async function POST(req: NextRequest) {
   try {
     const auth = await requireAdmin();
     if (auth.error) return auth.error;
+    console.log("[Sync Sheets] Auth passed");
 
     const SHEET_ID = process.env.GOOGLE_SHEET_ID;
     const CLIENT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
@@ -39,6 +40,11 @@ export async function POST(req: NextRequest) {
                 email: true,
                 collegeName: true,
                 createdAt: true,
+                orders: {
+                  select: {
+                    status: true
+                  }
+                }
               },
             },
           },
@@ -55,7 +61,10 @@ export async function POST(req: NextRequest) {
           },
         },
       },
-      orderBy: { name: "asc" },
+      orderBy: [
+        { category: "asc" },
+        { name: "asc" }
+      ],
     });
 
     // 2. Initialize Google Sheets API
@@ -70,9 +79,11 @@ export async function POST(req: NextRequest) {
     const sheets = google.sheets({ version: "v4", auth: authClient });
 
     // 3. Get existing sheets to avoid duplicates and handle tab management
+    console.log("[Sync Sheets] Fetching spreadsheet...");
     const spreadsheet = await sheets.spreadsheets.get({
       spreadsheetId: SHEET_ID,
     });
+    console.log("[Sync Sheets] Spreadsheet fetched");
     const existingSheetTitles = spreadsheet.data.sheets?.map(s => s.properties?.title) || [];
 
     // 4. Prepare batch updates (creating missing sheets)
@@ -131,7 +142,7 @@ export async function POST(req: NextRequest) {
     // 5. Prepare data for "Dashboard" (Index)
     const valueData: any[] = [];
     
-    const indexHeaders = ["SL No", "Event Name", "Event Type", "Total Registrations (Teams)", "Total Participants", "Link to Sheet"];
+    const indexHeaders = ["SL No", "Domain", "Event Name", "Event Type", "Total Registrations", "Link to Sheet"];
     const indexRows = events.map((event, index) => {
       const sanitizedName = sanitizedEventNames.get(event.id)!;
       const sheetId = titleToIdMap.get(sanitizedName);
@@ -139,16 +150,23 @@ export async function POST(req: NextRequest) {
         ? `=HYPERLINK("#gid=${sheetId}", "View Event")` 
         : "View Event";
       
-      // For TEAM events: show team count as the primary registration count
-      // For SOLO events: show individual participant count
-      const registrationCount = event.type === "TEAM" ? event.teams.length : event.registrations.length;
+      const approvedRegistrations = event.registrations.filter(reg => 
+        reg.user.orders.some((o: any) => o.status === "VERIFIED")
+      );
+      
+      const approvedUserIds = new Set(approvedRegistrations.map(r => r.user.id));
+      const approvedTeams = event.teams.filter(team => 
+        team.members.some(m => approvedUserIds.has(m.userId))
+      );
+
+      const registrationCount = event.type === "TEAM" ? approvedTeams.length : approvedRegistrations.length;
 
       return [
         index + 1,
+        event.category || "N/A",
         event.name,
         event.type,
         registrationCount,
-        event.registrations.length,
         linkFormula
       ];
     });
@@ -174,7 +192,11 @@ export async function POST(req: NextRequest) {
     let masterSlNo = 1;
     
     events.forEach(event => {
-      event.registrations.forEach(reg => {
+      const approvedRegistrations = event.registrations.filter(reg => 
+        reg.user.orders.some((o: any) => o.status === "VERIFIED")
+      );
+      
+      approvedRegistrations.forEach(reg => {
         const team = event.teams.find(t => t.members.some(m => m.userId === reg.user.id));
         const teamName = team ? team.name : (event.type === "TEAM" ? "Pending/No Team" : "N/A");
         
@@ -216,23 +238,51 @@ export async function POST(req: NextRequest) {
 
     events.forEach((event) => {
       const sanitizedName = sanitizedEventNames.get(event.id)!;
-      const rows = event.registrations.map((reg, index) => {
-        const team = event.teams.find(t => t.members.some(m => m.userId === reg.user.id));
-        const teamName = team ? team.name : (event.type === "TEAM" ? "Pending/No Team" : "N/A");
+      
+      const approvedRegistrations = event.registrations.filter(reg => 
+        reg.user.orders.some((o: any) => o.status === "VERIFIED")
+      );
+      const approvedUserIds = new Set(approvedRegistrations.map(r => r.user.id));
+      
+      let rows;
+      if (event.type === "TEAM") {
+        const approvedTeams = event.teams.filter(team => 
+          team.members.some(m => approvedUserIds.has(m.userId))
+        );
         
-        return [
-          index + 1,
-          teamName,
-          reg.user.name,
-          reg.user.usn || "N/A",
-          reg.user.collegeIdNumber || "N/A",
-          reg.user.aadharNumber || "N/A",
-          reg.user.phone,
-          reg.user.email,
-          reg.user.collegeName,
-          new Date(reg.user.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: true, dateStyle: "medium", timeStyle: "short" }) + " IST",
-        ];
-      });
+        rows = approvedTeams.map((team, index) => {
+          const leaderMember = team.members.find(m => approvedUserIds.has(m.userId)) || team.members[0];
+          const leaderReg = event.registrations.find(reg => reg.user.id === leaderMember?.userId);
+          
+          return [
+            index + 1,
+            team.name,
+            leaderReg?.user.name || "N/A",
+            leaderReg?.user.usn || "N/A",
+            leaderReg?.user.collegeIdNumber || "N/A",
+            leaderReg?.user.aadharNumber || "N/A",
+            leaderReg?.user.phone || "N/A",
+            leaderReg?.user.email || "N/A",
+            leaderReg?.user.collegeName || "N/A",
+            leaderReg?.user.createdAt ? new Date(leaderReg.user.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: true, dateStyle: "medium", timeStyle: "short" }) + " IST" : "N/A",
+          ];
+        });
+      } else {
+        rows = approvedRegistrations.map((reg, index) => {
+          return [
+            index + 1,
+            "N/A",
+            reg.user.name,
+            reg.user.usn || "N/A",
+            reg.user.collegeIdNumber || "N/A",
+            reg.user.aadharNumber || "N/A",
+            reg.user.phone,
+            reg.user.email,
+            reg.user.collegeName,
+            new Date(reg.user.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: true, dateStyle: "medium", timeStyle: "short" }) + " IST",
+          ];
+        });
+      }
 
       valueData.push({
         range: `'${sanitizedName}'!A1`,
@@ -240,6 +290,7 @@ export async function POST(req: NextRequest) {
       });
     });
 
+    console.log("[Sync Sheets] Data prepared, clearing sheets...");
     // 8. Execute batch update for values
     // First, clear existing content in all relevant sheets to avoid old data trailing
     const clearRanges = [INDEX_SHEET_NAME, MASTER_SHEET_NAME, ...Array.from(sanitizedEventNames.values())].map(name => `'${name}'!A1:Z5000`);
@@ -273,6 +324,30 @@ export async function POST(req: NextRequest) {
 
     const dashboardSheetId = titleToIdMap.get(INDEX_SHEET_NAME);
     if (dashboardSheetId !== undefined) {
+      // Unmerge first to clear any existing merges from previous runs with different column counts
+      autoResizeRequests.push({
+        unmergeCells: {
+          range: {
+            sheetId: dashboardSheetId,
+            startRowIndex: 0,
+            endRowIndex: 1,
+            startColumnIndex: 0,
+            endColumnIndex: 10, // Cover more than enough columns
+          }
+        }
+      });
+      autoResizeRequests.push({
+        unmergeCells: {
+          range: {
+            sheetId: dashboardSheetId,
+            startRowIndex: 1,
+            endRowIndex: 2,
+            startColumnIndex: 0,
+            endColumnIndex: 10,
+          }
+        }
+      });
+
       autoResizeRequests.push({
         mergeCells: {
           range: {
@@ -308,7 +383,8 @@ export async function POST(req: NextRequest) {
 
     return successResponse({ message: `Successfully synced ${events.length} events and Master List to Google Sheets` });
   } catch (error: any) {
-    console.error("[POST /api/admin/sync-sheets]", error);
+    console.error("[POST /api/admin/sync-sheets] Caught error:", error);
+    console.error("[POST /api/admin/sync-sheets] Error stack:", error?.stack);
     return errorResponse(
       error.message || "Failed to sync to Google Sheets",
       500
