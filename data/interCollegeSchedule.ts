@@ -12,7 +12,7 @@ export const events: Event[] = [
   { eventId: 2, domain: "Dance", eventName: "Dance Battle", venue: "Main Stage", date: "15th May", timings: "11:00 AM TO 1:00 PM" },
   { eventId: 3, domain: "Dance", eventName: "Semi Classical Group", venue: "Main Stage", date: "15th May", timings: "8:30 AM TO 11:00 AM" },
   { eventId: 4, domain: "Dance", eventName: "Western Group Dance", venue: "Main Stage", date: "15th May", timings: "2:00 PM TO 6:00 PM" },
-  { eventId: 5, domain: "Dance", eventName: "Western Solo Dance", venue: "Main Building 416", date: "15th May", timings: "11:00 AM TO 2:00 PM" },
+  { eventId: 5, domain: "Dance", eventName: "Western Solo Dance", venue: "Auditorium", date: "15th May", timings: "2:00 PM TO 4:00 PM" },
 
   { eventId: 6, domain: "Fashion", eventName: "Group Ramp Walk", venue: "Main Stage", date: "15th May", timings: "6:00 PM TO 8:00 PM" },
 
@@ -35,7 +35,7 @@ export const events: Event[] = [
   { eventId: 20, domain: "Music", eventName: "Battle of Bands", venue: "Main Stage", date: "14th May", timings: "3:00 PM TO 6:00 PM" },
   { eventId: 21, domain: "Music", eventName: "Beatboxing", venue: "AIB 402", date: "14th May", timings: "8:30 AM TO 10:30 AM" },
   { eventId: 22, domain: "Music", eventName: "Classical Vocal Solo", venue: "Auditorium", date: "14th May", timings: "8:30 AM TO 11:00 AM" },
-  { eventId: 23, domain: "Music", eventName: "Instrumental Solo", venue: "AIB 402", date: "14th May", timings: "8:30 AM TO 11:00 AM" },
+  { eventId: 23, domain: "Music", eventName: "Instrumental Solo", venue: "AIB 402", date: "14th May", timings: "10:30 AM TO 12:00 PM" },
   { eventId: 24, domain: "Music", eventName: "Voice of Interact", venue: "Main Stage", date: "14th May", timings: "11:00 AM TO 1:00 PM" },
   { eventId: 25, domain: "Music", eventName: "Western Singing Solo", venue: "AIB 102", date: "14th May", timings: "11:00 AM TO 1:00 PM" },
 
@@ -59,7 +59,7 @@ export const events: Event[] = [
   { eventId: 42, domain: "Theatre", eventName: "Mime", venue: "Auditorium", date: "14th May", timings: "2:00 PM TO 3:00 PM" },
   { eventId: 43, domain: "Theatre", eventName: "Mimicry", venue: "Main Building 316", date: "14th May", timings: "9:00 AM TO 11:00 AM" },
   { eventId: 44, domain: "Theatre", eventName: "Mono Acting", venue: "Main Building 309", date: "14th May", timings: "9:00 AM TO 11:00 AM" },
-  { eventId: 45, domain: "Theatre", eventName: "Skit", venue: "Auditorium", date: "14th May", timings: "2:00 PM TO 6:00 PM" },
+  { eventId: 45, domain: "Theatre", eventName: "Skit", venue: "Auditorium", date: "14th May", timings: "3:00 PM TO 6:00 PM" },
 
   { eventId: 46, domain: "Technical", eventName: "Capture The Flag (CTF)", venue: "Main Building Lab 1 & 2", date: "13th May", timings: "8:00 AM TO 5:00 PM" },
 
