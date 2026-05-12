@@ -79,7 +79,9 @@ export default function SignIn() {
           description: "Welcome back!",
         });
         const role = response.data.data?.user?.role;
-        if (role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN") {
+        if (role === "REG_ADMIN") {
+          router.push("/adminDashboard/payments");
+        } else if (role === "SUPER_ADMIN" || role === "ADMIN") {
           router.push("/admin");
         } else if (["TECH_ADMIN", "SPORTS_ADMIN", "CULTURALS_ADMIN"].includes(role)) {
           router.push("/adminDashboard");

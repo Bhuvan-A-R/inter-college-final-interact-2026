@@ -112,7 +112,7 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
                 )}
                 <Link
                   id="payments-link"
-                  href="/admin"
+                  href={role === "REG_ADMIN" ? "/adminDashboard/payments" : "/admin"}
                   className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
                 >
                   Payments
