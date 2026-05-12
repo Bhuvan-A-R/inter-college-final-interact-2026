@@ -18,6 +18,7 @@ type PendingOrder = {
   upiTransactionId: string | null;
   paymentScreenshotUrl: string | null;
   paymentSubmittedAt: string | null;
+  verifiedAt: string | null;
   status: "PAYMENT_SUBMITTED" | "VERIFIED" | "REJECTED";
   user: {
     id: string;
@@ -160,6 +161,7 @@ export default function AdminPaymentsPage() {
         "Events": o.orderItems.map((i: any) => `${i.event.name}${i.Team ? ` (${i.Team.name})` : ''}`).join(", "),
         "UPI Txn ID": o.upiTransactionId || "N/A",
         "Submitted At": o.paymentSubmittedAt ? new Date(o.paymentSubmittedAt).toLocaleString() : "N/A",
+        "Approved At": o.verifiedAt ? new Date(o.verifiedAt).toLocaleString() : "N/A",
         "Rejection Reason": o.REJECTED_REASON || "N/A"
       }));
 
@@ -322,7 +324,7 @@ export default function AdminPaymentsPage() {
               <table className="w-full text-sm">
                 <thead className="bg-gat-midnight text-white">
                   <tr>
-                    <th className="text-left px-4 py-3 font-semibold">User</th>
+                    <th className="text-left px-4 py-3 font-semibold">Participant</th>
                     <th className="text-left px-4 py-3 font-semibold">
                       College
                     </th>
@@ -339,7 +341,10 @@ export default function AdminPaymentsPage() {
                       Screenshot
                     </th>
                     <th className="text-left px-4 py-3 font-semibold">
-                      Submitted
+                      Submitted At
+                    </th>
+                    <th className="text-left px-4 py-3 font-semibold">
+                      Approved At
                     </th>
                     {activeTab === "PAYMENT_SUBMITTED" && (
                       <th className="text-center px-4 py-3 font-semibold">
@@ -419,6 +424,7 @@ export default function AdminPaymentsPage() {
                         </td>
 
                         {/* Submitted At */}
+                        {/* Submitted At */}
                         <td className="px-4 py-3 text-xs text-gat-steel whitespace-nowrap">
                           {order.paymentSubmittedAt
                             ? new Date(order.paymentSubmittedAt).toLocaleString(
@@ -426,7 +432,21 @@ export default function AdminPaymentsPage() {
                                 {
                                   day: "2-digit",
                                   month: "short",
-                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
+                            : "—"}
+                        </td>
+
+                        {/* Approved At */}
+                        <td className="px-4 py-3 text-xs text-gat-steel whitespace-nowrap">
+                          {order.verifiedAt
+                            ? new Date(order.verifiedAt).toLocaleString(
+                                "en-IN",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
                                   hour: "2-digit",
                                   minute: "2-digit",
                                 },

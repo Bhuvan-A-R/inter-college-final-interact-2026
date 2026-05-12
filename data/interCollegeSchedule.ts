@@ -8,18 +8,18 @@ export interface Event {
 }
 
 export const events: Event[] = [
-    { eventId: 1, domain: "Dance", eventName: "Classical Solo Dance", venue: "Auditorium", date: "15th May", timings: "11:00 AM TO 2:00 PM" },
-    { eventId: 2, domain: "Dance", eventName: "Dance Battle", venue: "Main Stage", date: "15th May", timings: "11:00 AM TO 1:00 PM" },
+    { eventId: 1, domain: "Dance", eventName: "Classical Solo Dance", venue: "Auditorium", date: "15th May", timings: "11:00 AM TO 1:00 PM" },
+    { eventId: 2, domain: "Dance", eventName: "Dance Battle", venue: "Auditorium", date: "15th May", timings: "2:00 PM TO 4:00 PM" },
     { eventId: 3, domain: "Dance", eventName: "Semi Classical Group", venue: "Main Stage", date: "15th May", timings: "8:30 AM TO 11:00 AM" },
-    { eventId: 4, domain: "Dance", eventName: "Western Group Dance", venue: "Main Stage", date: "15th May", timings: "2:00 PM TO 6:00 PM" },
-    { eventId: 5, domain: "Dance", eventName: "Western Solo Dance", venue: "Auditorium", date: "15th May", timings: "2:00 PM TO 4:00 PM" },
+    { eventId: 4, domain: "Dance", eventName: "Western Group Dance", venue: "Main Stage", date: "15th May", timings: "11:00 AM TO 1:00 PM" },
+    { eventId: 5, domain: "Dance", eventName: "Western Solo Dance", venue: "Auditorium", date: "15th May", timings: "8:30 AM TO 11:00 AM" },
 
     { eventId: 6, domain: "Fashion", eventName: "Group Ramp Walk", venue: "Main Stage", date: "15th May", timings: "6:00 PM TO 8:00 PM" },
 
     { eventId: 7, domain: "Fine Arts", eventName: "Cartooning", venue: "AIB 103", date: "14th May", timings: "8:30 AM TO 10:30 AM" },
     { eventId: 8, domain: "Fine Arts", eventName: "Clay Modelling", venue: "Civil FM Lab", date: "13th May", timings: "12:00 PM TO 2:00 PM" },
     { eventId: 9, domain: "Fine Arts", eventName: "Digital Art", venue: "AIB Lab", date: "13th May", timings: "9:00 AM TO 11:00 AM" },
-    { eventId: 10, domain: "Fine Arts", eventName: "On Spot Painting", venue: "AIB 201, AIB 202", date: "14th May", timings: "2:00 PM TO 6:00 PM" },
+    { eventId: 10, domain: "Fine Arts", eventName: "On Spot Painting", venue: "AIB 201, AIB 202", date: "14th May", timings: "2:00 PM TO 4:00 PM" },
     { eventId: 11, domain: "Fine Arts", eventName: "On Spot Photography", venue: "Main Building 416", date: "13th May", timings: "Reporting: 8:30 AM | Presentation: 1:00 PM" },
     { eventId: 12, domain: "Fine Arts", eventName: "Rangoli", venue: "NEF Entry", date: "14th May", timings: "11:00 AM TO 1:00 PM" },
 
@@ -28,8 +28,8 @@ export const events: Event[] = [
     { eventId: 15, domain: "General Events", eventName: "Short Film", venue: "Auditorium", date: "13th May", timings: "10:00 AM TO 1:00 PM" },
 
     { eventId: 16, domain: "Literary", eventName: "Creative Writing", venue: "Main Building 202", date: "13th May", timings: "9:00 AM TO 11:00 AM" },
-    { eventId: 17, domain: "Literary", eventName: "Debate", venue: "SJB 001", date: "13th May", timings: "3:00 PM TO 6:00 PM" },
-    { eventId: 18, domain: "Literary", eventName: "Elocution", venue: "Main Building 316", date: "13th May", timings: "11:30 AM TO 1:00 PM" },
+    { eventId: 17, domain: "Literary", eventName: "Debate", venue: "SJB 001", date: "13th May", timings: "11:30 AM TO 1:00 PM" },
+    { eventId: 18, domain: "Literary", eventName: "Elocution", venue: "Main Building 316", date: "13th May", timings: "11:00 AM TO 1:00 PM" },
     { eventId: 19, domain: "Literary", eventName: "Poetry", venue: "Main Building 318", date: "13th May", timings: "12:00 PM TO 2:00 PM" },
 
     { eventId: 20, domain: "Music", eventName: "Battle of Bands", venue: "Main Stage", date: "14th May", timings: "3:00 PM TO 6:00 PM" },
@@ -41,9 +41,8 @@ export const events: Event[] = [
 
     { eventId: 26, domain: "Sports", eventName: "Basketball (M & W)", venue: "Basketball Court", date: "13th May", timings: "8:00 AM TO 6:00 PM" },
     { eventId: 27, domain: "Sports", eventName: "Best Physique (M)", venue: "Quadrangle", date: "13th May", timings: "3:00 PM TO 5:00 PM" },
-    { eventId: 28, domain: "Sports", eventName: "Crossfit (M & W)", venue: "Basketball Court", date: "10th May", timings: "9:00 AM TO 12:00 PM" },
     { eventId: 29, domain: "Sports", eventName: "Deadlift (M & W)", venue: "PED", date: "14th May", timings: "10:30 AM TO 5:00 PM" },
-    { eventId: 31, domain: "Sports", eventName: "Short Pitch Cricket (M)", venue: "Ground 1 & 2", date: "13th, 14th & 15th May", timings: "8:00 AM TO 5:00 PM" },
+    { eventId: 31, domain: "Sports", eventName: "Short Pitch Cricket (M)", venue: "Ground 1 & 2", date: "13th & 14th May", timings: "8:00 AM TO 5:00 PM" },
     { eventId: 32, domain: "Sports", eventName: "Throwball (W)", venue: "Volleyball Court", date: "14th May", timings: "8:00 AM TO 6:00 PM" },
     { eventId: 33, domain: "Sports", eventName: "Volleyball (M & W)", venue: "Volleyball Court", date: "13th May", timings: "8:00 AM TO 6:00 PM" },
 
@@ -59,9 +58,9 @@ export const events: Event[] = [
     { eventId: 42, domain: "Theatre", eventName: "Mime", venue: "Auditorium", date: "14th May", timings: "2:00 PM TO 3:00 PM" },
     { eventId: 43, domain: "Theatre", eventName: "Mimicry", venue: "Main Building 316", date: "14th May", timings: "9:00 AM TO 11:00 AM" },
     { eventId: 44, domain: "Theatre", eventName: "Mono Acting", venue: "Main Building 309", date: "14th May", timings: "9:00 AM TO 11:00 AM" },
-    { eventId: 45, domain: "Theatre", eventName: "Skit", venue: "Auditorium", date: "14th May", timings: "3:00 PM TO 6:00 PM" },
+    { eventId: 45, domain: "Theatre", eventName: "Skit", venue: "Auditorium", date: "14th May", timings: "3:00 PM TO 5:00 PM" },
 
-    { eventId: 46, domain: "Technical", eventName: "Capture The Flag (CTF)", venue: "Main Building Lab 1 & 2", date: "13th May", timings: "8:00 AM TO 5:00 PM" },
+    { eventId: 46, domain: "Technical", eventName: "Capture The Flag (CTF)", venue: "Main Building Lab 1 & 2", date: "13th May", timings: "9:00 AM TO 5:00 PM" },
 
     { eventId: 47, domain: "Quiz", eventName: "General Quiz", venue: "Auditorium", date: "14th May", timings: "11:00 AM TO 1:00 PM" },
 

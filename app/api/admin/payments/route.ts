@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
             },
           },
         },
-        orderBy: { paymentSubmittedAt: "asc" },
+        orderBy: status === "VERIFIED" ? { verifiedAt: "desc" } : { paymentSubmittedAt: "asc" },
         skip,
         take: limit,
       }),

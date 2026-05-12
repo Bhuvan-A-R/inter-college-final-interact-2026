@@ -43,82 +43,6 @@ type CartResponse = {
   };
 };
 
-const SlideToPayButton = ({
-  onComplete,
-  isProcessing,
-  text,
-  disabled,
-}: {
-  onComplete: () => void;
-  isProcessing: boolean;
-  text: string;
-  disabled?: boolean;
-}) => {
-  const [isSuccess, setIsSuccess] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isProcessing && isSuccess) {
-      setIsSuccess(false);
-    }
-  }, [isProcessing, isSuccess]);
-
-  return (
-    <div
-      ref={containerRef}
-      className={`relative w-full h-[60px] rounded-xl overflow-hidden mt-5 shadow-sm transition-colors ${
-        disabled || isSuccess || isProcessing
-          ? "bg-gat-off-white border border-gat-blue/10 cursor-not-allowed"
-          : "bg-gat-blue hover:bg-gat-midnight"
-      }`}
-    >
-      <div
-        className={`absolute inset-0 flex items-center justify-center font-bold text-base pointer-events-none ${isSuccess || isProcessing || disabled ? "text-gat-steel" : "text-white"}`}
-      >
-        {isProcessing || isSuccess
-          ? "Processing…"
-          : disabled
-            ? "Fill all team requirements first"
-            : text}
-      </div>
-
-      {!(isProcessing || isSuccess || disabled) && (
-        <motion.div
-          drag="x"
-          dragConstraints={containerRef}
-          dragElastic={0}
-          dragMomentum={false}
-          onDragEnd={(event, info) => {
-            const currentElement = containerRef.current;
-            if (!currentElement) return;
-            const containerWidth = currentElement.getBoundingClientRect().width;
-            const thumbWidth = 68;
-            const threshold = containerWidth - thumbWidth;
-            if (info.offset.x >= threshold * 0.9) {
-              setIsSuccess(true);
-              onComplete();
-            }
-          }}
-          whileDrag={{ scale: 1.05 }}
-          dragSnapToOrigin={true}
-          className="absolute left-[4px] top-[4px] bottom-[4px] w-[52px] bg-white rounded-lg cursor-grab active:cursor-grabbing flex items-center justify-center shadow-sm overflow-hidden"
-        >
-          <div className="flex items-center justify-center -space-x-1.5 pr-1">
-            <motion.div animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0 }}>
-              <ChevronRight className="w-5 h-5 text-gat-blue" />
-            </motion.div>
-            <motion.div animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }}>
-              <ChevronRight className="w-5 h-5 text-gat-blue" />
-            </motion.div>
-            <motion.div animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.4 }}>
-              <ChevronRight className="w-5 h-5 text-gat-blue" />
-            </motion.div>
-          </div>
-        </motion.div>
-      )}
-    </div>
-  );
-};
 
 export default function CartPage() {
   const router = useRouter();
@@ -455,19 +379,29 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <SlideToPayButton
-                onComplete={handleCheckout}
-                isProcessing={checkingOut}
-                disabled={teamValidations.some(
-                  (v) => v.minMembers && v.currentMembers < v.minMembers,
-                )}
-                text={`Pay ₹${subtotal.toFixed(2)} for ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""}`}
-              />
+              <Button
+                onClick={handleCheckout}
+                disabled={
+                  checkingOut ||
+                  teamValidations.some(
+                    (v) => v.minMembers && v.currentMembers < v.minMembers,
+                  )
+                }
+                className="w-full h-[60px] text-lg font-bold mt-5 rounded-xl shadow-lg bg-gat-blue hover:bg-gat-midnight transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+              >
+                {checkingOut
+                  ? "Processing..."
+                  : teamValidations.some(
+                      (v) => v.minMembers && v.currentMembers < v.minMembers,
+                    )
+                    ? "Fill team requirements"
+                    : `Pay ₹${subtotal.toFixed(2)} for ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""}`}
+              </Button>
+                 <p className="text-xs text-gat-steel text-center mt-3">
+                  One UPI payment covers all events. Upload your screenshot after
+                  checkout.
+                </p>
 
-              <p className="text-xs text-gat-steel text-center mt-3">
-                One UPI payment covers all events. Upload your screenshot after
-                checkout.
-              </p>
             </div>
           </div>
         )}

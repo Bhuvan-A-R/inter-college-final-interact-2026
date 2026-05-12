@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
-import { Calendar, Clock, MapPin, Filter, ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft, Download, Users } from "lucide-react";
 
 export default function UsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [exportingFull, setExportingFull] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -107,6 +108,97 @@ export default function UsersPage() {
     }
   };
 
+  /**
+   * Downloads all users with their registrations (event + team info).
+   * Columns: ID, Name, Email, Phone, College, Aadhaar Number, Photo URL,
+   *          College ID Number, Role, Email Verified, Joined At,
+   *          Event 1, Team 1, Team Role 1, Event 2, Team 2, Team Role 2, ...
+   * No payment details included.
+   */
+  const exportFullUserData = async () => {
+    setExportingFull(true);
+    try {
+      const res = await fetch("/api/admin/users/export");
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error?.message || "Failed to fetch user data.");
+        return;
+      }
+
+      const fullUsers: any[] = data.data?.users ?? [];
+      if (fullUsers.length === 0) {
+        toast.error("No data to export.");
+        return;
+      }
+
+      const exportData = fullUsers.map((user: any) => {
+        const row: Record<string, string> = {
+          ID: user.id,
+          Name: user.name ?? "—",
+          Email: user.email ?? "—",
+          Phone: user.phone ?? "—",
+          College: user.collegeName ?? "—",
+          "Aadhaar Number": user.aadharNumber ?? "—",
+          "Photo URL": user.photoUrl ?? "—",
+          "College ID Number": user.collegeIdNumber ?? "—",
+          Role: user.role ?? "—",
+          "Email Verified": user.emailVerified ? "Yes" : "No",
+          "Joined At": new Date(user.createdAt).toLocaleString("en-IN"),
+        };
+
+        const registrations: any[] = user.registrations ?? [];
+
+        registrations.forEach((reg: any, idx: number) => {
+          const n = idx + 1;
+          const eventName = reg.event?.name ?? "—";
+          const eventType = reg.event?.type === "TEAM" ? "Team" : "Solo";
+
+          // Determine team name and this user's role in the team
+          let teamName = "—";
+          let teamRole = "—";
+
+          if (reg.event?.type === "TEAM" && reg.teamId) {
+            // Check teamsLed first (user is leader)
+            const ledTeam = (user.teamsLed ?? []).find(
+              (t: any) => t.id === reg.teamId
+            );
+            if (ledTeam) {
+              teamName = ledTeam.name;
+              teamRole = "Leader";
+            } else {
+              // Check teamMemberships
+              const membership = (user.teamMemberships ?? []).find(
+                (m: any) => m.team?.id === reg.teamId
+              );
+              if (membership) {
+                teamName = membership.team?.name ?? "—";
+                teamRole =
+                  membership.role === "LEADER" ? "Leader" : "Team Member";
+              }
+            }
+          }
+
+          row[`Event ${n}`] = `${eventName} [${eventType}]`;
+          row[`Team ${n}`] = teamName;
+          row[`Team Role ${n}`] = teamRole;
+        });
+
+        return row;
+      });
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "All Users");
+      XLSX.writeFile(wb, "all_users_event_data.xlsx");
+      toast.success("Full user data downloaded successfully.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to export full user data.");
+    } finally {
+      setExportingFull(false);
+    }
+  };
+
   const formatDate = (iso: string | null) =>
     iso
       ? new Date(iso).toLocaleString("en-IN", {
@@ -135,13 +227,23 @@ export default function UsersPage() {
               View all registered students and their details.
             </p>
           </div>
-          <Button
-            onClick={exportToExcel}
-            disabled={loading || users.length === 0}
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold"
-          >
-            <Download className="w-4 h-4 mr-2" /> Download Excel
-          </Button>
+          <div className="flex items-center gap-3 flex-wrap justify-end">
+            <Button
+              onClick={exportToExcel}
+              disabled={loading || users.length === 0}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+            >
+              <Download className="w-4 h-4 mr-2" /> Download Excel
+            </Button>
+            <Button
+              onClick={exportFullUserData}
+              disabled={exportingFull}
+              className="bg-blue-700 hover:bg-blue-800 text-white font-semibold"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              {exportingFull ? "Exporting…" : "Download Full User Data"}
+            </Button>
+          </div>
         </div>
 
         {/* Content */}
