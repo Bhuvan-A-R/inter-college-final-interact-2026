@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, UserCheck, Download } from "lucide-react";
 import { EditDeadlineModal } from "./EditDeadlineModal";
+import { ExportAllEventsButton } from "./ExportAllEventsButton";
 
 export default async function EventsDataPage() {
   const newSession = await getAuthSession();
@@ -43,18 +44,21 @@ export default async function EventsDataPage() {
     <div className="bg-background min-h-screen pt-10">
       <div className="mt-20 max-w-6xl mx-auto px-4 sm:px-6 pb-16">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Link href="/adminDashboard">
-            <Button variant="ghost" size="sm" className="gap-1.5">
-              <ArrowLeft className="h-4 w-4" /> Dashboard
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-primary font-bold text-4xl">Event-wise Data</h1>
-            <p className="text-muted-foreground text-sm mt-0.5">
-              Registrations and teams per event — {events.length} events total
-            </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <Link href="/adminDashboard">
+              <Button variant="ghost" size="sm" className="gap-1.5">
+                <ArrowLeft className="h-4 w-4" /> Dashboard
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-primary font-bold text-4xl">Event-wise Data</h1>
+              <p className="text-muted-foreground text-sm mt-0.5">
+                Registrations and teams per event — {events.length} events total
+              </p>
+            </div>
           </div>
+          <ExportAllEventsButton />
         </div>
 
         {/* Table */}
