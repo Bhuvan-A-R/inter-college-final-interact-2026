@@ -14,8 +14,7 @@ type LoginLogoutButtonProps = {
 
 const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
   const { isLoggedIn, role, setIsLoggedIn } = useAuthContext();
-  const isAdmin =
-    role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN";
+  const isAdmin = role === "SUPER_ADMIN" || role === "ADMIN";
   const isDomainAdmin = [
     "TECH_ADMIN",
     "SPORTS_ADMIN",
@@ -23,7 +22,11 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
   ].includes(role as string);
   const isParticipant =
     role === "PARTICIPANT" ||
-    (isLoggedIn && role !== null && !isAdmin && !isDomainAdmin);
+    (isLoggedIn &&
+      role !== null &&
+      !isAdmin &&
+      !isDomainAdmin &&
+      role !== "REG_ADMIN");
   const router = useRouter();
 
   const [cartCount, setCartCount] = useState(0);
@@ -103,23 +106,28 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
       {isLoggedIn ? (
         <>
           {
-            isAdmin ? (
-              // SUPER_ADMIN / ADMIN / REG_ADMIN: payment dashboard
+            role === "REG_ADMIN" ? (
+              // REG_ADMIN: direct to payments only
+              <Link
+                id="payments-link"
+                href="/adminDashboard/payments"
+                className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
+              >
+                Payments
+              </Link>
+            ) : isAdmin ? (
+              // SUPER_ADMIN / ADMIN: dashboard + payments
               <>
-                {role === "SUPER_ADMIN" && (
-                  <Link
-                    id="dashboard-link"
-                    href="/adminDashboard"
-                    className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
-                  >
-                    Admin Dashboard
-                  </Link>
-                )}
+                <Link
+                  id="dashboard-link"
+                  href="/adminDashboard"
+                  className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
+                >
+                  Admin Dashboard
+                </Link>
                 <Link
                   id="payments-link"
-                  href={
-                    role === "REG_ADMIN" ? "/adminDashboard/payments" : "/admin"
-                  }
+                  href="/admin"
                   className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
                 >
                   Payments
