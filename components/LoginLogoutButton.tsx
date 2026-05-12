@@ -16,9 +16,14 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
   const { isLoggedIn, role, setIsLoggedIn } = useAuthContext();
   const isAdmin =
     role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN";
-  const isDomainAdmin = ["TECH_ADMIN", "SPORTS_ADMIN", "CULTURALS_ADMIN"].includes(role as string);
+  const isDomainAdmin = [
+    "TECH_ADMIN",
+    "SPORTS_ADMIN",
+    "CULTURALS_ADMIN",
+  ].includes(role as string);
   const isParticipant =
-    role === "PARTICIPANT" || (isLoggedIn && role !== null && !isAdmin && !isDomainAdmin);
+    role === "PARTICIPANT" ||
+    (isLoggedIn && role !== null && !isAdmin && !isDomainAdmin);
   const router = useRouter();
 
   const [cartCount, setCartCount] = useState(0);
@@ -112,7 +117,9 @@ const LoginLogoutButton = ({ variant = "inline" }: LoginLogoutButtonProps) => {
                 )}
                 <Link
                   id="payments-link"
-                  href={role === "REG_ADMIN" ? "/adminDashboard/payments" : "/admin"}
+                  href={
+                    role === "REG_ADMIN" ? "/adminDashboard/payments" : "/admin"
+                  }
                   className={`${baseBtn} ${variant === "stacked" ? stackedBtn : ""}`}
                 >
                   Payments
