@@ -104,6 +104,7 @@ export default function ManageTeamPage() {
 
   // Payment guard
   const [hasPaidOrder, setHasPaidOrder] = useState(false);
+  const [isPaymentLocked, setIsPaymentLocked] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -150,6 +151,14 @@ export default function ManageTeamPage() {
             item.order.status === "VERIFIED"
         );
         setHasPaidOrder(paid);
+
+        const paymentLocked = (teamData.data.team.OrderItem ?? []).some(
+          (item: { order: { status: string } }) =>
+            item.order.status === "PAYMENT_SUBMITTED" ||
+            item.order.status === "VERIFIED" ||
+            item.order.status === "REJECTED"
+        );
+        setIsPaymentLocked(paymentLocked);
       }
 
       if (profileRes.ok && profileData.data?.user?.id) {
@@ -473,6 +482,18 @@ export default function ManageTeamPage() {
             <p className="text-sm text-gat-steel mt-1">{team.event.name} • {team.event.category}</p>
           </div>
 
+          {isPaymentLocked && (
+            <div className="mb-6 flex items-start gap-3 p-4 rounded-xl border border-red-200 bg-red-50">
+              <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-bold text-red-800">Team editing is locked</p>
+                <p className="text-xs text-red-700 mt-0.5">
+                  You cannot edit team members because a payment has been submitted, verified, or rejected.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Edit deadline banners */}
           {editAllowed === false && (
             <div className="mb-6 flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50">
@@ -537,9 +558,9 @@ export default function ManageTeamPage() {
                     {isLeader && member.role !== "LEADER" && (
                       <button
                         onClick={() => setModal({ type: "removeMember", memberId: member.id, memberName: member.user.name })}
-                        disabled={removingMember === member.id || editAllowed === false}
+                        disabled={removingMember === member.id || editAllowed === false || isPaymentLocked}
                         className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        title={editAllowed === false ? "Team editing is closed" : "Remove Member"}
+                        title={isPaymentLocked ? "Editing is locked due to payment" : editAllowed === false ? "Team editing is closed" : "Remove Member"}
                       >
                         <UserMinus className="h-4 w-4" />
                       </button>
@@ -564,11 +585,11 @@ export default function ManageTeamPage() {
                     onKeyDown={(e) => e.key === "Enter" && !inviting && handleInvite()}
                     placeholder="Enter registered email address"
                     className="flex-1"
-                    disabled={editAllowed === false}
+                    disabled={editAllowed === false || isPaymentLocked}
                   />
                   <Button
                     onClick={handleInvite}
-                    disabled={inviting || editAllowed === false}
+                    disabled={inviting || editAllowed === false || isPaymentLocked}
                     className="bg-gat-blue text-white hover:bg-gat-midnight disabled:opacity-60"
                   >
                     {inviting ? "Sending..." : "Send Invite"}
@@ -607,9 +628,9 @@ export default function ManageTeamPage() {
                             {isPending && (
                               <button
                                 onClick={() => setModal({ type: "cancelInvite", inviteId: invite.id, inviteeName: invite.User_TeamInvite_invitedUserIdToUser.name })}
-                                disabled={cancelingInvite === invite.id || editAllowed === false}
+                                disabled={cancelingInvite === invite.id || editAllowed === false || isPaymentLocked}
                                 className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                                title={editAllowed === false ? "Team editing is closed" : "Cancel Invite"}
+                                title={isPaymentLocked ? "Editing is locked due to payment" : editAllowed === false ? "Team editing is closed" : "Cancel Invite"}
                               >
                                 <X className="h-4 w-4" />
                               </button>
