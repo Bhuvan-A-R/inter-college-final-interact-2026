@@ -46,7 +46,8 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { setIsLoggedIn, checkAuth } = useAuthContext();
   const [visibility, setVisibility] = useState<boolean>(false);
-  const [showMaintenanceModal, setShowMaintenanceModal] = useState<boolean>(true);
+  const [showMaintenanceModal, setShowMaintenanceModal] =
+    useState<boolean>(true);
 
   // Auto-hide modal after 5 seconds
   useEffect(() => {
@@ -79,16 +80,26 @@ export default function SignIn() {
           description: "Welcome back!",
         });
         const role = response.data.data?.user?.role;
-        if (role === "SUPER_ADMIN" || role === "REG_ADMIN" || role === "ADMIN") {
+        if (role === "REG_ADMIN") {
+          router.push("/adminDashboard/payments");
+        } else if (role === "SUPER_ADMIN" || role === "ADMIN") {
           router.push("/admin");
-        } else if (["TECH_ADMIN", "SPORTS_ADMIN", "CULTURALS_ADMIN"].includes(role)) {
+        } else if (
+          ["TECH_ADMIN", "SPORTS_ADMIN", "CULTURALS_ADMIN"].includes(role)
+        ) {
           router.push("/adminDashboard");
         } else {
           router.push("/dashboard");
         }
       } else {
-        form.setError("email", { type: "manual", message: "Invalid credentials" });
-        form.setError("password", { type: "manual", message: "Invalid credentials" });
+        form.setError("email", {
+          type: "manual",
+          message: "Invalid credentials",
+        });
+        form.setError("password", {
+          type: "manual",
+          message: "Invalid credentials",
+        });
         setError(response.data.error?.message ?? "Invalid email or password.");
         setIsLoading(false);
       }
@@ -98,11 +109,20 @@ export default function SignIn() {
         const message = error.response?.data?.error?.message;
         if (code === "EMAIL_NOT_FOUND") {
           setEmailNotFound(true);
-          form.setError("email", { type: "manual", message: "Email not registered" });
+          form.setError("email", {
+            type: "manual",
+            message: "Email not registered",
+          });
         } else if (message) {
           setError(message);
-          form.setError("email", { type: "manual", message: "Invalid credentials" });
-          form.setError("password", { type: "manual", message: "Invalid credentials" });
+          form.setError("email", {
+            type: "manual",
+            message: "Invalid credentials",
+          });
+          form.setError("password", {
+            type: "manual",
+            message: "Invalid credentials",
+          });
         } else {
           setError("An error occurred during login. Please try again.");
           console.error(error);
@@ -208,7 +228,7 @@ export default function SignIn() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-primary/20">
-                <motion.div 
+                <motion.div
                   initial={{ width: "100%" }}
                   animate={{ width: "0%" }}
                   transition={{ duration: 5, ease: "linear" }}
@@ -220,13 +240,14 @@ export default function SignIn() {
                 <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <AlertCircle className="w-8 h-8 text-primary" />
                 </div>
-                
+
                 <h2 className="text-2xl font-display font-bold mb-3 text-foreground">
                   Data Check Required
                 </h2>
-                
+
                 <p className="text-muted-foreground leading-relaxed mb-8">
-                  We recently updated our systems. Please check your dashboard and inform us if any of your registration data is missing.
+                  We recently updated our systems. Please check your dashboard
+                  and inform us if any of your registration data is missing.
                 </p>
 
                 <button
@@ -323,7 +344,10 @@ export default function SignIn() {
             </div> */}
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-5"
+              >
                 {/* Email */}
                 <FormField
                   control={form.control}
@@ -412,7 +436,9 @@ export default function SignIn() {
                 {/* Inline error */}
                 {emailNotFound ? (
                   <div className="text-xs text-center bg-amber-400/10 border border-amber-400/30 rounded-lg px-3 py-3 space-y-1.5">
-                    <p className="text-amber-400 font-semibold">Email isn&apos;t registered.</p>
+                    <p className="text-amber-400 font-semibold">
+                      Email isn&apos;t registered.
+                    </p>
                     <p style={{ color: "hsl(var(--muted-foreground))" }}>
                       Don&apos;t have an account?{" "}
                       <Link

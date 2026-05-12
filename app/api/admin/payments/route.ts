@@ -10,8 +10,9 @@ export async function GET(req: NextRequest) {
     if (auth.error) return auth.error;
 
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") ?? "1");
-    const limit = parseInt(searchParams.get("limit") ?? "50");
+    const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
+    const rawLimit = parseInt(searchParams.get("limit") ?? "100");
+    const limit = Math.min(Math.max(rawLimit, 1), 100);
     const skip = (page - 1) * limit;
 
     const validStatuses = ["PAYMENT_SUBMITTED", "VERIFIED", "REJECTED"] as const;
@@ -45,7 +46,10 @@ export async function GET(req: NextRequest) {
             },
           },
         },
-        orderBy: status === "VERIFIED" ? { verifiedAt: "desc" } : { paymentSubmittedAt: "asc" },
+        orderBy:
+          status === "VERIFIED" || status === "REJECTED"
+            ? { verifiedAt: "desc" }
+            : { paymentSubmittedAt: "desc" },
         skip,
         take: limit,
       }),

@@ -33,8 +33,10 @@ type PendingOrder = {
 type PaymentsResponse = {
   success: boolean;
   data?: { 
-    orders: PendingOrder[]; 
+    orders: PendingOrder[];
     total: number;
+    page?: number;
+    totalPages?: number;
     counts?: { pending: number; approved: number; rejected: number };
   };
   error?: { message?: string };
@@ -45,14 +47,19 @@ export default function AdminPaymentsPage() {
   const [activeTab, setActiveTab] = useState<"PAYMENT_SUBMITTED" | "VERIFIED" | "REJECTED">("PAYMENT_SUBMITTED");
   const [orders, setOrders] = useState<PendingOrder[]>([]);
   const [counts, setCounts] = useState({ pending: 0, approved: 0, rejected: 0 });
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalOrders, setTotalOrders] = useState(0);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [processing, setProcessing] = useState<string | null>(null);
 
-  const loadOrders = async (status: string) => {
+  const loadOrders = async (status: string, pageNumber = 1) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/payments?status=${status}`);
+      const res = await fetch(
+        `/api/admin/payments?status=${status}&page=${pageNumber}&limit=100`,
+      );
       const data: PaymentsResponse = await res.json();
 
       if (!res.ok) {
@@ -66,6 +73,9 @@ export default function AdminPaymentsPage() {
       }
 
       setOrders(data.data?.orders ?? []);
+      setTotalOrders(data.data?.total ?? 0);
+      setTotalPages(data.data?.totalPages ?? 1);
+      setPage(data.data?.page ?? pageNumber);
       if (data.data?.counts) {
         setCounts(data.data.counts);
       }
@@ -78,7 +88,8 @@ export default function AdminPaymentsPage() {
   };
 
   useEffect(() => {
-    loadOrders(activeTab);
+    setPage(1);
+    loadOrders(activeTab, 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
@@ -96,7 +107,7 @@ export default function AdminPaymentsPage() {
       }
 
       toast.success("Payment approved and registrations created.");
-      loadOrders(activeTab); // Reload to update counts and list
+      loadOrders(activeTab, page); // Reload current page to update counts and list
     } catch (error) {
       console.error(error);
       toast.error("Unable to approve payment.");
@@ -129,7 +140,7 @@ export default function AdminPaymentsPage() {
       }
 
       toast.success("Payment rejected.");
-      loadOrders(activeTab); // Reload to update counts and list
+      loadOrders(activeTab, page); // Reload current page to update counts and list
     } catch (error) {
       console.error(error);
       toast.error("Unable to reject payment.");
@@ -271,7 +282,7 @@ export default function AdminPaymentsPage() {
             </h1>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => loadOrders(activeTab)} disabled={loading || exporting}>
+            <Button variant="outline" onClick={() => loadOrders(activeTab, page)} disabled={loading || exporting}>
               Refresh
             </Button>
             <Button variant="outline" onClick={handleExportTab} disabled={loading || exporting}>
@@ -432,8 +443,11 @@ export default function AdminPaymentsPage() {
                                 {
                                   day: "2-digit",
                                   month: "short",
+                                  year: "numeric",
                                   hour: "2-digit",
                                   minute: "2-digit",
+                                  second: "2-digit",
+                                  hour12: false,
                                 },
                               )
                             : "—"}
@@ -447,8 +461,11 @@ export default function AdminPaymentsPage() {
                                 {
                                   day: "2-digit",
                                   month: "short",
+                                  year: "numeric",
                                   hour: "2-digit",
                                   minute: "2-digit",
+                                  second: "2-digit",
+                                  hour12: false,
                                 },
                               )
                             : "—"}
@@ -484,8 +501,32 @@ export default function AdminPaymentsPage() {
                 </tbody>
               </table>
             </div>
-            <div className="bg-white border-t border-gat-blue/10 px-4 py-3 text-xs text-gat-steel">
-              {orders.length} order{orders.length !== 1 ? "s" : ""}
+            <div className="bg-white border-t border-gat-blue/10 px-4 py-3 text-xs text-gat-steel flex flex-col md:flex-row items-center justify-between gap-3">
+              <div>
+                Showing {Math.min((page - 1) * 100 + 1, totalOrders)}–
+                {Math.min(page * 100, totalOrders)} of {totalOrders} payments
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => loadOrders(activeTab, page - 1)}
+                  disabled={loading || page <= 1}
+                >
+                  Previous
+                </Button>
+                <span>
+                  Page {page} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => loadOrders(activeTab, page + 1)}
+                  disabled={loading || page >= totalPages}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
           </div>
         )}
