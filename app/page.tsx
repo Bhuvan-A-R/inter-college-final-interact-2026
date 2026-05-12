@@ -421,11 +421,13 @@ function RunForHungerModal() {
           setModalShown(true);
         }
       },
-      { threshold: 0.4 }
+      { threshold: 0.4 },
     );
     const el = triggerRef.current;
     if (el) observer.observe(el);
-    return () => { if (el) observer.unobserve(el); };
+    return () => {
+      if (el) observer.unobserve(el);
+    };
   }, [modalShown]);
 
   useEffect(() => {
@@ -472,7 +474,9 @@ function RunForHungerModal() {
           {/* Modal */}
           <div
             className="relative z-10 flex flex-col items-center w-full max-w-sm"
-            style={{ animation: "rfhSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards" }}
+            style={{
+              animation: "rfhSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards",
+            }}
           >
             {/* Close button — large, prominent */}
             <button
@@ -489,7 +493,10 @@ function RunForHungerModal() {
             </button>
 
             {/* Countdown progress bar */}
-            <div className="w-full mb-3 rounded-full overflow-hidden h-1" style={{ background: "rgba(255,255,255,0.15)" }}>
+            <div
+              className="w-full mb-3 rounded-full overflow-hidden h-1"
+              style={{ background: "rgba(255,255,255,0.15)" }}
+            >
               <div
                 className="h-full rounded-full"
                 style={{
@@ -503,10 +510,13 @@ function RunForHungerModal() {
             {/* Poster image — full, no zoom */}
             <div
               className="w-full overflow-hidden shadow-2xl"
-              style={{ border: "3px solid rgba(255,255,255,0.12)", borderRadius: 0 }}
+              style={{
+                border: "3px solid rgba(255,255,255,0.12)",
+                borderRadius: 0,
+              }}
             >
               <Image
-                src="/events/Run for Hunger.jpeg"
+                src="/events/BAND-CONCERT-DJ-BANNER.jpg"
                 alt="Run for Hunger 4.0 — Poster"
                 width={1200}
                 height={900}
@@ -517,35 +527,44 @@ function RunForHungerModal() {
 
             {/* Register Now button */}
             <Link
-              href="https://www.gatinteract.com/pre-launch/run-for-hunger"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/band-concert-dj-night"
               onClick={closeModal}
               className="mt-5 inline-flex items-center gap-2 font-semibold rounded-full transition-all duration-700"
               style={{
                 padding: "14px 36px",
-                fontSize: 15,
+                fontSize: 12,
                 background: "hsl(var(--secondary))",
                 color: "hsl(var(--background))",
                 boxShadow: "0 0 28px hsl(var(--secondary) / 0.45)",
                 letterSpacing: "0.05em",
                 fontFamily: "'Outfit', sans-serif",
-                transition: "transform 0.7s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.7s ease",
+                transition:
+                  "transform 0.7s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.7s ease",
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.06)";
-                (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 0 42px hsl(var(--secondary) / 0.65)";
+                (e.currentTarget as HTMLAnchorElement).style.transform =
+                  "scale(1.06)";
+                (e.currentTarget as HTMLAnchorElement).style.boxShadow =
+                  "0 0 42px hsl(var(--secondary) / 0.65)";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)";
-                (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 0 28px hsl(var(--secondary) / 0.45)";
+                (e.currentTarget as HTMLAnchorElement).style.transform =
+                  "scale(1)";
+                (e.currentTarget as HTMLAnchorElement).style.boxShadow =
+                  "0 0 28px hsl(var(--secondary) / 0.45)";
               }}
             >
-              🏃‍♂️ Register for Run for Hunger 4.0
+              Register for BAND CONCERT DJ NIGHT
               <ArrowRight size={16} />
             </Link>
 
-            <p className="mt-2.5 text-xs" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Outfit', sans-serif" }}>
+            <p
+              className="mt-2.5 text-xs"
+              style={{
+                color: "rgba(255,255,255,0.4)",
+                fontFamily: "'Outfit', sans-serif",
+              }}
+            >
               Closes in {countdown}s · Click outside to dismiss
             </p>
           </div>
@@ -605,7 +624,7 @@ export default function Home() {
       ) : (
         <>
           <InteractLogoLaunchVideo />
-          {/* <RunForHungerModal /> */}
+          <RunForHungerModal />
           <div
             className="min-h-screen"
             style={{
