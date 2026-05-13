@@ -44,7 +44,6 @@ type CartResponse = {
   };
 };
 
-
 export default function CartPage() {
   const router = useRouter();
   const { isLoggedIn } = useAuthContext();
@@ -310,7 +309,9 @@ export default function CartPage() {
                       <td className="px-5 py-4 font-medium text-gat-midnight">
                         {item.event.name}
                         <span className="block text-xs text-gat-steel font-normal mt-0.5">
-                          {item.event.category.replace(/_/g, " ")}
+                          {item.event.category
+                            ? item.event.category.replace(/_/g, " ")
+                            : "General"}
                         </span>
                       </td>
                       <td className="px-5 py-4">
@@ -324,7 +325,7 @@ export default function CartPage() {
                         )}
                       </td>
                       <td className="px-5 py-4 text-right font-mono font-bold text-gat-dark-gold">
-                        ₹{Number(item.event.price).toFixed(2)}
+                        ₹{Number(item.event.price ?? 0).toFixed(2)}
                       </td>
                       <td className="px-5 py-4 text-right">
                         <button
@@ -370,7 +371,7 @@ export default function CartPage() {
                       )}
                     </span>
                     <span className="font-mono">
-                      ₹{Number(item.event.price).toFixed(2)}
+                      ₹{Number(item.event.price ?? 0).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -405,18 +406,17 @@ export default function CartPage() {
                 {checkingOut
                   ? "Processing..."
                   : teamValidations.some(
-                      (v) => v.minMembers && v.currentMembers < v.minMembers,
-                    )
+                        (v) => v.minMembers && v.currentMembers < v.minMembers,
+                      )
                     ? "Fill team requirements"
-                  : deadlinePassed
-                    ? "Registration deadline passed"
-                    : `Pay ₹${subtotal.toFixed(2)} for ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""}`}
+                    : deadlinePassed
+                      ? "Registration deadline passed"
+                      : `Pay ₹${subtotal.toFixed(2)} for ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""}`}
               </Button>
-                 <p className="text-xs text-gat-steel text-center mt-3">
-                  One UPI payment covers all events. Upload your screenshot after
-                  checkout.
-                </p>
-
+              <p className="text-xs text-gat-steel text-center mt-3">
+                One UPI payment covers all events. Upload your screenshot after
+                checkout.
+              </p>
             </div>
           </div>
         )}
