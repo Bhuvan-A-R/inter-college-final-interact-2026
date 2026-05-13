@@ -16,11 +16,7 @@ export async function GET() {
       include: {
         event: {
           select: {
-            id: true,
-            name: true,
-            type: true,
-            category: true,
-            price: true,
+            deadline: true,
             date: true,
             time: true,
             venue: true,
