@@ -23,13 +23,13 @@ export const events: Event[] = [
     { eventId: 11, domain: "Fine Arts", eventName: "On Spot Photography", venue: "Main Building 416", date: "13th May", timings: "Reporting: 8:30 AM | Presentation: 1:00 PM" },
     { eventId: 12, domain: "Fine Arts", eventName: "Rangoli", venue: "NEF Entry", date: "14th May", timings: "11:00 AM TO 1:00 PM" },
 
-    { eventId: 13, domain: "General Events", eventName: "Content Creation", venue: "Auditorium", date: "13th May", timings: "Reporting: 8:30 AM | Presentation: 1:00 PM" },
+    { eventId: 13, domain: "General Events", eventName: "Content Creation", venue: "Auditorium", date: "13th May", timings: "Reporting: 8:30 AM | Presentation: 10:30 AM" },
     { eventId: 14, domain: "General Events", eventName: "Radio Jockey", venue: "AIB 101", date: "13th May", timings: "2:00 PM TO 4:00 PM" },
-    { eventId: 15, domain: "General Events", eventName: "Short Film", venue: "Auditorium", date: "13th May", timings: "10:00 AM TO 1:00 PM" },
+    { eventId: 15, domain: "General Events", eventName: "Short Film", venue: "Auditorium", date: "13th May", timings: "10:00 AM TO 11:00 AM" },
 
     { eventId: 16, domain: "Literary", eventName: "Creative Writing", venue: "Main Building 202", date: "13th May", timings: "9:00 AM TO 11:00 AM" },
-    { eventId: 17, domain: "Literary", eventName: "Debate", venue: "SJB 001", date: "13th May", timings: "11:30 AM TO 1:00 PM" },
-    { eventId: 18, domain: "Literary", eventName: "Elocution", venue: "Main Building 316", date: "13th May", timings: "11:00 AM TO 1:00 PM" },
+    { eventId: 17, domain: "Literary", eventName: "Debate", venue: "SJB 001", date: "13th May", timings: "12:00 PM TO 1:00 PM" },
+    { eventId: 18, domain: "Literary", eventName: "Elocution", venue: "SJB 001", date: "13th May", timings: "1:00 PM ONWARDS" },
     { eventId: 19, domain: "Literary", eventName: "Poetry", venue: "Main Building 318", date: "13th May", timings: "12:00 PM TO 2:00 PM" },
 
     { eventId: 20, domain: "Music", eventName: "Battle of Bands", venue: "Main Stage", date: "14th May", timings: "3:00 PM TO 6:00 PM" },

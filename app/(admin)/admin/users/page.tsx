@@ -126,6 +126,8 @@ export default function UsersPage() {
       }
 
       const fullUsers: any[] = data.data?.users ?? [];
+      // Sort users by join date (createdAt) ascending (oldest first)
+      fullUsers.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
       if (fullUsers.length === 0) {
         toast.error("No data to export.");
         return;

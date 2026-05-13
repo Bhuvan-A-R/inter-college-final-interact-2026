@@ -17,6 +17,7 @@ type CartItem = {
     type: "SOLO" | "TEAM";
     category: string;
     price: number | string;
+    deadline?: string | null;
   };
   team?: {
     id: string;
@@ -50,6 +51,8 @@ export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [subtotal, setSubtotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  // Tracks if any cart item has a passed deadline
+  const [deadlinePassed, setDeadlinePassed] = useState<boolean>(false);
   const [checkingOut, setCheckingOut] = useState<boolean>(false);
   const [removing, setRemoving] = useState<string | null>(null);
   const [teamValidations, setTeamValidations] = useState<TeamValidation[]>([]);
@@ -72,6 +75,15 @@ export default function CartPage() {
 
       setCartItems(data.data?.items ?? []);
       setSubtotal(data.data?.subtotal ?? 0);
+      // Determine if any event in the cart has a deadline that has passed
+      const now = new Date();
+      const anyDeadlinePassed = (data.data?.items ?? []).some((item) => {
+        if (item.event.deadline) {
+          return now > new Date(item.event.deadline);
+        }
+        return false;
+      });
+      setDeadlinePassed(anyDeadlinePassed);
     } catch (error) {
       console.error(error);
       toast.error("Unable to load cart.");
@@ -383,6 +395,7 @@ export default function CartPage() {
                 onClick={handleCheckout}
                 disabled={
                   checkingOut ||
+                  deadlinePassed ||
                   teamValidations.some(
                     (v) => v.minMembers && v.currentMembers < v.minMembers,
                   )
@@ -395,6 +408,8 @@ export default function CartPage() {
                       (v) => v.minMembers && v.currentMembers < v.minMembers,
                     )
                     ? "Fill team requirements"
+                  : deadlinePassed
+                    ? "Registration deadline passed"
                     : `Pay ₹${subtotal.toFixed(2)} for ${cartItems.length} Event${cartItems.length !== 1 ? "s" : ""}`}
               </Button>
                  <p className="text-xs text-gat-steel text-center mt-3">
