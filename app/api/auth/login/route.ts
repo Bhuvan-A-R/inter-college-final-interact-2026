@@ -72,7 +72,10 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("[auth/login]", error);
+    // Ensure the caught error is an object for logging
+    const safeError = (error && typeof error === "object") ? error : new Error(String(error));
+    console.error("[auth/login]", safeError);
+    // Return a standard error response
     return NextResponse.json(
       { success: false, error: { message: "Internal server error." } },
       { status: 500 }

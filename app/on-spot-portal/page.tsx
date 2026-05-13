@@ -135,7 +135,6 @@ export default function OnSpotPortalPage() {
 
         <div className="mt-12">
           <Link href="/" className="text-sm text-muted-foreground hover:text-primary hover:underline">
-            ← Back to Home
           </Link>
         </div>
       </div>

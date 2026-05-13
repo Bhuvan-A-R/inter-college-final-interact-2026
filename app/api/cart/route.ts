@@ -16,6 +16,11 @@ export async function GET() {
       include: {
         event: {
           select: {
+            id: true,
+            name: true,
+            type: true,
+            category: true,
+            price: true,
             deadline: true,
             date: true,
             time: true,
@@ -34,7 +39,7 @@ export async function GET() {
       orderBy: { addedAt: "desc" },
     });
     const subtotal = cartItems.reduce(
-      (sum, item) => sum + Number(item.event.price),
+      (sum, item) => sum + Number(item.event.price ?? 0),
       0
     );
 

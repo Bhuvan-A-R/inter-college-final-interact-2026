@@ -107,10 +107,10 @@ export default async function DashboardPage({
         transactionId: order.upiTransactionId ?? null,
         registrationDate: order.verifiedAt
           ? new Date(order.verifiedAt).toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
           : null,
       });
     }
@@ -266,7 +266,7 @@ export default async function DashboardPage({
           </div>
         </div>
 
-         {/* Events Registered */}
+        {/* Events Registered */}
         <div className="bg-white rounded-xl border border-gat-blue/10 shadow-sm mt-10 p-6 mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xs font-bold tracking-[0.2em] uppercase text-gat-steel">
