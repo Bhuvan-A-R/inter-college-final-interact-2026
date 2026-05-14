@@ -10,7 +10,7 @@ export default function OnSpotPortalPage() {
   const [qrDay1, setQrDay1] = useState("");
   const [qrDay2, setQrDay2] = useState("");
 
-  const day1FormUrl = "https://forms.gle/ppz7EoZgq8tqGpXF6";
+  const day1FormUrl = "https://forms.gle/bhsV7jNeeYaecYm46";
   const day2FormUrl = "https://forms.gle/placeholderDay2";
 
   useEffect(() => {
@@ -73,10 +73,10 @@ export default function OnSpotPortalPage() {
           <div className="bg-card border border-blue-200 rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6 hover:shadow-lg transition-shadow">
             <div className="flex-1 flex flex-col gap-2">
               <h2 className="text-xl font-bold text-foreground">
-                INTERACT 2026 – On Spot Registration - DAY - 01
+                INTERACT 2026 – On Spot Registration - DAY - 02
               </h2>
               <p className="text-sm text-muted-foreground">
-                Scan the QR code or click the button to open the registration form for Day 1.
+                Scan the QR code or click the button to open the registration form for Day 2.
               </p>
               <a
                 href={day1FormUrl}
